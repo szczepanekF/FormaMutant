@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from api.views import CookieTokenObtainPairView, CookieTokenRefreshView, create_order, index
 urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/token/", CookieTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
+    path("api/test", create_order),
+    path("api/", index),
     path('admin/', admin.site.urls),
 ]
