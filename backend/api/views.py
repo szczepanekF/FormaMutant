@@ -5,7 +5,11 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
-from .serializers import AccountSerializer, OrderCreateSerializer, UserSerializer
+
+from .utils import send_confirmation_mail, send_cancellation_mail
+from .serializers import AccountSerializer, OrderCreateSerializer, UserSerializer, OrderStateUpdateSerializer
+from .models import Order, Account
+
 # Create your views here.
 class CookieTokenRefreshView(TokenRefreshView):
 
@@ -106,14 +110,8 @@ def is_admin(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_order(request):
-    account_serializer = AccountSerializer(data=request.data)
-    print(account_serializer)
-    
     serializer = OrderCreateSerializer(data=request.data)
-    print(serializer)
-    # return Response({"msg": "Hello world"})
-    
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         order = serializer.save()
         return Response({
             'order_id': order.id,
@@ -123,14 +121,31 @@ def create_order(request):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def index(request):
-    #TODO
-    return Response({"msg": "Hello world"})
 
-# @api_view(["POST"])
-# @permission_classes([AllowAny])
-# def create_order(request):
-#     #TODO
-#     return Response({"msg": "Hello world"})
+@api_view(["POST"])
+@permission_classes([AllowAny])
+# TODO check cookies token - isAuthenticated
+def change_order_state(request, order_id):
+    
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({"detail": "Nie znaleziono zamówienia."}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = OrderStateUpdateSerializer(order, data=request.data, partial=True)
+    if serializer.is_valid():
+        old_state = order.state
+        serializer.save()
+        new_state = serializer.validated_data.get('state')
+        if new_state != old_state:
+            if new_state is 'zaakceptowane':
+                send_confirmation_mail(order.account, order.items.values_list('id', flat=True))
+            elif new_state is 'anulowane':
+                send_cancellation_mail(order.account)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    
