@@ -9,6 +9,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["username", "first_name", "last_name", "id"]
 
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'state', 'item_real_ID']
+
 class AccountSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         validators=[]
@@ -68,3 +73,14 @@ class OrderStateUpdateSerializer(serializers.ModelSerializer):
         if value["state"] not in allowed_states:
             raise serializers.ValidationError("Nieprawidłowy stan.")
         return value
+    
+class AllOrdersSerializer(serializers.ModelSerializer):
+    account = AccountSerializer()
+    items_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'account', 'state', 'creation_date', 'modification_date', 'items_count']
+
+    def get_items_count(self, obj):
+        return obj.items.count()

@@ -20,6 +20,7 @@ import React from 'react';
 // import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { order_creation } from "../endpoints/api";
 
 const Order = () => {
 
@@ -56,8 +57,8 @@ const Order = () => {
       newErrors.last_name = "Last name is required";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Valid email is required";
-    if (!formData.phone_number.trim() || !/^\d{11}$/.test(formData.phone_number))
-      newErrors.phone_number = "Phone number must be 11 digits long";
+    if (!formData.phone_number.trim() || !/^\d{9}$/.test(formData.phone_number))
+      newErrors.phone_number = "Phone number must be 9 digits long";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -75,43 +76,18 @@ const Order = () => {
   const handleCreateUser = async () => {
     try {
       setLoading(true);
-      // await createUser(
-      //   formData.username,
-      //   formData.first_name,
-      //   formData.last_name,
-      //   formData.email,
-      //   formData.PESEL
-      // );
+      const user = {
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      email: formData.email,
+      phone_number: formData.phone_number,
+      };
+
+      const amount = formData.number_of_headphones;
+      const response = await order_creation(user, amount);
       reset();
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        try {
-          // await refresh();
-          // await createUser(
-          //   formData.username,
-          //   formData.first_name,
-          //   formData.last_name,
-          //   formData.email,
-          //   formData.PESEL
-          // );
-          reset();
-        } catch (refreshError) {
-          if (refreshError.response && refreshError.response.status === 401) {
-            console.error("Nie udało się odświeżyć tokena", refreshError);
-            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-            nav("/login");
-          } else {
-            // alert(refreshError.response?.data?.reason || "Wystąpił błąd.");
-            setLoading(false);
-            // toast.error(
-            //   formatErrorsToString(
-            //     parseErrorsFromString(refreshError.response?.data?.reason)
-            //   ) || "Unexpected error."
-            // );
-          }
-        }
-      } else {
-        // alert(error.response?.data?.reason || "Wystąpił błąd.");
+        alert(error.response?.data?.reason || "Wystąpił błąd.");
         setLoading(false);
         // toast.error(
         //   formatErrorsToString(
@@ -119,7 +95,7 @@ const Order = () => {
         //   ) || "Unexpected error."
         // );
       }
-    }
+    
   };
 
   return (

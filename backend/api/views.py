@@ -2,12 +2,12 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated,IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
 
 from .utils import send_confirmation_mail, send_cancellation_mail
-from .serializers import AccountSerializer, OrderCreateSerializer, UserSerializer, OrderStateUpdateSerializer
+from .serializers import AccountSerializer, OrderCreateSerializer, UserSerializer, OrderStateUpdateSerializer,AllOrdersSerializer
 from .models import Order, Account
 
 # Create your views here.
@@ -105,10 +105,16 @@ def is_logged_in(request):
 def is_admin(request):
     return Response({"is_admin": request.user.is_superuser})
 
-
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_all_order(requests):
+    orders = Order.objects.all().prefetch_related('items').select_related('account')
+    serializer = AllOrdersSerializer(orders, many=True)
+    return Response(serializer.data)
         
 @api_view(['POST'])
 @permission_classes([AllowAny])
+# TODO mail z linkiem do revoluta i potwierdzeniem
 def create_order(request):
     serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -123,7 +129,7 @@ def create_order(request):
             
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAdminUser])
 # TODO check cookies token - isAuthenticated
 def change_order_state(request, order_id):
     
