@@ -11,14 +11,14 @@ import {
 } from "@chakra-ui/react";
 // import { HamburgerIcon, CloseIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Link as RouterLink, NavLink } from "react-router-dom";
-// import { useAuth } from "../context/auth";
+import { useAuth } from "../context/auth";
 
 const Navbar = () => {
-//   const { isOpen, onToggle } = useDisclosure();
-//   const { logoutUser, userName, admin } = useAuth();
-//   const handleLogout = async () => {
-//     await logoutUser();
-//   };
+  const { isOpen, onToggle } = useDisclosure();
+  const { logoutUser, userName, admin } = useAuth();
+  const handleLogout = async () => {
+    await logoutUser();
+  };
 
   return (
     <Box
@@ -50,7 +50,7 @@ const Navbar = () => {
           Menu
         </ChakraLink>
 
-        <ChakraLink
+        {/* <ChakraLink
           as={RouterLink}
           to="/admin"
           fontSize="1.7rem"
@@ -60,8 +60,8 @@ const Navbar = () => {
           ml={5}
         >
           Admin
-        </ChakraLink>
-        <ChakraLink
+        </ChakraLink> */}
+        {/* <ChakraLink
           as={RouterLink}
           to="/login"
           fontSize="1.7rem"
@@ -71,7 +71,7 @@ const Navbar = () => {
           ml={5}
         >
           Login
-        </ChakraLink>
+        </ChakraLink> */}
         <ChakraLink
           as={RouterLink}
           to="/order"
@@ -105,8 +105,6 @@ const Navbar = () => {
         >
           Rodo
         </ChakraLink>
-
-
       </Flex>
     </Box>
   );

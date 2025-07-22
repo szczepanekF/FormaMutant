@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
-// import { useAuth } from "../context/auth";
+import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -22,16 +22,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  // const { loginUser, user } = useAuth();
+  const { loginUser, user } = useAuth();
 
-  // const handleLogin = async () => {
-  //   await loginUser(username, password);
-  // };
-  // useEffect(() => {
-  //   if (user) {
-  //     nav("/menu");
-  //   }
-  // }, [user]);
+  const handleLogin = async () => {
+    await loginUser(username, password);
+  };
+  useEffect(() => {
+    if (user) {
+      nav("/admin");
+    }
+  }, [user]);
 
   return (
     <Flex minH={"100vh"} w={"100vw"} align={"center"} justify={"center"} bg="#DAE3E5" >
@@ -82,7 +82,7 @@ const Login = () => {
               <Button
                 bg="#507DBC"
                 color={"white"}
-                // onClick={handleLogin}
+                onClick={handleLogin}
                 _hover={{
                   bg: "blue.700",
                 }}
