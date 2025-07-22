@@ -14,9 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
-from api.views import CookieTokenObtainPairView, CookieTokenRefreshView, create_order, logout,is_logged_in,is_admin, change_order_state,get_all_order
+from api.views import (
+    CookieTokenObtainPairView,
+    CookieTokenRefreshView,
+    create_order,
+    logout,
+    is_logged_in,
+    is_admin,
+    change_order_state,
+    get_all_order,
+    set_item_real_id,
+    set_item_state,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,8 +36,10 @@ urlpatterns = [
     path("api/token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
     path("api/logout/", logout),
     path("api/authcheck/", is_logged_in),
-    path("api/checkAdmin/",is_admin),
+    path("api/checkAdmin/", is_admin),
     path("api/order/", create_order),
     path("api/orderChangeState/<int:order_id>/", change_order_state),
-    path("api/getAllOrders/",get_all_order)
+    path("api/getAllOrders/",get_all_order),
+    path("api/lendItem/<str:token>/", set_item_real_id),
+    path("api/updateItemState/<str:token>/", set_item_state),
 ]

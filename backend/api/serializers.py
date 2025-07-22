@@ -46,10 +46,10 @@ class OrderCreateSerializer(serializers.Serializer):
         )
         if not created:
             total_items = Item.objects.filter(order__account=account).count()
-            print(total_items)
-            if total_items + amount_of_items >= MAX_ITEM_AMOUNT:
-                # TODO ogarnac ile jeszcze mozna domówić i dać znać userowi
-                raise serializers.ValidationError("Wykorzystano limit słuchawek do rezerwacji na ten adres email")
+            if total_items == MAX_ITEM_AMOUNT:
+                raise serializers.ValidationError("Wykorzystano limit słuchawek do rezerwacji na ten adres email")  
+            elif total_items + amount_of_items > MAX_ITEM_AMOUNT:
+                raise serializers.ValidationError(f"Przekroczono dozwoloną liczbę słuchawe, dostępna liczba rezerwacji: {MAX_ITEM_AMOUNT - total_items}")
         
         order = Order.objects.create(account=account)
 
@@ -73,7 +73,7 @@ class OrderStateUpdateSerializer(serializers.ModelSerializer):
         if value["state"] not in allowed_states:
             raise serializers.ValidationError("Nieprawidłowy stan.")
         return value
-    
+
 class AllOrdersSerializer(serializers.ModelSerializer):
     account = AccountSerializer()
     items_count = serializers.SerializerMethodField()
@@ -84,3 +84,18 @@ class AllOrdersSerializer(serializers.ModelSerializer):
 
     def get_items_count(self, obj):
         return obj.items.count()
+
+
+class ItemRealIdUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['item_real_ID']
+
+    def validate(self, value):
+        allowed_states = [choice[0] for choice in Order.STATE_CHOICES]
+        print(value)
+        print(value["state"])
+        if value["state"] not in allowed_states:
+            raise serializers.ValidationError("Nieprawidłowy stan.")
+        return value
+

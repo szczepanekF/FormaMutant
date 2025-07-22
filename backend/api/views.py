@@ -1,14 +1,25 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import AllowAny, IsAuthenticated,IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
 
-from .utils import send_confirmation_mail, send_cancellation_mail
-from .serializers import AccountSerializer, OrderCreateSerializer, UserSerializer, OrderStateUpdateSerializer,AllOrdersSerializer
-from .models import Order, Account
+
+from .utils import send_confirmation_mail, send_cancellation_mail, send_payment_mail
+from .serializers import (
+    AccountSerializer,
+    OrderCreateSerializer,
+    UserSerializer,
+    OrderStateUpdateSerializer,
+)
+from .models import Item, Order, Account
+
 
 # Create your views here.
 class CookieTokenRefreshView(TokenRefreshView):
@@ -43,12 +54,12 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        print('LOG')
-        ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
+        print("LOG")
+        ip_address = request.META.get("HTTP_X_FORWARDED_FOR")
         if ip_address:
-            ip_address = ip_address.split(',')[0]
+            ip_address = ip_address.split(",")[0]
         else:
-            ip_address = request.META.get('REMOTE_ADDR')
+            ip_address = request.META.get("REMOTE_ADDR")
         print(ip_address)
         try:
             response = super().post(request, *args, **kwargs)
@@ -79,7 +90,8 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             return Response(
                 {"success": False, "reason": str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-   
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def logout(request):
@@ -91,7 +103,8 @@ def logout(request):
     except Exception as e:
         return Response(
             {"succes": False, "reason": str(e)}, status=status.HTTP_400_BAD_REQUEST
-        )   
+        )
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -105,53 +118,99 @@ def is_logged_in(request):
 def is_admin(request):
     return Response({"is_admin": request.user.is_superuser})
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @permission_classes([IsAdminUser])
 def get_all_order(requests):
-    orders = Order.objects.all().prefetch_related('items').select_related('account')
+    orders = Order.objects.all().prefetch_related("items").select_related("account")
     serializer = AllOrdersSerializer(orders, many=True)
     return Response(serializer.data)
-        
-@api_view(['POST'])
+
+
+@api_view(["POST"])
 @permission_classes([AllowAny])
-# TODO mail z linkiem do revoluta i potwierdzeniem
 def create_order(request):
     serializer = OrderCreateSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         order = serializer.save()
-        return Response({
-            'order_id': order.id,
-            'account_email': order.account.email,
-            'items_count': order.items.count(),
-        }, status=status.HTTP_201_CREATED)
+        send_payment_mail(order.account, order.items.count())
+        return Response(
+            {
+                "order_id": order.id,
+                "account_email": order.account.email,
+                "items_count": order.items.count(),
+            },
+            status=status.HTTP_201_CREATED,
+        )
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
 
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
-# TODO check cookies token - isAuthenticated
 def change_order_state(request, order_id):
-    
+
     try:
         order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
-        return Response({"detail": "Nie znaleziono zamówienia."}, status=status.HTTP_404_NOT_FOUND)
-    
+        return Response(
+            {"detail": "Nie znaleziono zamówienia."}, status=status.HTTP_404_NOT_FOUND
+        )
+
     serializer = OrderStateUpdateSerializer(order, data=request.data, partial=True)
     if serializer.is_valid():
         old_state = order.state
         serializer.save()
-        new_state = serializer.validated_data.get('state')
+        new_state = serializer.validated_data.get("state")
         if new_state != old_state:
-            if new_state is 'zaakceptowane':
-                send_confirmation_mail(order.account, order.items.values_list('id', flat=True))
-            elif new_state is 'anulowane':
+            if new_state is "zaakceptowane":
+                send_confirmation_mail(
+                    order.account, order.items.values_list("token", flat=True)
+                )
+            elif new_state is "anulowane":
+                # todo dodaj info o nr zamowienia ktore bylo zcancellowane (dodac np pole nr zamowienia generowane na podstawie daty i inicialow)
                 send_cancellation_mail(order.account)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["POST"])
+@permission_classes([IsAdminUser])
+def set_item_real_id(request, token):
+    try:
+        item = Item.objects.get(token=token)
+    except Item.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    
+    new_real_id = request.data.get("item_real_ID")
+    if not new_real_id:
+        return Response(
+            {"error": "item_real_ID field is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    item.item_real_ID = new_real_id
+    item.state = "wydane"
+    item.save()
+    return Response({"message": "item_real_ID updated successfully"})
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAdminUser])
+def set_item_state(request, token):
+    try:
+        item = Item.objects.get(token=token)
+    except Item.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    new_state = request.data.get("state")
+    if not new_state:
+        return Response(
+            {"error": "item_real_ID field is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    item.new_state = new_state
+    item.save()
+    return Response({"message": "item_real_ID updated successfully"})
