@@ -53,7 +53,7 @@ class Order(models.Model):
     modification_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Order #{self.id} for {self.account.email} - State: {self.state}"
+        return f"Order #{self.state} for {self.account} - State: {self.state}"
 
 def generate_token():
     return uuid.uuid4().hex
@@ -76,4 +76,4 @@ class Item(models.Model):
     #todo add hash consisting of user data and item id
     
     def __str__(self):
-        return f"Item {self.name} (x{self.quantity}) in Order #{self.order.id} - State: {self.state}"
+        return f"Item - State: {self.state}"

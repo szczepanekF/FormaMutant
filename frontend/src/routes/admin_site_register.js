@@ -48,6 +48,7 @@ const AdminTokenLookup = () => {
     let form = {'state': 'wydane', 'number': parseInt(numberValue)};
     try {
      await set_item_number(form, token);
+     handleCancel();
     } catch (error) {
       alert("Błąd podczas wysyłania danych:", error?.response?.data || error.message);
       // console.log(error);

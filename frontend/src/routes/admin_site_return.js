@@ -45,6 +45,7 @@ const AdminNumberLookup = () => {
 
   const handleSubmit = async () => {
     await change_item_state(selectedState, token);
+    handleCancel();
   };
 
   return (

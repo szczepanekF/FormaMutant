@@ -164,12 +164,18 @@ def get_account_with_number(request, number):
         item = Item.objects.select_related("order__account").get(item_real_ID=number)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(
+            {"error": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,)
+
     if item.state is None or item.state != "wydane":
         # print("Item is not in a valid state to retrieve account information (" + item.state + ")")
         return Response(
             {"error": "Item is not in a valid state to retrieve account information (" + item.state + ")"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    print(item)
     account = item.order.account
     return Response({
         "first_name": account.first_name,
