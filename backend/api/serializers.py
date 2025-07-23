@@ -104,6 +104,20 @@ class AllOrdersSerializer(serializers.ModelSerializer):
     def get_items_count(self, obj):
         return obj.items.count()
 
+class AllItemsSerializer(serializers.ModelSerializer):
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Item
+        fields = ['id', 'token', 'state', 'item_real_ID', 'order', 'first_name', 'last_name']
+
+    def get_first_name(self, obj):
+        return obj.order.account.first_name if obj.order and obj.order.account else None
+
+    def get_last_name(self, obj):
+        return obj.order.account.last_name if obj.order and obj.order.account else None
+
 
 class ItemRealIdUpdateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,6 +17,8 @@ from .serializers import (
     OrderCreateSerializer,
     UserSerializer,
     OrderStateUpdateSerializer,
+    AllItemsSerializer,
+    AllOrdersSerializer,
 )
 from .models import Item, Order, Account
 
@@ -122,9 +124,60 @@ def is_admin(request):
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
 def get_all_order(requests):
-    orders = Order.objects.all().prefetch_related("items").select_related("account")
-    serializer = AllOrdersSerializer(orders, many=True)
+    try:
+        orders = Order.objects.all().prefetch_related("items").select_related("account")
+        serializer = AllOrdersSerializer(orders, many=True)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def get_all_items(request):
+    items = Item.objects.select_related("order__account")
+    serializer = AllItemsSerializer(items, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def get_account_with_token(request, token):
+    try:
+        item = Item.objects.select_related("order__account").get(token=token)
+    except Item.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+    if item.state is None or item.state != "zarezerwowane":
+        return Response(
+            {"error": "Item is not in a valid state to retrieve account information"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    account = item.order.account
+    serializer = AccountSerializer(account)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def get_account_with_number(request, number):
+    try:
+        item = Item.objects.select_related("order__account").get(item_real_ID=number)
+    except Item.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+    if item.state is None or item.state != "wydane":
+        # print("Item is not in a valid state to retrieve account information (" + item.state + ")")
+        return Response(
+            {"error": "Item is not in a valid state to retrieve account information (" + item.state + ")"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    account = item.order.account
+    return Response({
+        "first_name": account.first_name,
+        "last_name": account.last_name,
+        "email": account.email,
+        "phone_number": account.phone_number,
+        "token": item.token
+    })
 
 
 @api_view(["POST"])
@@ -211,6 +264,33 @@ def set_item_state(request, token):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    item.new_state = new_state
+    item.state = new_state
+    item.save()
+    return Response({"message": "item_real_ID updated successfully"})
+
+
+@api_view(["PATCH"])
+@permission_classes([IsAdminUser])
+def set_item_number(request, token):
+    print(request.data)
+    try:
+        item = Item.objects.get(token=token)
+    except Item.DoesNotExist:
+        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    new_state = request.data.get("state")
+    if not new_state:
+        return Response(
+            {"error": "item_real_ID field is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    number = request.data.get("number")
+    if not number:
+        return Response(
+            {"error": "number field is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    item.state = new_state
+    item.item_real_ID = number
     item.save()
     return Response({"message": "item_real_ID updated successfully"})

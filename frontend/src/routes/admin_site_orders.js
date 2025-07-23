@@ -7,6 +7,7 @@ import {
   Tbody,
   Tr,
   Button,
+  Text,
   Spinner,
   Th,
   Td,
@@ -14,6 +15,15 @@ import {
   Input,
   Select,
   Badge,
+} from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { IconButton } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
@@ -31,6 +41,10 @@ const Admin = () => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [loading, setLoading] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState({});
+  const [headphoneCount, setHeadphoneCount] = useState(0);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const nav = useNavigate();
 
@@ -51,11 +65,36 @@ const Admin = () => {
     }
   };
 
-  const handleStatusChange = async (order, newStatus) => {
-    await change_order_state(newStatus,order.id);
-
+  const handleStatusChange = async (order, status) => {
+    // await change_order_state(newStatus, order.id);
+    setSelectedOrder(order);
+    setNewStatus(status);
+    setIsModalOpen(true);
   };
 
+  const confirmStatusChange = async () => {
+    try {
+      await change_order_state(newStatus, selectedOrder.id);
+      selectedOrder.state = newStatus;
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === selectedOrder.id ? { ...order, state: newStatus } : order
+        )
+      );
+      setSelectedOrder(null);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Błąd przy zmianie statusu");
+    }
+  };
+
+  const updateHeadphoneCount = (orders) => {
+    const count = orders
+      .filter((order) => order.state === "zaakceptowane")
+      .reduce((total, order) => total + order.items_count, 0);
+    console.log(orders.filter((order) => order.state === "zaakceptowane"));
+    setHeadphoneCount(count);
+  };
   const handleSelectChange = (orderId, value) => {
     setSelectedStatuses((prev) => ({
       ...prev,
@@ -68,6 +107,7 @@ const Admin = () => {
       setLoading(true);
       try {
         const orders = await getAllOrders();
+        console.log(orders);
         setOrders(orders);
         setFilteredOrders(orders);
         // Initialize selectedStatuses with current order statuses
@@ -112,6 +152,10 @@ const Admin = () => {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    updateHeadphoneCount(orders);
+  }, [orders]);
+
   const handleFilterChange = (field, value) => {
     const newFilters = { ...filters, [field]: value.toLowerCase() };
     setFilters(newFilters);
@@ -149,32 +193,9 @@ const Admin = () => {
 
   return (
     <Box p={4}>
-      <Heading as="h1" size="xl" mb={6}>
-        Panel Admina
-      </Heading>
-
-      <Button
-        as="a"
-        href="http://localhost:8000/admin"
-        target="_blank"
-        rel="noopener noreferrer"
-        bg="#507DBC"
-        _hover={{ bg: "blue.700" }}
-        color="white"
-        mr={4}
-      >
-        Przejdź do panelu Django
-      </Button>
-
-      <Button
-        onClick={handleLogout}
-        bg="#507DBC"
-        _hover={{ bg: "blue.700" }}
-        color="white"
-      >
-        Logout
-      </Button>
-
+      <Box mt={4} mb={4}>
+        <strong>Aktualnie wypożyczone słuchawki:</strong> {headphoneCount}
+      </Box>
       <Box mt={8}>
         {loading ? (
           <Spinner size="xl" />
@@ -456,42 +477,55 @@ const Admin = () => {
                     <Td>{order.account.phone_number}</Td>
                     <Td>{order.items_count}</Td>
                     <Td>
-                      <Select
-                        size="sm"
-                        value={selectedStatuses[order.id] || order.state}
-                        onChange={(e) =>
-                          handleSelectChange(order.id, e.target.value)
-                        }
-                        borderColor={getColor(
-                          selectedStatuses[order.id] || order.state
-                        )}
-                      >
-                        <option value="oczekujące">oczekujące</option>
-                        <option value="zaakceptowane">zaakceptowane</option>
-                        <option value="anulowane">anulowane</option>
-                      </Select>
+                      {order.state === "oczekujące" ? (
+                        <Select
+                          size="sm"
+                          value={selectedStatuses[order.id] || order.state}
+                          onChange={(e) =>
+                            handleSelectChange(order.id, e.target.value)
+                          }
+                          borderColor={getColor(
+                            selectedStatuses[order.id] || order.state
+                          )}
+                        >
+                          <option value="oczekujące">oczekujące</option>
+                          <option value="zaakceptowane">zaakceptowane</option>
+                          <option value="anulowane">anulowane</option>
+                        </Select>
+                      ) : (
+                        <Text
+                          fontSize="sm"
+                          fontWeight="medium"
+                          color={getColor(order.state)}
+                          textTransform="capitalize"
+                        >
+                          {order.state}
+                        </Text>
+                      )}
                     </Td>
                     <Td>{new Date(order.creation_date).toLocaleString()}</Td>
                     <Td>
                       {new Date(order.modification_date).toLocaleString()}
                     </Td>
                     <Td>
-                      <Button
-                        size="sm"
-                        colorScheme="blue"
-                        isDisabled={
-                          (selectedStatuses[order.id] || order.state) ===
-                          order.state
-                        }
-                        onClick={() =>
-                          handleStatusChange(
-                            order,
-                            selectedStatuses[order.id] || order.state
-                          )
-                        }
-                      >
-                        Zmień status
-                      </Button>
+                      {order.state === "oczekujące" && (
+                        <Button
+                          size="sm"
+                          colorScheme="blue"
+                          isDisabled={
+                            (selectedStatuses[order.id] || order.state) ===
+                            order.state
+                          }
+                          onClick={() =>
+                            handleStatusChange(
+                              order,
+                              selectedStatuses[order.id] || order.state
+                            )
+                          }
+                        >
+                          Zmień status
+                        </Button>
+                      )}
                     </Td>
                   </Tr>
                 ))}
@@ -500,6 +534,30 @@ const Admin = () => {
           </TableContainer>
         )}
       </Box>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Potwierdź zmianę statusu</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Czy na pewno chcesz zmienić status zamówienia dla{" "}
+            <strong>
+              {selectedOrder?.account?.first_name}{" "}
+              {selectedOrder?.account?.last_name}
+            </strong>{" "}
+            (ID: {selectedOrder?.id}) na <strong>{newStatus}</strong>?
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={confirmStatusChange}>
+              Potwierdź
+            </Button>
+            <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+              Anuluj
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

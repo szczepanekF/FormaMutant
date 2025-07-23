@@ -2,7 +2,9 @@ import logo from "./logo.svg";
 import { ChakraProvider, Stack, Flex } from "@chakra-ui/react";
 import "./App.css";
 import Menu from "./routes/main_site";
-import Admin from "./routes/admin_site";
+import Admin from "./routes/admin_site_orders";
+import AdminPanel from "./routes/admin_panel";
+import AdminItems from "./routes/admin_site_items";
 import { AuthProvider } from "./context/auth";
 import Login from "./routes/login";
 import Order from "./routes/order_site";
@@ -43,7 +45,7 @@ function App() {
                 path="/admin"
                 element={
                   <ProtectedRoute>
-                    <Admin />
+                    <AdminPanel />
                   </ProtectedRoute>
                 }
               ></Route>
