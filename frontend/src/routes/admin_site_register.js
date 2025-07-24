@@ -10,32 +10,32 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react";
-import { getAccountForItem,set_item_number } from "../endpoints/api";
-
+import { getAccountForItem, set_item_number } from "../endpoints/api";
+import { useAuth } from "../context/auth";
 const AdminTokenLookup = () => {
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState(null);
   const [numberValue, setNumberValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const { withRefresh, witheErrorHandler } = useAuth();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const res = await getAccountForItem(token); 
+        const res = await getAccountForItem(token);
         setUserData(res);
-      } catch (error) {
-        // console.log(error?.response?.data);
-        alert(error?.response?.data?.error || error.message);
-        setUserData(null);
-      } finally {
         setLoading(false);
-      }
     };
 
-    if (token.length === 32) {
-      fetchUserData();
-    }
+    const run = async () => {
+      if (token.length === 32) {
+        setLoading(true);
+        await withRefresh(fetchUserData, () => {
+          setLoading(false);
+          setUserData(null);
+        });
+      }
+    };
+    run();
   }, [token]);
 
   const handleCancel = () => {
@@ -45,15 +45,16 @@ const AdminTokenLookup = () => {
   };
 
   const handleSubmit = async () => {
-    let form = {'state': 'wydane', 'number': parseInt(numberValue)};
-    try {
-     await set_item_number(form, token);
-     handleCancel();
-    } catch (error) {
-      alert("Błąd podczas wysyłania danych:", error?.response?.data || error.message);
-      // console.log(error);
-      return;
-    }
+    await withRefresh(
+      async () => {
+        let form = { state: "wydane", number: parseInt(numberValue) };
+        await set_item_number(form, token);
+        handleCancel();
+      },
+      () => {
+        console.log("error");
+      }
+    );
   };
 
   return (

@@ -16,14 +16,14 @@ import {
   ModalContent,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import React from 'react';
+import React from "react";
 // import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { order_creation } from "../endpoints/api";
+import { useAuth } from "../context/auth";
 
 const Order = () => {
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formData, setFormData] = useState({
     first_name: "",
@@ -35,6 +35,7 @@ const Order = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
+  const { withErrorHandler } = useAuth();
 
   const reset = () => {
     setFormData({
@@ -74,32 +75,28 @@ const Order = () => {
   };
 
   const handleCreateUser = async () => {
-    try {
-      setLoading(true);
-      const user = {
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      email: formData.email,
-      phone_number: formData.phone_number,
-      };
-
-      const amount = formData.number_of_headphones;
-      const response = await order_creation(user, amount);
-      reset();
-    } catch (error) {
-        alert(error.response?.data?.reason || "Wystąpił błąd.");
+    await withErrorHandler(
+      async () => {
+        setLoading(true);
+        const user = {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          phone_number: formData.phone_number,
+        };
+        const amount = formData.number_of_headphones;
+        const response = await order_creation(user, amount);
+        reset();
         setLoading(false);
-        // toast.error(
-        //   formatErrorsToString(
-        //     parseErrorsFromString(error.response?.data?.reason)
-        //   ) || "Unexpected error."
-        // );
+      },
+      () => {
+        setLoading(false);
       }
-    
+    );
   };
 
   return (
-     <Flex
+    <Flex
       minH={"100%"}
       maxW={"100%"}
       align={"center"}
@@ -133,25 +130,29 @@ const Order = () => {
           width={"100%"}
         >
           <Stack spacing={4}>
-            {[ "first_name", "last_name", "email", "phone_number","number_of_headphones"].map(
-              (field) => (
-                <FormControl key={field} isInvalid={!!errors[field]}>
-                  <FormLabel color="#04080F">
-                    {field
-                      .split('_')
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')}
-                  </FormLabel>
-                  <Input
-                    color="#04080F"
-                    boxShadow="md"
-                    value={formData[field]}
-                    onChange={(e) => handleChange(field, e.target.value)}
-                  />
-                  <FormErrorMessage>{errors[field]}</FormErrorMessage>
-                </FormControl>
-              )
-            )}
+            {[
+              "first_name",
+              "last_name",
+              "email",
+              "phone_number",
+              "number_of_headphones",
+            ].map((field) => (
+              <FormControl key={field} isInvalid={!!errors[field]}>
+                <FormLabel color="#04080F">
+                  {field
+                    .split("_")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </FormLabel>
+                <Input
+                  color="#04080F"
+                  boxShadow="md"
+                  value={formData[field]}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                />
+                <FormErrorMessage>{errors[field]}</FormErrorMessage>
+              </FormControl>
+            ))}
             <Button
               bg="#507DBC"
               // mt={3}
@@ -224,7 +225,7 @@ const Order = () => {
                   onClick={handleCreateUser}
                   isLoading={loading}
                   boxShadow="md"
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Confirm
                 </Button>
@@ -237,7 +238,7 @@ const Order = () => {
                   }}
                   onClick={onClose}
                   boxShadow="md"
-                  width={'100%'}
+                  width={"100%"}
                 >
                   Cancel
                 </Button>

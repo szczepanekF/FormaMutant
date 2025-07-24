@@ -2,18 +2,21 @@ import React from "react";
 import { useAuth } from "../context/auth";
 import { VStack, Text, Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading,get_authenticated } = useAuth();
+  const { user, loading, get_authenticated } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    if ( location.pathname !== "/login") {
       get_authenticated();
-    }, [window.location.pathname]);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user ) {
       nav("/login");
     }
   }, [loading, user]);

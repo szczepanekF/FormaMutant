@@ -34,7 +34,8 @@ import { getAllItems, change_item_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 
 const AdminItems = () => {
-  const { logoutUser, refresh } = useAuth();
+  const { logoutUser, refresh, navigatingToLogin, withErrorHandler, withRefresh } =
+    useAuth();
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [filters, setFilters] = useState({});
@@ -72,18 +73,40 @@ const AdminItems = () => {
     }
   };
 
+  // const handleStatusChange = async (order, newStatus) => {
+  //   await change_item_state(newStatus, order.token);
+  //   selectedItem.state = newStatus;
+  //   setItems((prev) =>
+  //     prev.map((item) =>
+  //       item.id === modalData.item.id
+  //         ? { ...item, state: modalData.targetState }
+  //         : item
+  //     )
+  //   );
+  //   setSelectedItem(null);
+  // };
+
   const handleStatusChange = async (order, newStatus) => {
-    await change_item_state(newStatus, order.token);
-    selectedItem.state = newStatus;
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === modalData.item.id
-          ? { ...item, state: modalData.targetState }
-          : item
-      )
+    await withRefresh(
+      async () => {
+        await change_item_state(newStatus, order.token);
+        selectedItem.state = newStatus;
+        setItems((prev) =>
+          prev.map((item) =>
+            item.id === modalData.item.id
+              ? { ...item, state: modalData.targetState }
+              : item
+          )
+        );
+        setSelectedItem(null);
+      },
+      () => {
+        console.log("error");
+      }
     );
-    setSelectedItem(null);
   };
+
+
 
   const handleSelectChange = (orderId, value) => {
     setSelectedStatuses((prev) => ({
@@ -94,52 +117,29 @@ const AdminItems = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
+      console.log('items');
       setLoading(true);
-      try {
-        const items = await getAllItems();
-        // console.log(items);
-        setItems(items);
-        setFilteredItems(items);
-        // Initialize selectedStatuses with current order statuses
-        const initialStatuses = items.reduce(
-          (acc, order) => ({
-            ...acc,
-            [order.id]: order.state,
-          }),
-          {}
-        );
-        setSelectedStatuses(initialStatuses);
-        setLoading(false);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          try {
-            await refresh();
-            const items = await getAllItems();
-            setItems(items);
-            setFilteredItems(items);
-            // Initialize selectedStatuses with current order statuses
-            const initialStatuses = items.reduce(
-              (acc, order) => ({
-                ...acc,
-                [order.id]: order.state,
-              }),
-              {}
-            );
-            setSelectedStatuses(initialStatuses);
-            setLoading(false);
-          } catch (refreshError) {
-            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-            nav("/login");
-          }
-        } else {
-          setItems([]);
-          setFilteredItems([]);
-          setSelectedStatuses({});
-          setLoading(false);
-        }
-      }
+      const items = await getAllItems();
+      setItems(items);
+      setFilteredItems(items);
+
+      const initialStatuses = items.reduce(
+        (acc, order) => ({
+          ...acc,
+          [order.id]: order.state,
+        }),
+        {}
+      );
+      setSelectedStatuses(initialStatuses);
+      setLoading(false);
     };
-    fetchItems();
+
+    withErrorHandler(fetchItems, () => {
+      setItems([]);
+      setFilteredItems([]);
+      setSelectedStatuses({});
+      setLoading(false);
+    });
   }, []);
 
   const handleFilterChange = (field, value) => {
@@ -400,11 +400,7 @@ const AdminItems = () => {
                       <Td>{order.item_real_ID}</Td>
                       <Td>{order.order}</Td>
                       <Td>
-                        {currentState ===
-                        "zarezerwowane" ? //   onClick={() => handleStatusChange(order, "wydane")} //   colorScheme="blue" //   size="sm" // <Button
-                        // >
-                        //   Wydaj
-                        // </Button>
+                        {currentState === "zarezerwowane" ? // </Button> //   Wydaj // > //   onClick={() => handleStatusChange(order, "wydane")} //   colorScheme="blue" //   size="sm" // <Button
                         null : currentState === "wydane" ? (
                           <Button
                             size="sm"

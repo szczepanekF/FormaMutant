@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
   Box,
   Heading,
@@ -33,7 +33,14 @@ import { getAllOrders, change_order_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
-  const { logoutUser, refresh } = useAuth();
+  const {
+    logoutUser,
+    refresh,
+    navigatingToLogin,
+    setNavigatingToLogin,
+    withErrorHandler,
+    withRefresh,
+  } = useAuth();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [filters, setFilters] = useState({});
@@ -72,27 +79,47 @@ const Admin = () => {
     setIsModalOpen(true);
   };
 
+  // const confirmStatusChange = async () => {
+  //   try {
+  //     await change_order_state(newStatus, selectedOrder.id);
+  //     selectedOrder.state = newStatus;
+  //     setOrders((prev) =>
+  //       prev.map((order) =>
+  //         order.id === selectedOrder.id ? { ...order, state: newStatus } : order
+  //       )
+  //     );
+  //     setSelectedOrder(null);
+  //     setIsModalOpen(false);
+  //   } catch (err) {
+  //     console.error("Błąd przy zmianie statusu");
+  //   }
+  // };
+
   const confirmStatusChange = async () => {
-    try {
-      await change_order_state(newStatus, selectedOrder.id);
-      selectedOrder.state = newStatus;
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === selectedOrder.id ? { ...order, state: newStatus } : order
-        )
-      );
-      setSelectedOrder(null);
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error("Błąd przy zmianie statusu");
-    }
+    await withRefresh(
+      async () => {
+        await change_order_state(newStatus, selectedOrder.id);
+        selectedOrder.state = newStatus;
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === selectedOrder.id
+              ? { ...order, state: newStatus }
+              : order
+          )
+        );
+        setSelectedOrder(null);
+        setIsModalOpen(false);
+      },
+      () => {
+        console.error("Błąd przy zmianie statusu");
+      }
+    );
   };
 
   const updateHeadphoneCount = (orders) => {
     const count = orders
       .filter((order) => order.state === "zaakceptowane")
       .reduce((total, order) => total + order.items_count, 0);
-    console.log(orders.filter((order) => order.state === "zaakceptowane"));
     setHeadphoneCount(count);
   };
   const handleSelectChange = (orderId, value) => {
@@ -102,54 +129,82 @@ const Admin = () => {
     }));
   };
 
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     // if (navigatingToLogin) return;
+  //     setLoading(true);
+  //     try {
+  //       const orders = await getAllOrders();
+  //       console.log(orders);
+  //       setOrders(orders);
+  //       setFilteredOrders(orders);
+  //       // Initialize selectedStatuses with current order statuses
+  //       const initialStatuses = orders.reduce(
+  //         (acc, order) => ({
+  //           ...acc,
+  //           [order.id]: order.state,
+  //         }),
+  //         {}
+  //       );
+  //       setSelectedStatuses(initialStatuses);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       if (error.response?.status === 401) {
+  //         try {
+  //           await refresh();
+  //           const orders = await getAllOrders();
+  //           setOrders(orders);
+  //           setFilteredOrders(orders);
+  //           // Initialize selectedStatuses with current order statuses
+  //           const initialStatuses = orders.reduce(
+  //             (acc, order) => ({
+  //               ...acc,
+  //               [order.id]: order.state,
+  //             }),
+  //             {}
+  //           );
+  //           setSelectedStatuses(initialStatuses);
+  //           setLoading(false);
+  //         } catch (refreshError) {
+  //           alert("Twoja sesja wygasła. Zaloguj się ponownie.");
+  //           nav("/login");
+  //         }
+  //       } else {
+  //         setOrders([]);
+  //         setFilteredOrders([]);
+  //         setSelectedStatuses({});
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
+  //   fetchOrders();
+  // }, []);
+
   useEffect(() => {
     const fetchOrders = async () => {
+      console.log('orders');
       setLoading(true);
-      try {
-        const orders = await getAllOrders();
-        console.log(orders);
-        setOrders(orders);
-        setFilteredOrders(orders);
-        // Initialize selectedStatuses with current order statuses
-        const initialStatuses = orders.reduce(
-          (acc, order) => ({
-            ...acc,
-            [order.id]: order.state,
-          }),
-          {}
-        );
-        setSelectedStatuses(initialStatuses);
-        setLoading(false);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          try {
-            await refresh();
-            const orders = await getAllOrders();
-            setOrders(orders);
-            setFilteredOrders(orders);
-            // Initialize selectedStatuses with current order statuses
-            const initialStatuses = orders.reduce(
-              (acc, order) => ({
-                ...acc,
-                [order.id]: order.state,
-              }),
-              {}
-            );
-            setSelectedStatuses(initialStatuses);
-            setLoading(false);
-          } catch (refreshError) {
-            alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-            nav("/login");
-          }
-        } else {
-          setOrders([]);
-          setFilteredOrders([]);
-          setSelectedStatuses({});
-          setLoading(false);
-        }
-      }
+      const orders = await getAllOrders();
+      setOrders(orders);
+      setFilteredOrders(orders);
+
+      const initialStatuses = orders.reduce(
+        (acc, order) => ({
+          ...acc,
+          [order.id]: order.state,
+        }),
+        {}
+      );
+      setSelectedStatuses(initialStatuses);
+      setLoading(false);
     };
-    fetchOrders();
+
+    withErrorHandler(fetchOrders, () => {
+      setOrders([]);
+      setFilteredOrders([]);
+      setSelectedStatuses({});
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {

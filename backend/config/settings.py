@@ -46,7 +46,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": td(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": td(minutes=0.5),
     "REFRESH_TOKEN_LIFETIME": td(hours=8),
 }
 # Application definition

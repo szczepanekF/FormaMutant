@@ -8,7 +8,7 @@ import { useAuth } from "../context/auth";
 
 const AdminPanel = () => {
   const [view, setView] = useState("orders");
-  const { logoutUser, refresh } = useAuth();
+  const { logoutUser, refresh, get_authenticated } = useAuth();
 
   const handleLogout = async () => {
     await logoutUser();
@@ -57,25 +57,37 @@ const AdminPanel = () => {
       </Button>
       <ButtonGroup mb={6} spacing={4}>
         <Button
-          onClick={() => setView("items")}
+          onClick={async () => {
+            await get_authenticated();
+            setView("items");
+          }}
           colorScheme={view === "items" ? "blue" : "gray"}
         >
           Przedmioty
         </Button>
         <Button
-          onClick={() => setView("orders")}
+          onClick={async () => {
+            await get_authenticated();
+            setView("orders");
+          }}
           colorScheme={view === "orders" ? "blue" : "gray"}
         >
           Zamówienia
         </Button>
         <Button
-          onClick={() => setView("register")}
+          onClick={async () => {
+            await get_authenticated();
+            setView("register");
+          }}
           colorScheme={view === "register" ? "blue" : "gray"}
         >
           Przypisanie słuchawek
         </Button>
         <Button
-          onClick={() => setView("return")}
+          onClick={async () => {
+            await get_authenticated();
+            setView("return");
+          }}
           colorScheme={view === "return" ? "blue" : "gray"}
         >
           Zwrot słuchawek

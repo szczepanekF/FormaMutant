@@ -1,76 +1,148 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { login, is_auth, refresh, logout, getIsAdmin } from "../endpoints/api";
 import { toast } from "sonner";
 
-
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(false);
-  const [userName, setUserName] = useState('');
+
+  const [userName, setUserName] = useState("");
   const [admin, setADmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const nav = useNavigate();
+  const [navigatingToLogin, setNavigatingToLogin] = useState(false);
 
-  const get_authenticated = async () => {
+  const withRefresh = async (fn, onFail) => {
     try {
-      const response = await is_auth();
-      const isAdmin = await getIsAdmin();
-      setADmin(isAdmin);
-      console.log("true_auth");
-      setUser(true);
-      if (response.data.first_name === ''){
-        setUserName('Admin')
-      }else {
-        setUserName(`${response.data.first_name} ${response.data.last_name}`)
-      }
+      await fn();
     } catch (error) {
-      try {
-        await refresh();
-        const response = await is_auth();
-        const isAdmin = await getIsAdmin();
-        setADmin(isAdmin);
-        console.log("true_refresh");
-        setUser(true);
-        if (response.data.first_name === ''){
-          setUserName('Admin')
-        }else {
-          setUserName(`${response.data.first_name} ${response.data.last_name}`)
+      if (error.response?.status === 401) {
+        try {
+          await refresh();
+          await fn();
+        } catch (refreshError) {
+          if (refreshError.response?.status === 401) {
+            // console.error("Nie udało się odświeżyć tokena", refreshError);
+            setUser(false);
+            toast.error("Twoja sesja wygasła. Zaloguj się ponownie.");
+            setNavigatingToLogin(true);
+            nav("/login");
+          } else {
+            toast.error(
+              refreshError.response?.data?.reason || "Wystąpił błąd."
+            );
+          }
+          onFail?.();
         }
-      } catch {
-        console.log("false");
-        nav('/login')
-        setUser(false);
+      } else {
+        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
+
+        onFail?.();
       }
-    } finally {
-      setLoading(false);
     }
   };
 
+  const withErrorHandler = async (fn, onFail) => {
+    try {
+      await fn();
+    } catch (error) {
+      const message =
+        error?.response?.data?.reason ||
+        error?.message ||
+        "Wystąpił nieznany błąd.";
+
+      toast.error(message);
+      onFail?.();
+    }
+  };
+
+  const get_authenticated = async () => {
+    await withRefresh(
+      async () => {
+        console.log('BBBBBBBBB');
+        const response = await is_auth();
+        const isAdmin = await getIsAdmin();
+        setADmin(isAdmin);
+        console.log("true_auth");
+        setUser(true);
+        if (response.data.first_name === "") {
+          setUserName("Admin");
+        } else {
+          setUserName(`${response.data.first_name} ${response.data.last_name}`);
+        }
+        setLoading(false);
+      },
+      () => {
+        setNavigatingToLogin(true);
+        nav("/login");
+        setUser(false);
+        setLoading(false);
+      }
+    );
+  };
+
+  // const get_authenticated = async () => {
+  //   try {
+  //     const response = await is_auth();
+  //     const isAdmin = await getIsAdmin();
+  //     setADmin(isAdmin);
+  //     console.log("true_auth");
+  //     setUser(true);
+  //     if (response.data.first_name === "") {
+  //       setUserName("Admin");
+  //     } else {
+  //       setUserName(`${response.data.first_name} ${response.data.last_name}`);
+  //     }
+  //   } catch (error) {
+  //     try {
+  //       await refresh();
+  //       const response = await is_auth();
+  //       const isAdmin = await getIsAdmin();
+  //       setADmin(isAdmin);
+  //       console.log("true_refresh");
+  //       setUser(true);
+  //       if (response.data.first_name === "") {
+  //         setUserName("Admin");
+  //       } else {
+  //         setUserName(`${response.data.first_name} ${response.data.last_name}`);
+  //       }
+  //     } catch {
+  //       console.log("false");
+  //       setNavigatingToLogin(true);
+  //       nav("/login");
+  //       setUser(false);
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const loginUser = async (username, password) => {
     try {
-      console.log('proba')
+      console.log("proba");
       const info = await login(username, password);
-      console.log('Udalo sie')
+      console.log("Udalo sie");
       setUser(info);
       const isAdmin = await getIsAdmin();
       setADmin(isAdmin);
+      setNavigatingToLogin(false);
       nav("/admin");
     } catch (error) {
-      toast.error('Bad credentials')
+      toast.error("Bad credentials");
     }
   };
   const deleteUser = async () => {
     setUser(false);
-  }
+  };
 
   const logoutUser = async () => {
     try {
       await logout();
       setUser(false);
+      setNavigatingToLogin(true);
       nav("/menu");
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -78,6 +150,7 @@ export const AuthProvider = ({ children }) => {
           await refresh();
           await logout();
           setUser(false);
+          setNavigatingToLogin(true);
           nav("/login");
         } catch (refreshError) {}
       } else {
@@ -91,7 +164,21 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginUser, refresh, logoutUser,get_authenticated, admin, userName,deleteUser }}
+      value={{
+        user,
+        loading,
+        navigatingToLogin,
+        setNavigatingToLogin,
+        loginUser,
+        refresh,
+        withErrorHandler,
+        logoutUser,
+        get_authenticated,
+        admin,
+        userName,
+        deleteUser,
+        withRefresh
+      }}
     >
       {children}
     </AuthContext.Provider>

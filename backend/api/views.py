@@ -31,6 +31,11 @@ class CookieTokenRefreshView(TokenRefreshView):
             data = request.data.copy()
             refresh = request.COOKIES.get("refresh")
             data["refresh"] = refresh
+            if not refresh:
+                return Response(
+                    {"refreshed": False, "reason": "No refresh token provided."},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
             request._full_data = data
             response = super().post(request, *args, **kwargs)
             data = response.data
@@ -167,42 +172,54 @@ def get_account_with_number(request, number):
     except Exception as e:
         return Response(
             {"error": f"Unexpected error: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,)
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     if item.state is None or item.state != "wydane":
         # print("Item is not in a valid state to retrieve account information (" + item.state + ")")
         return Response(
-            {"error": "Item is not in a valid state to retrieve account information (" + item.state + ")"},
+            {
+                "error": "Item is not in a valid state to retrieve account information ("
+                + item.state
+                + ")"
+            },
             status=status.HTTP_400_BAD_REQUEST,
         )
     print(item)
     account = item.order.account
-    return Response({
-        "first_name": account.first_name,
-        "last_name": account.last_name,
-        "email": account.email,
-        "phone_number": account.phone_number,
-        "token": item.token
-    })
+    return Response(
+        {
+            "first_name": account.first_name,
+            "last_name": account.last_name,
+            "email": account.email,
+            "phone_number": account.phone_number,
+            "token": item.token,
+        }
+    )
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def create_order(request):
-    serializer = OrderCreateSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        order = serializer.save()
-        send_payment_mail(order.account, order.items.count())
+    try:
+        serializer = OrderCreateSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            order = serializer.save()
+            send_payment_mail(order.account, order.items.count())
+            return Response(
+                {
+                    "order_id": order.id,
+                    "account_email": order.account.email,
+                    "items_count": order.items.count(),
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
         return Response(
-            {
-                "order_id": order.id,
-                "account_email": order.account.email,
-                "items_count": order.items.count(),
-            },
-            status=status.HTTP_201_CREATED,
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])

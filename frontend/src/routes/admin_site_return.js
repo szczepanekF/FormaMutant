@@ -12,6 +12,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { getAccountByNumber, change_item_state } from "../endpoints/api";
+import { useAuth } from "../context/auth";
 
 const AdminNumberLookup = () => {
   const [itemNumber, setItemNumber] = useState("");
@@ -19,21 +20,24 @@ const AdminNumberLookup = () => {
   const [token, setToken] = useState("");
   const [selectedState, setSelectedState] = useState("zwrócone");
   const [loading, setLoading] = useState(false);
+  const { withRefresh } = useAuth();
 
   const handleFetch = async () => {
-    try {
-      setLoading(true);
-      const res = await getAccountByNumber(itemNumber);
-      setUserData(res);
-      setToken(res.token);
-    } catch (error) {
-      // console.log(error.message);
-      alert(error?.response?.data?.error || error.message  );
-      setUserData(null);
-      setToken("");
-    } finally {
-      setLoading(false);
-    }
+    await withRefresh(
+      async () => {
+        setLoading(true);
+        const res = await getAccountByNumber(itemNumber);
+        setUserData(res);
+        setToken(res.token);
+        setLoading(false);
+      },
+      () => {
+        console.log("error");
+        setUserData(null);
+        setToken("");
+        setLoading(false);
+      }
+    );
   };
 
   const handleCancel = () => {
@@ -43,9 +47,21 @@ const AdminNumberLookup = () => {
     setSelectedState("zwrócone");
   };
 
+  // const handleSubmit = async () => {
+  //   await change_item_state(selectedState, token);
+  //   handleCancel();
+  // };
+
   const handleSubmit = async () => {
-    await change_item_state(selectedState, token);
-    handleCancel();
+    await withRefresh(
+      async () => {
+        await change_item_state(selectedState, token);
+        handleCancel();
+      },
+      () => {
+        console.log("error");
+      }
+    );
   };
 
   return (
@@ -93,10 +109,7 @@ const AdminNumberLookup = () => {
 
             <FormControl>
               <FormLabel>Status słuchawek</FormLabel>
-              <RadioGroup
-                onChange={setSelectedState}
-                value={selectedState}
-              >
+              <RadioGroup onChange={setSelectedState} value={selectedState}>
                 <Stack spacing={3}>
                   <Radio value="zwrócone">Słuchawki cofnięte</Radio>
                   <Radio value="zgubione">Zgubione</Radio>
