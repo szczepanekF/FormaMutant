@@ -9,9 +9,8 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
+from django_q.tasks import async_task
 
-
-from .utils import send_confirmation_mail, send_cancellation_mail, send_payment_mail
 from .serializers import (
     AccountSerializer,
     OrderCreateSerializer,
@@ -20,7 +19,7 @@ from .serializers import (
     AllItemsSerializer,
     AllOrdersSerializer,
 )
-from .models import Item, Order, Account
+from .models import Item, Order
 
 
 # Create your views here.
@@ -61,13 +60,11 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        print("LOG")
         ip_address = request.META.get("HTTP_X_FORWARDED_FOR")
         if ip_address:
             ip_address = ip_address.split(",")[0]
         else:
             ip_address = request.META.get("REMOTE_ADDR")
-        print(ip_address)
         try:
             response = super().post(request, *args, **kwargs)
             data = response.data
@@ -133,7 +130,7 @@ def get_all_order(requests):
         orders = Order.objects.all().prefetch_related("items").select_related("account")
         serializer = AllOrdersSerializer(orders, many=True)
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(serializer.data)
 
 
@@ -151,10 +148,10 @@ def get_account_with_token(request, token):
     try:
         item = Item.objects.select_related("order__account").get(token=token)
     except Item.DoesNotExist:
-        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"reason": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
     if item.state is None or item.state != "zarezerwowane":
         return Response(
-            {"error": "Item is not in a valid state to retrieve account information"},
+            {"reason": "Item is not in a valid state to retrieve account information"},
             status=status.HTTP_400_BAD_REQUEST,
         )
     account = item.order.account
@@ -168,24 +165,20 @@ def get_account_with_number(request, number):
     try:
         item = Item.objects.select_related("order__account").get(item_real_ID=number)
     except Item.DoesNotExist:
-        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"reason": f"Item with number '{number}' not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response(
-            {"error": f"Unexpected error: {str(e)}"},
+            {"reason": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     if item.state is None or item.state != "wydane":
-        # print("Item is not in a valid state to retrieve account information (" + item.state + ")")
         return Response(
             {
-                "error": "Item is not in a valid state to retrieve account information ("
-                + item.state
-                + ")"
+                "reason": f"Item is not in a valid state to retrieve account information ({item.state})"
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-    print(item)
     account = item.order.account
     return Response(
         {
@@ -205,17 +198,60 @@ def create_order(request):
         serializer = OrderCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             order = serializer.save()
-            send_payment_mail(order.account, order.items.count())
+            async_task(
+                "api.utils.send_payment_mail",
+                order.account,
+                order.order_code,
+                order.items_count,
+            )
             return Response(
                 {
                     "order_id": order.id,
                     "account_email": order.account.email,
-                    "items_count": order.items.count(),
+                    "items_count": order.items_count,
                 },
                 status=status.HTTP_201_CREATED,
             )
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response(
+            {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+# @permission_classes([IsAdminUser])
+def change_order_state(request, order_id):
+
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response(
+            {"reason": f"Nie znaleziono zamówienia o id {order_id}"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    serializer = OrderStateUpdateSerializer(order, data=request.data, partial=True)
+    try:
+        if serializer.is_valid(raise_exception=True):
+            old_state = order.state
+            serializer.save()
+            new_state = serializer.validated_data.get("state")
+            if new_state != old_state:
+                if new_state == "zaakceptowane":
+                    async_task(
+                        "api.utils.send_confirmation_mail",
+                        order.account,
+                        order.order_code,
+                        order.items.values_list("token", flat=True),
+                    )
+                elif new_state == "anulowane":
+                    async_task(
+                        "api.utils.send_cancellation_mail",
+                        order.account,
+                        order.order_code,
+                    )
+            return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(
             {"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -224,52 +260,26 @@ def create_order(request):
 
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
-def change_order_state(request, order_id):
-
-    try:
-        order = Order.objects.get(id=order_id)
-    except Order.DoesNotExist:
-        return Response(
-            {"detail": "Nie znaleziono zamówienia."}, status=status.HTTP_404_NOT_FOUND
-        )
-
-    serializer = OrderStateUpdateSerializer(order, data=request.data, partial=True)
-    if serializer.is_valid():
-        old_state = order.state
-        serializer.save()
-        new_state = serializer.validated_data.get("state")
-        if new_state != old_state:
-            if new_state is "zaakceptowane":
-                send_confirmation_mail(
-                    order.account, order.items.values_list("token", flat=True)
-                )
-            elif new_state is "anulowane":
-                # todo dodaj info o nr zamowienia ktore bylo zcancellowane (dodac np pole nr zamowienia generowane na podstawie daty i inicialow)
-                send_cancellation_mail(order.account)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-@permission_classes([IsAdminUser])
 def set_item_real_id(request, token):
     try:
         item = Item.objects.get(token=token)
     except Item.DoesNotExist:
-        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"reason": f"Nie znaleziono przedmiotu dla tokenu: {token}"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
 
     new_real_id = request.data.get("item_real_ID")
     if not new_real_id:
         return Response(
-            {"error": "item_real_ID field is required"},
+            {"reason": f"Pole item_real_ID jest wymagane"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
     item.item_real_ID = new_real_id
     item.state = "wydane"
     item.save()
-    return Response({"message": "item_real_ID updated successfully"})
+    return Response({"message": f"Pomyślnie uakualniono item_real_ID"})
 
 
 @api_view(["PATCH"])
@@ -278,12 +288,12 @@ def set_item_state(request, token):
     try:
         item = Item.objects.get(token=token)
     except Item.DoesNotExist:
-        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"reason": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
 
     new_state = request.data.get("state")
     if not new_state:
         return Response(
-            {"error": "item_real_ID field is required"},
+            {"reason": "item_real_ID field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -299,18 +309,18 @@ def set_item_number(request, token):
     try:
         item = Item.objects.get(token=token)
     except Item.DoesNotExist:
-        return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"reason": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
 
     new_state = request.data.get("state")
     if not new_state:
         return Response(
-            {"error": "item_real_ID field is required"},
+            {"reason": "item_real_ID field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
     number = request.data.get("number")
     if not number:
         return Response(
-            {"error": "number field is required"},
+            {"reason": "number field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
     item.state = new_state

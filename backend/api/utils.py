@@ -15,16 +15,18 @@ def generate_qr_image(data):
     buffer.seek(0)
     return buffer
 
+
 EXAMPLE_ITEM_PRICE = 100
 
 
-def send_payment_mail(user, item_amount):
+def send_payment_mail(user, order_code, item_amount):
     full_order_price = ceil_2_decimal_places(item_amount * EXAMPLE_ITEM_PRICE)
 
     context = {
         "first_name": user.first_name,
         "last_name": user.last_name,
         "full_price": f"{full_order_price:.2f}",
+        "order_code": order_code,
     }
     email_message = EmailMultiAlternatives(
         subject="Opłata rezerwacji słuchawek",
@@ -44,7 +46,7 @@ def ceil_2_decimal_places(x):
     return math.ceil(x * 100) / 100
 
 
-def send_confirmation_mail(user, item_tokens):
+def send_confirmation_mail(user, order_code, item_tokens):
 
     qr_images = []
     for i, item_id in enumerate(item_tokens):
@@ -59,6 +61,7 @@ def send_confirmation_mail(user, item_tokens):
             {"cid": cid, "item_id": item_id}
             for (cid, _), item_id in zip(qr_images, item_tokens)
         ],
+        "order_code": order_code,
     }
     email_message = EmailMultiAlternatives(
         subject="Potwierdzenie rezerwacji słuchawek.",
@@ -83,8 +86,12 @@ def generate_password():
     return secrets.token_urlsafe(8)
 
 
-def send_cancellation_mail(user):
-    context = {"first_name": user.first_name, "last_name": user.last_name}
+def send_cancellation_mail(user, order_code):
+    context = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "order_code": order_code,
+    }
     email_message = EmailMultiAlternatives(
         subject="Potwierdzenie anulowania rezerwacji sluchawek.",
         body=(

@@ -111,7 +111,7 @@ const AdminNumberLookup = () => {
               <FormLabel>Status słuchawek</FormLabel>
               <RadioGroup onChange={setSelectedState} value={selectedState}>
                 <Stack spacing={3}>
-                  <Radio value="zwrócone">Słuchawki cofnięte</Radio>
+                  <Radio value="zwrócone">Zwrócone</Radio>
                   <Radio value="zgubione">Zgubione</Radio>
                   <Radio value="uszkodzone">Uszkodzone</Radio>
                 </Stack>

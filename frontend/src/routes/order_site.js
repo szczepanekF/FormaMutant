@@ -15,6 +15,11 @@ import {
   ModalBody,
   ModalContent,
   ModalCloseButton,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import React from "react";
 // import { toast } from "sonner";
@@ -30,7 +35,7 @@ const Order = () => {
     last_name: "",
     email: "",
     phone_number: "",
-    number_of_headphones: "",
+    number_of_headphones: "1",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -43,7 +48,7 @@ const Order = () => {
       last_name: "",
       email: "",
       phone_number: "",
-      number_of_headphones: "",
+      number_of_headphones: "1",
     });
     setLoading(false);
     // toast.success("User has benn successfully craeted.");
@@ -58,7 +63,10 @@ const Order = () => {
       newErrors.last_name = "Last name is required";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Valid email is required";
-    if (!formData.phone_number.trim() || !/^\d{9}$/.test(formData.phone_number))
+    if (
+      !formData.phone_number.replace(/\s+/g, "") ||
+      !/^(?:\+48)?\d{9}$/.test(formData.phone_number.replace(/\s+/g, ""))
+    )
       newErrors.phone_number = "Phone number must be 9 digits long";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -82,7 +90,7 @@ const Order = () => {
           first_name: formData.first_name,
           last_name: formData.last_name,
           email: formData.email,
-          phone_number: formData.phone_number,
+          phone_number: formData.phone_number.replace(/\s+/g, ""),
         };
         const amount = formData.number_of_headphones;
         const response = await order_creation(user, amount);
@@ -144,12 +152,34 @@ const Order = () => {
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(" ")}
                 </FormLabel>
-                <Input
-                  color="#04080F"
-                  boxShadow="md"
-                  value={formData[field]}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                />
+
+                {field === "number_of_headphones" ? (
+                  <NumberInput
+                    min={1}
+                    value={parseInt(formData[field]) || 1}
+                    onChange={(_, valueNumber) =>
+                      handleChange(field, String(Math.max(1, valueNumber || 1)))
+                    }
+                    clampValueOnBlur
+                  >
+                    <NumberInputField
+                      pointerEvents="none"
+                      color="#04080F"
+                      boxShadow="md"
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                ) : (
+                  <Input
+                    color="#04080F"
+                    boxShadow="md"
+                    value={formData[field]}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                  />
+                )}
                 <FormErrorMessage>{errors[field]}</FormErrorMessage>
               </FormControl>
             ))}

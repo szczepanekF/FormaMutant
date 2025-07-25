@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Input,
@@ -18,12 +18,15 @@ const AdminTokenLookup = () => {
   const [numberValue, setNumberValue] = useState("");
   const [loading, setLoading] = useState(false);
   const { withRefresh, witheErrorHandler } = useAuth();
+  const [shouldRefocusToken, setShouldRefocusToken] = useState(false);
 
+  const numberInputRef = useRef(null);
+  const tokenInputRef = useRef(null);
   useEffect(() => {
     const fetchUserData = async () => {
-        const res = await getAccountForItem(token);
-        setUserData(res);
-        setLoading(false);
+      const res = await getAccountForItem(token);
+      setUserData(res);
+      setLoading(false);
     };
 
     const run = async () => {
@@ -38,6 +41,18 @@ const AdminTokenLookup = () => {
     run();
   }, [token]);
 
+  useEffect(() => {
+    tokenInputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (userData) {
+      // Delay focus to ensure component has mounted
+      setTimeout(() => {
+        numberInputRef.current?.focus();
+      }, 0);
+    }
+  }, [userData]);
   const handleCancel = () => {
     setToken("");
     setUserData(null);
@@ -50,13 +65,19 @@ const AdminTokenLookup = () => {
         let form = { state: "wydane", number: parseInt(numberValue) };
         await set_item_number(form, token);
         handleCancel();
+        setShouldRefocusToken(true);
       },
       () => {
         console.log("error");
       }
     );
   };
-
+  useEffect(() => {
+    if (shouldRefocusToken && !userData && token === "") {
+      tokenInputRef.current?.focus();
+      setShouldRefocusToken(false);
+    }
+  }, [shouldRefocusToken, userData, token]);
   return (
     <Box
       maxW="lg"
@@ -71,6 +92,7 @@ const AdminTokenLookup = () => {
         <FormControl>
           <FormLabel>Token przedmiotu</FormLabel>
           <Input
+            ref={tokenInputRef}
             value={token}
             onChange={(e) => setToken(e.target.value)}
             isDisabled={!!userData}
@@ -99,12 +121,12 @@ const AdminTokenLookup = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Liczba (np. sztuk, dni, itd.)</FormLabel>
+              <FormLabel>Numer słuchawek</FormLabel>
               <NumberInput
                 value={numberValue}
                 onChange={(val) => setNumberValue(val)}
               >
-                <NumberInputField />
+                <NumberInputField ref={numberInputRef} />
               </NumberInput>
             </FormControl>
 

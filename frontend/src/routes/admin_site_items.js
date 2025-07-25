@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Heading,
   Table,
   Thead,
   Tbody,
@@ -14,8 +13,6 @@ import {
   Input,
   Select,
   Badge,
-} from "@chakra-ui/react";
-import {
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -25,8 +22,9 @@ import {
   ModalBody,
   ModalCloseButton,
   Text,
+  IconButton,
 } from "@chakra-ui/react";
-import { IconButton } from "@chakra-ui/react";
+import { FiEdit, FiRefreshCw } from "react-icons/fi";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
@@ -34,9 +32,16 @@ import { getAllItems, change_item_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 
 const AdminItems = () => {
-  const { logoutUser, refresh, navigatingToLogin, withErrorHandler, withRefresh } =
-    useAuth();
+  const {
+    logoutUser,
+    refresh,
+    navigatingToLogin,
+    withErrorHandler,
+    withRefresh,
+  } = useAuth();
   const [items, setItems] = useState([]);
+  const [headphoneCount, setHeadphoneCount] = useState(0);
+
   const [filteredItems, setFilteredItems] = useState([]);
   const [filters, setFilters] = useState({});
   const [sortField, setSortField] = useState(null);
@@ -73,19 +78,6 @@ const AdminItems = () => {
     }
   };
 
-  // const handleStatusChange = async (order, newStatus) => {
-  //   await change_item_state(newStatus, order.token);
-  //   selectedItem.state = newStatus;
-  //   setItems((prev) =>
-  //     prev.map((item) =>
-  //       item.id === modalData.item.id
-  //         ? { ...item, state: modalData.targetState }
-  //         : item
-  //     )
-  //   );
-  //   setSelectedItem(null);
-  // };
-
   const handleStatusChange = async (order, newStatus) => {
     await withRefresh(
       async () => {
@@ -106,18 +98,19 @@ const AdminItems = () => {
     );
   };
 
-
-
   const handleSelectChange = (orderId, value) => {
     setSelectedStatuses((prev) => ({
       ...prev,
       [orderId]: value,
     }));
   };
-
+  const updateHeadphoneCount = (items) => {
+    const count = items.filter((item) => item.state === "wydane").length;
+    setHeadphoneCount(count);
+  };
   useEffect(() => {
     const fetchItems = async () => {
-      console.log('items');
+      console.log("items");
       setLoading(true);
       const items = await getAllItems();
       setItems(items);
@@ -141,7 +134,9 @@ const AdminItems = () => {
       setLoading(false);
     });
   }, []);
-
+  useEffect(() => {
+    updateHeadphoneCount(items);
+  }, [items]);
   const handleFilterChange = (field, value) => {
     const newFilters = { ...filters, [field]: value.toLowerCase() };
     setFilters(newFilters);
@@ -179,15 +174,29 @@ const AdminItems = () => {
 
   return (
     <Box p={4}>
+      <Box mt={4} mb={4}>
+        <strong>Aktualnie wypożyczone słuchawki:</strong> {headphoneCount}
+      </Box>
+      <Box mt={4} mb={4}>
+        <strong>Liczba wszystkich słuchawek:</strong> {items.length}
+      </Box>
       <Box mt={8}>
         {loading ? (
-          <Spinner size="xl" />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minH="200px"
+          >
+            <Spinner size="xl" thickness="4px" speed="0.65s" color="blue.500" />
+          </Box>
         ) : (
-          <TableContainer>
+          <TableContainer overflowX="auto" maxW="100%" withSpace="nowrap">
             <Table variant="striped" colorScheme="blue">
               <Thead>
                 <Tr>
                   <Th>ID</Th>
+                  <Th>Token</Th>
                   <Th>
                     Imię
                     <IconButton
@@ -316,6 +325,14 @@ const AdminItems = () => {
                     <Input
                       size="sm"
                       onChange={(e) =>
+                        handleFilterChange("token", e.target.value)
+                      }
+                    />
+                  </Th>
+                  <Th>
+                    <Input
+                      size="sm"
+                      onChange={(e) =>
                         handleFilterChange("first_name", e.target.value)
                       }
                     />
@@ -331,6 +348,7 @@ const AdminItems = () => {
                   <Th>
                     <Select
                       size="sm"
+                      variant="filled"
                       placeholder="Wszystkie"
                       onChange={(e) =>
                         handleFilterChange("state", e.target.value)
@@ -370,6 +388,7 @@ const AdminItems = () => {
                   return (
                     <Tr key={order.id}>
                       <Td>{order.id}</Td>
+                      <Td>{order.token}</Td>
                       <Td>{order.first_name}</Td>
                       <Td>{order.last_name}</Td>
                       <Td>
@@ -400,13 +419,14 @@ const AdminItems = () => {
                       <Td>{order.item_real_ID}</Td>
                       <Td>{order.order}</Td>
                       <Td>
-                        {currentState === "zarezerwowane" ? // </Button> //   Wydaj // > //   onClick={() => handleStatusChange(order, "wydane")} //   colorScheme="blue" //   size="sm" // <Button
-                        null : currentState === "wydane" ? (
+                        {currentState ===
+                        "zarezerwowane" ? null : currentState === "wydane" ? ( // </Button> //   Wydaj // > //   onClick={() => handleStatusChange(order, "wydane")} //   colorScheme="blue" //   size="sm" // <Button
                           <Button
                             size="sm"
+                            leftIcon={<FiEdit />}
                             colorScheme="blue"
+                            aria-label="Zmień status"
                             isDisabled={selected === currentState}
-                            // onClick={() => handleStatusChange(order, selected)}
                             onClick={() => {
                               setSelectedItem(order);
                               openModal(order, selected);
@@ -447,7 +467,10 @@ const AdminItems = () => {
                 </Text>
                 <Text mt={2}>
                   Nowy status:{" "}
-                  <Badge colorScheme={getColor(modalData.targetState)}>
+                  <Badge
+                    colorScheme={getColor(modalData.targetState)}
+                    variant="subtle"
+                  >
                     {modalData.targetState}
                   </Badge>
                 </Text>

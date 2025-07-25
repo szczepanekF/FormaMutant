@@ -15,28 +15,28 @@ from datetime import timedelta as td
 import os
 from dotenv import load_dotenv
 
-env_path = Path('../.') / '.env'
+env_path = Path("../.") / ".env"
 load_dotenv(dotenv_path=env_path)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER",default='empty')
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD",default='empty')
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", default="empty")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", default="empty")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY",default='empty')
+SECRET_KEY = os.environ.get("SECRET_KEY", default="empty")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = ['*']#os.environ.get("DJANGO_ALLOWED_HOSTS",default='*').split(" ")
+ALLOWED_HOSTS = ["*"]  # os.environ.get("DJANGO_ALLOWED_HOSTS",default='*').split(" ")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("api.auth.CookiesJWTAuthentication",),
@@ -46,7 +46,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": td(minutes=0.5),
+    "ACCESS_TOKEN_LIFETIME": td(minutes=10),
     "REFRESH_TOKEN_LIFETIME": td(hours=8),
 }
 # Application definition
@@ -58,21 +58,22 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_q",
     "api",
     "rest_framework",
     "corsheaders",
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.common.CommonMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -100,11 +101,11 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8010",
     "http://localhost:3000",
-    "http://192.168.50.214"
+    "http://192.168.50.214",
 ]
 
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False 
+SESSION_COOKIE_SECURE = False
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -113,9 +114,9 @@ SESSION_COOKIE_SECURE = False
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.environ.get("POSTGRES_DB",default='empty'),
-        "USER": os.environ.get("POSTGRES_USER",default='empty'),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD",default='empty'),
+        "NAME": os.environ.get("POSTGRES_DB", default="empty"),
+        "USER": os.environ.get("POSTGRES_USER", default="empty"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", default="empty"),
         "HOST": "127.0.0.1",
         "PORT": "5433",
     }
@@ -152,10 +153,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+Q_CLUSTER = {
+    "name": "DjangoQ",
+    "workers": 2,
+    "recycle": 500,
+    "timeout": 60,
+    "retry": 300,
+    "queue_limit": 100,
+    "bulk": 5,
+    "orm": "default",
+    "catch_up": False,
+}

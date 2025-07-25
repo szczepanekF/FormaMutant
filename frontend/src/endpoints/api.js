@@ -15,7 +15,6 @@ const GET_ACCOUNT_FOR_ITEM = `${BASE_URL}getAccountForItem/`;
 const SET_ITEM_NUMBER = `${BASE_URL}setItemNumber/`;
 const GET_ACCOUNT_BY_NUMBER = `${BASE_URL}getAccountForNumber/`;
 
-
 export const login = async (username, password) => {
   await axios.post(
     LOGIN_URL,
@@ -38,7 +37,9 @@ export const getIsAdmin = async () => {
 };
 
 export const getAccountForItem = async (token) => {
-  const response = await axios.get(`${GET_ACCOUNT_FOR_ITEM}${token}/`, { withCredentials: true });
+  const response = await axios.get(`${GET_ACCOUNT_FOR_ITEM}${token}/`, {
+    withCredentials: true,
+  });
   return response.data;
 };
 
@@ -61,33 +62,44 @@ export const is_auth = async () => {
   return response;
 };
 
-export const order_creation = async (user,amount_of_headphones) => {
+export const order_creation = async (user, amount_of_headphones) => {
   const payload = {
     user: user,
-    amount_of_items: parseInt(amount_of_headphones),
+    items_count: parseInt(amount_of_headphones),
   };
-  const response = await axios.post(ORDER_ADD_URL,payload,{withCredentials: false});
-  return response
-}
+  const response = await axios.post(ORDER_ADD_URL, payload, {
+    withCredentials: false,
+  });
+  return response;
+};
 
-
-export const change_order_state = async (state,pk) => {
-  await axios.post(`${CHANGE_ORDER_STATUS}${pk}/`, { state }, { withCredentials: true });
+export const change_order_state = async (state, pk) => {
+  await axios.post(
+    `${CHANGE_ORDER_STATUS}${pk}/`,
+    { state },
+    { withCredentials: true }
+  );
 
   return true;
 };
 
-export const change_item_state = async (state,token) => {
-  await axios.patch(`${CHANGE_ITEM_STATE}${token}/`, { state }, { withCredentials: true });
+export const change_item_state = async (state, token) => {
+  await axios.patch(
+    `${CHANGE_ITEM_STATE}${token}/`,
+    { state },
+    { withCredentials: true }
+  );
 
   return true;
 };
 
-export const set_item_number = async (number,token) => {
-  await axios.patch(`${SET_ITEM_NUMBER}${token}/`, number , { withCredentials: true });
+export const set_item_number = async (number, token) => {
+  await axios.patch(`${SET_ITEM_NUMBER}${token}/`, number, {
+    withCredentials: true,
+  });
 
   return true;
-}
+};
 
 export const getAccountByNumber = async (number) => {
   const res = await axios.get(`${GET_ACCOUNT_BY_NUMBER}${number}/`, {

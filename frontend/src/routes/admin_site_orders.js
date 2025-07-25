@@ -182,7 +182,7 @@ const Admin = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      console.log('orders');
+      console.log("orders");
       setLoading(true);
       const orders = await getAllOrders();
       setOrders(orders);
@@ -249,17 +249,25 @@ const Admin = () => {
   return (
     <Box p={4}>
       <Box mt={4} mb={4}>
-        <strong>Aktualnie wypożyczone słuchawki:</strong> {headphoneCount}
+        <strong>Aktualnie zarezerwowane słuchawki:</strong> {headphoneCount}
       </Box>
       <Box mt={8}>
         {loading ? (
-          <Spinner size="xl" />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minH="200px"
+          >
+            <Spinner size="xl" thickness="4px" speed="0.65s" color="blue.500" />
+          </Box>
         ) : (
           <TableContainer>
             <Table variant="striped" colorScheme="blue">
               <Thead>
                 <Tr>
                   <Th>ID</Th>
+                  <Th>Numer zamówienia</Th>
                   <Th>
                     Imię
                     <IconButton
@@ -463,6 +471,7 @@ const Admin = () => {
                       onChange={(e) => handleFilterChange("id", e.target.value)}
                     /> */}
                   </Th>
+                  <Th></Th>
                   <Th>
                     <Input
                       size="sm"
@@ -510,6 +519,7 @@ const Admin = () => {
                     <Select
                       size="sm"
                       placeholder="Wszystkie"
+                      variant="filled"
                       onChange={(e) =>
                         handleFilterChange("state", e.target.value)
                       }
@@ -526,6 +536,7 @@ const Admin = () => {
                 {filteredOrders.map((order) => (
                   <Tr key={order.id}>
                     <Td>{order.id}</Td>
+                    <Td>{order.order_code}</Td>
                     <Td>{order.account.first_name}</Td>
                     <Td>{order.account.last_name}</Td>
                     <Td>{order.account.email}</Td>

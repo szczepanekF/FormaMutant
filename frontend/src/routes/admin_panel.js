@@ -1,100 +1,162 @@
 import React, { useState } from "react";
-import { Button, ButtonGroup, Box, Heading } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Heading,
+  Button,
+  IconButton,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  useColorMode,
+  useBreakpointValue,
+  Box,
+  HStack,
+  Spacer,
+} from "@chakra-ui/react";
+import {
+  FiExternalLink,
+  FiLogOut,
+  FiShoppingCart,
+  FiPackage,
+  FiHeadphones,
+  FiRotateCcw,
+  FiMoon,
+  FiSun,
+} from "react-icons/fi";
+
 import AdminItems from "./admin_site_items";
 import AdminOrders from "./admin_site_orders";
 import AdminTokenLookup from "./admin_site_register";
 import AdminNumberLookup from "./admin_site_return";
 import { useAuth } from "../context/auth";
 
+const TABS = [
+  {
+    key: "orders",
+    label: "Zamówienia",
+    icon: FiShoppingCart,
+    component: <AdminOrders />,
+  },
+  {
+    key: "items",
+    label: "Przedmioty",
+    icon: FiPackage,
+    component: <AdminItems />,
+  },
+  {
+    key: "register",
+    label: "Przypisanie słuchawek",
+    icon: FiHeadphones,
+    component: <AdminTokenLookup />,
+  },
+  {
+    key: "return",
+    label: "Zwrot słuchawek",
+    icon: FiRotateCcw,
+    component: <AdminNumberLookup />,
+  },
+];
+
 const AdminPanel = () => {
   const [view, setView] = useState("orders");
-  const { logoutUser, refresh, get_authenticated } = useAuth();
+  const { logoutUser, get_authenticated } = useAuth();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const tabIndex = Math.max(
+    0,
+    TABS.findIndex((t) => t.key === view)
+  );
 
   const handleLogout = async () => {
     await logoutUser();
   };
-  const renderView = () => {
-    switch (view) {
-      case "items":
-        return <AdminItems />;
-      case "orders":
-        return <AdminOrders />;
-      case "register":
-        return <AdminTokenLookup />;
-      case "return":
-        return <AdminNumberLookup />;
-      default:
-        return null;
-    }
+
+  const handleTabChange = async (index) => {
+    const key = TABS[index].key;
+    await get_authenticated();
+    setView(key);
   };
 
   return (
-    <Box p={4}>
-      <Heading as="h1" size="xl" mb={6}>
-        Panel Admina
-      </Heading>
-
-      <Button
-        as="a"
-        href="http://localhost:8000/admin"
-        target="_blank"
-        rel="noopener noreferrer"
-        bg="#507DBC"
-        _hover={{ bg: "blue.700" }}
-        color="white"
-        mr={4}
+    <Container maxW={{ base: "100%", md: "container.xxl" }} py={6}>
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "flex-start", md: "center" }}
+        gap={4}
+        mb={6}
       >
-        Przejdź do panelu Django
-      </Button>
+        <Heading as="h1" size="lg">
+          Panel Admina
+        </Heading>
 
-      <Button
-        onClick={handleLogout}
-        bg="#507DBC"
-        _hover={{ bg: "blue.700" }}
-        color="white"
+        <Spacer />
+
+        <HStack spacing={2} alignSelf={{ base: "stretch", md: "center" }}>
+          <Button
+            as="a"
+            href="http://localhost:8000/admin"
+            target="_blank"
+            rel="noopener noreferrer"
+            leftIcon={<FiExternalLink />}
+            colorScheme="blue"
+            variant={isMobile ? "outline" : "solid"}
+          >
+            Panel Django
+          </Button>
+
+          <IconButton
+          aria-label={colorMode === "light" ? "Włącz tryb ciemny" : "Włącz tryb jasny"}
+          icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
+          onClick={toggleColorMode}
+          variant="ghost"
+        />
+
+          <Button
+            onClick={handleLogout}
+            leftIcon={<FiLogOut />}
+            colorScheme="red"
+            variant={isMobile ? "outline" : "ghost"}
+          >
+            Wyloguj
+          </Button>
+        </HStack>
+      </Flex>
+
+      <Box
+        bg={colorMode === "light" ? "white" : "gray.800"}
+        borderRadius="md"
+        boxShadow="sm"
+        p={{ base: 2, md: 4 }}
       >
-        Logout
-      </Button>
-      <ButtonGroup mb={6} spacing={4}>
-        <Button
-          onClick={async () => {
-            await get_authenticated();
-            setView("items");
-          }}
-          colorScheme={view === "items" ? "blue" : "gray"}
+        <Tabs
+          index={tabIndex}
+          onChange={handleTabChange}
+          isLazy
+          variant={isMobile ? "enclosed" : "soft-rounded"}
+          colorScheme="blue"
         >
-          Przedmioty
-        </Button>
-        <Button
-          onClick={async () => {
-            await get_authenticated();
-            setView("orders");
-          }}
-          colorScheme={view === "orders" ? "blue" : "gray"}
-        >
-          Zamówienia
-        </Button>
-        <Button
-          onClick={async () => {
-            await get_authenticated();
-            setView("register");
-          }}
-          colorScheme={view === "register" ? "blue" : "gray"}
-        >
-          Przypisanie słuchawek
-        </Button>
-        <Button
-          onClick={async () => {
-            await get_authenticated();
-            setView("return");
-          }}
-          colorScheme={view === "return" ? "blue" : "gray"}
-        >
-          Zwrot słuchawek
-        </Button>
-      </ButtonGroup>
-      {renderView()}
-    </Box>
+          <TabList overflowX="auto" py={2}>
+            {TABS.map(({ key, label, icon: Icon }) => (
+              <Tab key={key} fontSize={{ base: "sm", md: "md" }} gap={2}>
+                <Icon /> {label}
+              </Tab>
+            ))}
+          </TabList>
+
+          <TabPanels mt={4}>
+            {TABS.map(({ key, component }) => (
+              <TabPanel key={key} px={{ base: 0, md: 2 }}>
+                {component}
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      </Box>
+    </Container>
   );
 };
 
