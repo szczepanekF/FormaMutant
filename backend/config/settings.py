@@ -102,6 +102,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8010",
     "http://localhost:3000",
     "http://192.168.50.214",
+    os.environ.get("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),
 ]
 
 SESSION_COOKIE_SAMESITE = "Lax"
@@ -117,8 +118,8 @@ DATABASES = {
         "NAME": os.environ.get("POSTGRES_DB", default="empty"),
         "USER": os.environ.get("POSTGRES_USER", default="empty"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", default="empty"),
-        "HOST": "127.0.0.1",
-        "PORT": "5433",
+        "HOST": os.environ.get("POSTGRES_HOST", default="empty"),
+        "PORT": os.environ.get("POSTGRES_PORT", default="empty"),
     }
 }
 
