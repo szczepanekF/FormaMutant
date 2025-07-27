@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import (
     api_view,
@@ -133,6 +133,18 @@ def get_all_order(requests):
         return Response({"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     return Response(serializer.data)
 
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def get_order(requests, id):
+    try:
+        order = get_object_or_404(
+            Order.objects.select_related("account").prefetch_related("items"),
+            pk=id,
+        )
+        serializer = AllOrdersSerializer(order)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({"reason": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(["GET"])
 @permission_classes([IsAdminUser])

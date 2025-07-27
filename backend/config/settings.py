@@ -168,6 +168,7 @@ Q_CLUSTER = {
     "recycle": 500,
     "timeout": 60,
     "retry": 300,
+    "max_attempts": 3,     
     "queue_limit": 100,
     "bulk": 5,
     "orm": "default",

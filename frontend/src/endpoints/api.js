@@ -6,7 +6,7 @@ const REFRESH_URL = `${BASE_URL}token/refresh/`;
 const AUTH_CHECK_URL = `${BASE_URL}authcheck/`;
 const LOGOUT_URL = `${BASE_URL}logout/`;
 const ADMIN_URL = `${BASE_URL}checkAdmin/`;
-const ORDER_ADD_URL = `${BASE_URL}order/`;
+const ORDER_URL = `${BASE_URL}order/`;
 const GET_ALL_ORDER = `${BASE_URL}getAllOrders/`;
 const CHANGE_ORDER_STATUS = `${BASE_URL}orderChangeState/`;
 const GET_ALL_ITEMS = `${BASE_URL}getAllItems/`;
@@ -47,6 +47,12 @@ export const getAllOrders = async () => {
   const response = await axios.get(GET_ALL_ORDER, { withCredentials: true });
   return response.data;
 };
+
+export const getOrder = async (id) => {
+    const response = await axios.get(`${ORDER_URL}${id}/`, { withCredentials: true });
+    return response.data;
+};
+
 export const getAllItems = async () => {
   const response = await axios.get(GET_ALL_ITEMS, { withCredentials: true });
   return response.data;
@@ -67,7 +73,7 @@ export const order_creation = async (user, amount_of_headphones) => {
     user: user,
     items_count: parseInt(amount_of_headphones),
   };
-  const response = await axios.post(ORDER_ADD_URL, payload, {
+  const response = await axios.post(ORDER_URL, payload, {
     withCredentials: false,
   });
   return response;

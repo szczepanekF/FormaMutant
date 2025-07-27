@@ -24,11 +24,11 @@ import {
   Text,
   IconButton,
 } from "@chakra-ui/react";
-import { FiEdit, FiRefreshCw } from "react-icons/fi";
+import { FiEdit } from "react-icons/fi";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
-import { getAllItems, change_item_state } from "../endpoints/api";
+import { getAllItems, getOrder, change_item_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 
 const AdminItems = () => {
@@ -52,6 +52,29 @@ const AdminItems = () => {
   const [modalData, setModalData] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const nav = useNavigate();
+  const {
+    isOpen: isOrderModalOpen,
+    onOpen: onOrderModalOpen,
+    onClose: onOrderModalClose,
+  } = useDisclosure();
+  const [selectedOrderInfo, setSelectedOrderInfo] = useState(null);
+  const [orderModalLoading, setOrderModalLoading] = useState(false);
+  const [orderModalError, setOrderModalError] = useState(null);
+
+  const handleOpenOrderModal = async (orderId) => {
+    setOrderModalLoading(true);
+    setOrderModalError(null);
+    try {
+      const data = await getOrder(orderId); // <- your API call
+      setSelectedOrderInfo(data);
+      onOrderModalOpen();
+    } catch (e) {
+      setOrderModalError(e?.message || "Failed to load order");
+      onOrderModalOpen(); // optionally still open to show the error
+    } finally {
+      setOrderModalLoading(false);
+    }
+  };
 
   const openModal = (item, targetState) => {
     setModalData({ item, targetState });
@@ -417,7 +440,17 @@ const AdminItems = () => {
                         )}
                       </Td>
                       <Td>{order.item_real_ID}</Td>
-                      <Td>{order.order}</Td>
+                      <Td>
+                        <Button
+                          variant="link"
+                          colorScheme="blue"
+                          onClick={() => {
+                            handleOpenOrderModal(order.order);
+                          }}
+                        >
+                          {order.order}
+                        </Button>
+                      </Td>
                       <Td>
                         {currentState ===
                         "zarezerwowane" ? null : currentState === "wydane" ? ( // </Button> //   Wydaj // > //   onClick={() => handleStatusChange(order, "wydane")} //   colorScheme="blue" //   size="sm" // <Button
@@ -491,6 +524,62 @@ const AdminItems = () => {
             >
               Potwierdź
             </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOrderModalOpen} onClose={onOrderModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Szczegóły zamówienia</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {selectedOrderInfo && (
+              <>
+                <Text>
+                  <strong>ID zamówienia:</strong> {selectedOrderInfo.id}
+                </Text>
+                <Text mt={2}>
+                  <strong>Kod zamówienia:</strong>{" "}
+                  {selectedOrderInfo.order_code}
+                </Text>
+                <Text mt={2}>
+                  <strong>Imię:</strong> {selectedOrderInfo.account?.first_name}
+                </Text>
+                <Text mt={2}>
+                  <strong>Nazwisko:</strong> {selectedOrderInfo.account?.last_name}
+                </Text>
+                <Text mt={2}>
+                  <strong>Email:</strong> {selectedOrderInfo.account?.email}
+                </Text>
+                <Text mt={2}>
+                  <strong>Telefon:</strong>{" "}
+                  {selectedOrderInfo.account?.phone_number}
+                </Text>
+                <Text mt={2}>
+                  <strong>Liczba przedmiotów:</strong>{" "}
+                  {selectedOrderInfo.items_count}
+                </Text>
+                <Text mt={2}>
+                  <strong>Status:</strong>{" "}
+                  <Badge colorScheme={getColor(selectedOrderInfo.state)}>
+                    {selectedOrderInfo.state}
+                  </Badge>
+                </Text>
+                <Text mt={2}>
+                  <strong>Data utworzenia:</strong>{" "}
+                  {new Date(selectedOrderInfo.creation_date).toLocaleString()}
+                </Text>
+                <Text mt={2}>
+                  <strong>Data modyfikacji:</strong>{" "}
+                  {new Date(
+                    selectedOrderInfo.modification_date
+                  ).toLocaleString()}
+                </Text>
+              </>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onOrderModalClose}>Zamknij</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

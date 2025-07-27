@@ -98,7 +98,7 @@ const AdminPanel = () => {
         <HStack spacing={2} alignSelf={{ base: "stretch", md: "center" }}>
           <Button
             as="a"
-            href="http://localhost:8000/admin"
+            href={`${process.env.REACT_APP_API_BASE_URL}/admin`}
             target="_blank"
             rel="noopener noreferrer"
             leftIcon={<FiExternalLink />}
@@ -109,11 +109,13 @@ const AdminPanel = () => {
           </Button>
 
           <IconButton
-          aria-label={colorMode === "light" ? "Włącz tryb ciemny" : "Włącz tryb jasny"}
-          icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
-          onClick={toggleColorMode}
-          variant="ghost"
-        />
+            aria-label={
+              colorMode === "light" ? "Włącz tryb ciemny" : "Włącz tryb jasny"
+            }
+            icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
+            onClick={toggleColorMode}
+            variant="ghost"
+          />
 
           <Button
             onClick={handleLogout}

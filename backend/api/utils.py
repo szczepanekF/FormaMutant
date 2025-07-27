@@ -81,11 +81,6 @@ def send_confirmation_mail(user, order_code, item_tokens):
 
     email_message.send()
 
-
-def generate_password():
-    return secrets.token_urlsafe(8)
-
-
 def send_cancellation_mail(user, order_code):
     context = {
         "first_name": user.first_name,
@@ -103,3 +98,25 @@ def send_cancellation_mail(user, order_code):
     html_content = render_to_string("emails/cancellation.html", context)
     email_message.attach_alternative(html_content, "text/html")
     email_message.send()
+
+# def send_payment_reminder_mail(user, order_code, item_amount):
+#     full_order_price = ceil_2_decimal_places(item_amount * EXAMPLE_ITEM_PRICE)
+
+#     context = {
+#         "first_name": user.first_name,
+#         "last_name": user.last_name,
+#         "full_price": f"{full_order_price:.2f}",
+#         "order_code": order_code,
+#     }
+#     email_message = EmailMultiAlternatives(
+#         subject="Opłata rezerwacji słuchawek - przypomnienie",
+#         body=(
+#             f"Cześć {user.first_name}, dzieki za rezerwacje. Koszt całej rezerwacji: {full_order_price}. Link do płatności: https://revolut.me/michalg02"
+#         ),
+#         from_email=EMAIL_HOST_USER,
+#         to=[user.email],
+#     )
+#     html_content = render_to_string("emails/paymentRequest.html", context)
+#     email_message.attach_alternative(html_content, "text/html")
+
+#     email_message.send()
