@@ -3,7 +3,7 @@ from .models import Account, Order, Item, MAX_ITEM_AMOUNT
 from django.contrib.auth.models import User
 from django.db.models import Sum
 
-MAX_ITEM_AMOUNT = 4
+MAX_ITEM_AMOUNT = 1
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,22 +48,16 @@ class OrderCreateSerializer(serializers.Serializer):
                 "phone_number": account_data["phone_number"],
             },
         )
-        if not created:
-            # count sum of all items_count for the account
-            total_items = (
+        total_items = (
                 Order.objects.filter(account=account)
                 .aggregate(total=Sum("items_count"))
                 .get("total")
                 or 0
             )
-            if total_items == MAX_ITEM_AMOUNT:
-                raise serializers.ValidationError(
-                    "Wykorzystano limit słuchawek do rezerwacji na ten adres email"
-                )
-            elif total_items + items_count > MAX_ITEM_AMOUNT:
-                raise serializers.ValidationError(
-                    f"Przekroczono dozwoloną liczbę słuchawe, dostępna liczba rezerwacji: {MAX_ITEM_AMOUNT - total_items}"
-                )
+        if total_items + items_count > MAX_ITEM_AMOUNT:
+            raise serializers.ValidationError(
+                f"Przekroczono dozwoloną liczbę słuchawek o: {total_items + items_count - MAX_ITEM_AMOUNT}."
+            )
 
         order = Order.objects.create(account=account, items_count=items_count)
         return order

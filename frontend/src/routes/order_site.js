@@ -92,7 +92,7 @@ const Order = () => {
           email: formData.email,
           phone_number: formData.phone_number.replace(/\s+/g, ""),
         };
-        const amount = formData.number_of_headphones;
+        const amount = 1;//formData.number_of_headphones;
         const response = await order_creation(user, amount);
         reset();
         setLoading(false);
@@ -143,7 +143,7 @@ const Order = () => {
               "last_name",
               "email",
               "phone_number",
-              "number_of_headphones",
+              // "number_of_headphones",
             ].map((field) => (
               <FormControl key={field} isInvalid={!!errors[field]}>
                 <FormLabel color="#04080F">
@@ -240,12 +240,12 @@ const Order = () => {
                     {formData.phone_number}
                   </Text>
                 </Text>
-                <Text color="#04080F" fontWeight="semibold" ml={3}>
+                {/* <Text color="#04080F" fontWeight="semibold" ml={3}>
                   Liczba sluchawek:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.number_of_headphones}
                   </Text>
-                </Text>
+                </Text> */}
               </Box>
               <Stack direction="row" justify="center" spacing={4}>
                 <Button

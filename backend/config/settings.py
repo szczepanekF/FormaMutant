@@ -16,7 +16,10 @@ import os
 from dotenv import load_dotenv
 
 env_path = Path("../.") / ".env"
+# print("Loading environment variables from:", env_path)
+# print(env_path)
 load_dotenv(dotenv_path=env_path)
+# print("POSTGRES_PORT from env:", os.environ.get("POSTGRES_PORT"))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,7 +49,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": td(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": td(minutes=500),
     "REFRESH_TOKEN_LIFETIME": td(hours=8),
 }
 # Application definition
