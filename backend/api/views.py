@@ -231,8 +231,8 @@ def create_order(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
-# @permission_classes([IsAdminUser])
+# @permission_classes([AllowAny])
+@permission_classes([IsAdminUser])
 def change_order_state(request, order_id):
 
     try:
@@ -247,6 +247,8 @@ def change_order_state(request, order_id):
     try:
         if serializer.is_valid(raise_exception=True):
             old_state = order.state
+            if old_state != 'oczekujące':
+                raise Exception('Nie można zmienić stanu zamówienia, które nie jest oczekujące.')
             serializer.save()
             new_state = serializer.validated_data.get("state")
             if new_state != old_state:
@@ -287,11 +289,16 @@ def set_item_real_id(request, token):
             {"reason": f"Pole item_real_ID jest wymagane"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-    item.item_real_ID = new_real_id
-    item.state = "wydane"
-    item.save()
-    return Response({"message": f"Pomyślnie uakualniono item_real_ID"})
+    try:
+        item.item_real_ID = new_real_id
+        item.state = "wydane"
+        item.save()
+        return Response({"message": f"Pomyślnie uakualniono item_real_ID"})
+    except Exception as e:
+        return Response(
+            {"reason": f"Wystąpił błąd podczas aktualizacji item_real_ID: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @api_view(["PATCH"])
@@ -326,7 +333,7 @@ def set_item_number(request, token):
     new_state = request.data.get("state")
     if not new_state:
         return Response(
-            {"reason": "item_real_ID field is required"},
+            {"reason": "state field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
     number = request.data.get("number")
@@ -335,7 +342,13 @@ def set_item_number(request, token):
             {"reason": "number field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    item.state = new_state
-    item.item_real_ID = number
-    item.save()
-    return Response({"message": "item_real_ID updated successfully"})
+    try:
+        item.state = new_state
+        item.item_real_ID = number
+        item.save()
+        return Response({"message": "item_real_ID updated successfully"})
+    except Exception as e:
+        return Response(
+            {"reason": f"An error occurred while updating item_real_ID: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

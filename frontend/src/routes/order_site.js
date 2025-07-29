@@ -64,8 +64,8 @@ const Order = () => {
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Valid email is required";
     if (
-      !formData.phone_number.replace(/\s+/g, "") ||
-      !/^(?:\+48)?\d{9}$/.test(formData.phone_number.replace(/\s+/g, ""))
+      !formData.phone_number ||
+      !/^\d{3}\s\d{3}\s\d{3}$/.test(formData.phone_number)
     )
       newErrors.phone_number = "Phone number must be 9 digits long";
     setErrors(newErrors);
@@ -81,7 +81,10 @@ const Order = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
-
+  const formatPhone = (raw) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 9);
+    return digits.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
+  };
   const handleCreateUser = async () => {
     await withErrorHandler(
       async () => {
@@ -92,7 +95,7 @@ const Order = () => {
           email: formData.email,
           phone_number: formData.phone_number.replace(/\s+/g, ""),
         };
-        const amount = 1;//formData.number_of_headphones;
+        const amount = 1; //formData.number_of_headphones;
         const response = await order_creation(user, amount);
         reset();
         setLoading(false);
@@ -177,7 +180,16 @@ const Order = () => {
                     color="#04080F"
                     boxShadow="md"
                     value={formData[field]}
-                    onChange={(e) => handleChange(field, e.target.value)}
+                    maxLength={field === "phone_number" ? 11 : undefined}
+                    inputMode={field === "phone_number" ? "numeric" : undefined}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (field === "phone_number") {
+                        handleChange(field, formatPhone(raw));
+                      } else {
+                        handleChange(field, raw);
+                      }
+                    }}
                   />
                 )}
                 <FormErrorMessage>{errors[field]}</FormErrorMessage>

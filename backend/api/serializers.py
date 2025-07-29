@@ -40,7 +40,7 @@ class OrderCreateSerializer(serializers.Serializer):
     def create(self, validated_data):
         account_data = validated_data["user"]
         items_count = validated_data["items_count"]
-        account, created = Account.objects.get_or_create(
+        account, _ = Account.objects.get_or_create(
             email=account_data["email"],
             defaults={
                 "first_name": account_data["first_name"],
@@ -48,12 +48,14 @@ class OrderCreateSerializer(serializers.Serializer):
                 "phone_number": account_data["phone_number"],
             },
         )
+
         total_items = (
-                Order.objects.filter(account=account)
-                .aggregate(total=Sum("items_count"))
-                .get("total")
-                or 0
-            )
+            Order.objects
+            .filter(account=account)
+            .exclude(state="anulowane")
+            .aggregate(total=Sum("items_count"))
+            .get("total") or 0
+        )
         if total_items + items_count > MAX_ITEM_AMOUNT:
             raise serializers.ValidationError(
                 f"Przekroczono dozwoloną liczbę słuchawek o: {total_items + items_count - MAX_ITEM_AMOUNT}."
