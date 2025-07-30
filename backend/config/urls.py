@@ -26,12 +26,12 @@ from api.views import (
     change_order_state,
     get_all_order,
     get_order,
-    set_item_real_id,
     set_item_state,
     get_all_items,
     get_account_with_token,
     set_item_number,
-    get_account_with_number
+    get_account_with_number,
+    send_order_reminder
 )
 
 urlpatterns = [
@@ -45,10 +45,10 @@ urlpatterns = [
     path("api/order/<int:id>/", get_order),
     path("api/orderChangeState/<int:order_id>/", change_order_state),
     path("api/getAllOrders/", get_all_order),
-    path("api/lendItem/<str:token>/", set_item_real_id),
     path("api/updateItemState/<str:token>/", set_item_state),
     path("api/getAllItems/", get_all_items),
     path("api/getAccountForItem/<str:token>/", get_account_with_token),
     path("api/setItemNumber/<str:token>/", set_item_number),
     path("api/getAccountForNumber/<str:number>/", get_account_with_number),
+    path("api/sendOrderReminder/<str:number>/", send_order_reminder),
 ]

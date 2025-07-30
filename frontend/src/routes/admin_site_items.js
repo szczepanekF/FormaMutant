@@ -30,6 +30,7 @@ import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
 import { getAllItems, getOrder, change_item_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const AdminItems = () => {
   const {
@@ -114,6 +115,7 @@ const AdminItems = () => {
           )
         );
         setSelectedItem(null);
+        toast.success("Pomyślnie zmieniono status słuchawek")
       },
       () => {
         console.log("error");
@@ -218,7 +220,6 @@ const AdminItems = () => {
             <Table variant="striped" colorScheme="blue">
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
                   <Th>Token</Th>
                   <Th>
                     Imię
@@ -339,12 +340,6 @@ const AdminItems = () => {
                 </Tr>
                 <Tr>
                   <Th>
-                    {/* <Input
-                      size="sm"
-                      onChange={(e) => handleFilterChange("id", e.target.value)}
-                    /> */}
-                  </Th>
-                  <Th>
                     <Input
                       size="sm"
                       onChange={(e) =>
@@ -409,8 +404,7 @@ const AdminItems = () => {
                   const selected = selectedStatuses[order.id] || currentState;
 
                   return (
-                    <Tr key={order.id}>
-                      <Td>{order.id}</Td>
+                    <Tr key={order.token}>
                       <Td>{order.token}</Td>
                       <Td>{order.first_name}</Td>
                       <Td>{order.last_name}</Td>

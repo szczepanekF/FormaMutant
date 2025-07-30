@@ -19,8 +19,21 @@ class ItemSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(validators=[])
-
+    email = serializers.EmailField(validators=[], required=True, error_messages={
+        "invalid": ("Wprowadź poprawny adres e-mail."),
+        "required": ("Adres e-mail jest wymagany."),
+    })
+    first_name = serializers.CharField(max_length=50, required=True, error_messages={
+        "max_length": ("Imię musi być krótsze niż 50 znaków."),
+        "required": ("Imię jest wymagane."),
+    })
+    last_name = serializers.CharField(max_length=50, required=True, error_messages={
+        "max_length": ("Nazwisko musi być krótsze niż 50 znaków."),
+        "required": ("Nazwisko jest wymagane."),
+    })
+    phone_number = serializers.CharField(required=True, error_messages={
+        "required": ("Numer telefonu jest wymagany."),
+    })
     class Meta:
         model = Account
         fields = ["first_name", "last_name", "email", "phone_number"]
@@ -28,18 +41,21 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class OrderCreateSerializer(serializers.Serializer):
     user = AccountSerializer()
-    items_count = serializers.IntegerField(min_value=1)
+    items_count = serializers.IntegerField(min_value=1, error_messages={
+        "min_value": ("Liczba słuchawek musi być większa niż zero."),
+        "required": ("Podaj liczbę słuchawek."),
+    })
 
     def validate(self, data):
         user_serializer = AccountSerializer(data=data["user"])
-        user_serializer.is_valid(raise_exception=True)  # this triggers validate_email!
+        user_serializer.is_valid(raise_exception=True) 
         data["user"] = user_serializer.validated_data
-        print("VALIDATED")
         return data
 
     def create(self, validated_data):
         account_data = validated_data["user"]
         items_count = validated_data["items_count"]
+        
         account, _ = Account.objects.get_or_create(
             email=account_data["email"],
             defaults={

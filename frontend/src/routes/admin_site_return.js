@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { getAccountByNumber, change_item_state } from "../endpoints/api";
 import { useAuth } from "../context/auth";
+import { toast } from "sonner";
 
 const AdminNumberLookup = () => {
   const [itemNumber, setItemNumber] = useState("");
@@ -57,6 +58,7 @@ const AdminNumberLookup = () => {
       async () => {
         await change_item_state(selectedState, token);
         handleCancel();
+        toast.success("Pomyślnie odebrano słuchawki")
       },
       () => {
         console.log("error");
@@ -76,7 +78,7 @@ const AdminNumberLookup = () => {
     >
       <VStack spacing={4} align="stretch">
         <FormControl>
-          <FormLabel>Numer słuchawek (item_real_ID)</FormLabel>
+          <FormLabel>Numer słuchawek</FormLabel>
           <Input
             value={itemNumber}
             onChange={(e) => setItemNumber(e.target.value)}

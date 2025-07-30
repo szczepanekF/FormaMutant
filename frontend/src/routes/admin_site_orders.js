@@ -31,6 +31,7 @@ import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
 import { getAllOrders, change_order_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Admin = () => {
   const {
@@ -79,22 +80,6 @@ const Admin = () => {
     setIsModalOpen(true);
   };
 
-  // const confirmStatusChange = async () => {
-  //   try {
-  //     await change_order_state(newStatus, selectedOrder.id);
-  //     selectedOrder.state = newStatus;
-  //     setOrders((prev) =>
-  //       prev.map((order) =>
-  //         order.id === selectedOrder.id ? { ...order, state: newStatus } : order
-  //       )
-  //     );
-  //     setSelectedOrder(null);
-  //     setIsModalOpen(false);
-  //   } catch (err) {
-  //     console.error("Błąd przy zmianie statusu");
-  //   }
-  // };
-
   const confirmStatusChange = async () => {
     await withRefresh(
       async () => {
@@ -109,6 +94,7 @@ const Admin = () => {
         );
         setSelectedOrder(null);
         setIsModalOpen(false);
+        toast.success("Pomyślnie zmieniono status zamówienia")
       },
       () => {
         console.error("Błąd przy zmianie statusu");
@@ -129,56 +115,6 @@ const Admin = () => {
     }));
   };
 
-  // useEffect(() => {
-  //   const fetchOrders = async () => {
-  //     // if (navigatingToLogin) return;
-  //     setLoading(true);
-  //     try {
-  //       const orders = await getAllOrders();
-  //       console.log(orders);
-  //       setOrders(orders);
-  //       setFilteredOrders(orders);
-  //       // Initialize selectedStatuses with current order statuses
-  //       const initialStatuses = orders.reduce(
-  //         (acc, order) => ({
-  //           ...acc,
-  //           [order.id]: order.state,
-  //         }),
-  //         {}
-  //       );
-  //       setSelectedStatuses(initialStatuses);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       if (error.response?.status === 401) {
-  //         try {
-  //           await refresh();
-  //           const orders = await getAllOrders();
-  //           setOrders(orders);
-  //           setFilteredOrders(orders);
-  //           // Initialize selectedStatuses with current order statuses
-  //           const initialStatuses = orders.reduce(
-  //             (acc, order) => ({
-  //               ...acc,
-  //               [order.id]: order.state,
-  //             }),
-  //             {}
-  //           );
-  //           setSelectedStatuses(initialStatuses);
-  //           setLoading(false);
-  //         } catch (refreshError) {
-  //           alert("Twoja sesja wygasła. Zaloguj się ponownie.");
-  //           nav("/login");
-  //         }
-  //       } else {
-  //         setOrders([]);
-  //         setFilteredOrders([]);
-  //         setSelectedStatuses({});
-  //         setLoading(false);
-  //       }
-  //     }
-  //   };
-  //   fetchOrders();
-  // }, []);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -266,8 +202,31 @@ const Admin = () => {
             <Table variant="striped" colorScheme="blue">
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
-                  <Th>Numer zamówienia</Th>
+                  <Th>Numer zamówienia
+
+                  <IconButton
+                      aria-label="Sort ascending"
+                      icon={<TriangleUpIcon />}
+                      size="xs"
+                      ml={2}
+                      onClick={() => handleSort("order_code", "asc")}
+                      isActive={
+                        sortField === "order_code" &&
+                        sortDirection === "asc"
+                      }
+                    />
+                    <IconButton
+                      aria-label="Sort descending"
+                      icon={<TriangleDownIcon />}
+                      size="xs"
+                      ml={1}
+                      onClick={() => handleSort("order_code", "desc")}
+                      isActive={
+                        sortField === "order_code" &&
+                        sortDirection === "desc"
+                      }
+                    />
+                  </Th>
                   <Th>
                     Imię
                     <IconButton
@@ -368,29 +327,6 @@ const Admin = () => {
                     />
                   </Th>
                   <Th>
-                    Ilość
-                    <IconButton
-                      aria-label="Sort ascending"
-                      icon={<TriangleUpIcon />}
-                      size="xs"
-                      ml={2}
-                      onClick={() => handleSort("items_count", "asc")}
-                      isActive={
-                        sortField === "items_count" && sortDirection === "asc"
-                      }
-                    />
-                    <IconButton
-                      aria-label="Sort descending"
-                      icon={<TriangleDownIcon />}
-                      size="xs"
-                      ml={1}
-                      onClick={() => handleSort("items_count", "desc")}
-                      isActive={
-                        sortField === "items_count" && sortDirection === "desc"
-                      }
-                    />
-                  </Th>
-                  <Th>
                     Status
                     <IconButton
                       aria-label="Sort ascending"
@@ -465,13 +401,15 @@ const Admin = () => {
                   <Th>Akcje</Th>
                 </Tr>
                 <Tr>
-                  <Th>
-                    {/* <Input
+    
+                <Th>
+                    <Input
                       size="sm"
-                      onChange={(e) => handleFilterChange("id", e.target.value)}
-                    /> */}
+                      onChange={(e) =>
+                        handleFilterChange("order_code", e.target.value)
+                      }
+                    />
                   </Th>
-                  <Th></Th>
                   <Th>
                     <Input
                       size="sm"
@@ -508,14 +446,6 @@ const Admin = () => {
                     />
                   </Th>
                   <Th>
-                    <Input
-                      size="sm"
-                      onChange={(e) =>
-                        handleFilterChange("items_count", e.target.value)
-                      }
-                    />
-                  </Th>
-                  <Th>
                     <Select
                       size="sm"
                       placeholder="Wszystkie"
@@ -529,19 +459,17 @@ const Admin = () => {
                       <option value="anulowane">anulowane</option>
                     </Select>
                   </Th>
-                  <Th colSpan={2} />
+                  <Th colSpan={3} />
                 </Tr>
               </Thead>
               <Tbody>
                 {filteredOrders.map((order) => (
-                  <Tr key={order.id}>
-                    <Td>{order.id}</Td>
+                  <Tr key={order.order_code}>
                     <Td>{order.order_code}</Td>
                     <Td>{order.account.first_name}</Td>
                     <Td>{order.account.last_name}</Td>
                     <Td>{order.account.email}</Td>
                     <Td>{order.account.phone_number}</Td>
-                    <Td>{order.items_count}</Td>
                     <Td>
                       {order.state === "oczekujące" ? (
                         <Select

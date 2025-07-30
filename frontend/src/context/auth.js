@@ -24,7 +24,8 @@ export const AuthProvider = ({ children }) => {
           await refresh();
           await fn();
         } catch (refreshError) {
-          if (refreshError.response?.status === 401) {
+
+          if (refreshError.response?.status === 401 || refreshError.response?.status == 400 ) {
             // console.error("Nie udało się odświeżyć tokena", refreshError);
             setUser(false);
             toast.error("Twoja sesja wygasła. Zaloguj się ponownie.");

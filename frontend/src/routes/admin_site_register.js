@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { getAccountForItem, set_item_number } from "../endpoints/api";
 import { useAuth } from "../context/auth";
+import { toast } from "sonner";
+
 const AdminTokenLookup = () => {
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState(null);
@@ -66,6 +68,7 @@ const AdminTokenLookup = () => {
         await set_item_number(form, token);
         handleCancel();
         setShouldRefocusToken(true);
+        toast.success("Pomyślnie przypisano słuchawki")
       },
       () => {
         console.log("error");

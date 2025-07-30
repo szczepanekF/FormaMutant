@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { order_creation } from "../endpoints/api";
 import { useAuth } from "../context/auth";
+import { toast } from "sonner";
 
 const Order = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -51,23 +52,22 @@ const Order = () => {
       number_of_headphones: "1",
     });
     setLoading(false);
-    // toast.success("User has benn successfully craeted.");
     onClose();
   };
 
   const validate = () => {
     const newErrors = {};
     if (!formData.first_name.trim())
-      newErrors.first_name = "First name is required";
+      newErrors.first_name = "Wprowadź imię";
     if (!formData.last_name.trim())
-      newErrors.last_name = "Last name is required";
+      newErrors.last_name = "Wprowadź nazwisko";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Valid email is required";
+      newErrors.email = "Wprowadź poprawny adres email";
     if (
       !formData.phone_number ||
       !/^\d{3}\s\d{3}\s\d{3}$/.test(formData.phone_number)
     )
-      newErrors.phone_number = "Phone number must be 9 digits long";
+      newErrors.phone_number = "Numer telefonu musi mieć 9 cyfr";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -85,27 +85,63 @@ const Order = () => {
     const digits = raw.replace(/\D/g, "").slice(0, 9);
     return digits.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
   };
-  const handleCreateUser = async () => {
-    await withErrorHandler(
-      async () => {
-        setLoading(true);
-        const user = {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
-          phone_number: formData.phone_number.replace(/\s+/g, ""),
-        };
-        const amount = 1; //formData.number_of_headphones;
-        const response = await order_creation(user, amount);
-        reset();
-        setLoading(false);
-      },
-      () => {
-        setLoading(false);
+
+  function formatErrorsForUser(errorString) {
+    // Preprocess the string to make it valid JSON
+    const jsonString = errorString
+      .replace(/ErrorDetail\(string='(.*?)', code='(.*?)'\)/g, '"$1"')
+      .replace(/'/g, '"');
+
+    let errors;
+    try {
+      errors = JSON.parse(jsonString);
+    } catch (e) {
+      return "Błąd parsowania danych wejściowych.";
+    }
+
+    function extractMessages(errObj, parentKey = "") {
+      let messages = [];
+
+      for (const key in errObj) {
+        const value = errObj[key];
+        if (Array.isArray(value)) {
+          value.forEach((err) => {
+            const message = typeof err === "string" ? err : String(err);
+            messages.push(`${message}`);
+          });
+        } else if (typeof value === "object" && value !== null) {
+          messages = messages.concat(extractMessages(value, key));
+        }
       }
-    );
+      return messages;
+    }
+
+    const formattedErrors = extractMessages(errors).join("\n");
+    return formattedErrors || "nested_error: Nieprawidłowy numer";
+  }
+
+  const handleCreateUser = async () => {
+    try {
+      setLoading(true);
+      const user = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone_number: formData.phone_number.replace(/\s+/g, ""),
+      };
+      const amount = 1; //formData.number_of_headphones;
+      const response = await order_creation(user, amount);
+      reset();
+      setLoading(false);
+      toast.success("Pomyślnie utworzono rezerwacje");
+    } catch (error) {
+      setLoading(false);
+      toast.error(formatErrorsForUser(error.response.data.reason));
+      console.error("Błąd przy zmianie statusu");
+    }
   };
 
+  const fieldMap = {"first_name": "Imię", "last_name": "Nazwisko", "email": "Email", "phone_number": "Numer telefonu"}
   return (
     <Flex
       minH={"100%"}
@@ -150,10 +186,7 @@ const Order = () => {
             ].map((field) => (
               <FormControl key={field} isInvalid={!!errors[field]}>
                 <FormLabel color="#04080F">
-                  {field
-                    .split("_")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")}
+                  {fieldMap[field]}
                 </FormLabel>
 
                 {field === "number_of_headphones" ? (
@@ -180,7 +213,13 @@ const Order = () => {
                     color="#04080F"
                     boxShadow="md"
                     value={formData[field]}
-                    maxLength={field === "phone_number" ? 11 : undefined}
+                    maxLength={
+                      field === "phone_number"
+                        ? 11
+                        : field === "first_name" || field === "last_name"
+                        ? 50
+                        : undefined
+                    }
                     inputMode={field === "phone_number" ? "numeric" : undefined}
                     onChange={(e) => {
                       const raw = e.target.value;
@@ -215,11 +254,10 @@ const Order = () => {
             <ModalCloseButton />
             <ModalBody p={6}>
               <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                Confirm user creation
+                Składanie zamówienia
               </Heading>
               <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
-                Are you sure you want to create a user with the following
-                details?
+                Na pewno chcesz złożyć zamówienie na poniższe dane?
               </Text>
               <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
                 {/* <Text color="#04080F" fontWeight="semibold" ml={3}>
@@ -229,13 +267,13 @@ const Order = () => {
                   </Text>
                 </Text> */}
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  First name:{" "}
+                  Imię:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.first_name}
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Last name:{" "}
+                  Nazwisko:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.last_name}
                   </Text>
@@ -247,7 +285,7 @@ const Order = () => {
                   </Text>
                 </Text>
                 <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Phone number:{" "}
+                  Numer telefonu:{" "}
                   <Text as="span" color="#04080F" fontWeight="normal">
                     {formData.phone_number}
                   </Text>
@@ -269,7 +307,7 @@ const Order = () => {
                   boxShadow="md"
                   width={"100%"}
                 >
-                  Confirm
+                  Złóż zamówienie
                 </Button>
                 <Button
                   // variant="outline"
@@ -282,7 +320,7 @@ const Order = () => {
                   boxShadow="md"
                   width={"100%"}
                 >
-                  Cancel
+                  Anuluj
                 </Button>
               </Stack>
             </ModalBody>

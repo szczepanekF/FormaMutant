@@ -83,7 +83,7 @@ class Item(models.Model):
     state = models.CharField(
         max_length=20, choices=STATE_CHOICES, default="zarezerwowane"
     )
-    item_real_ID = models.CharField(max_length=100, default=None, unique=False, null=True)
+    item_real_ID = models.CharField(max_length=100, default=None, unique=True, null=True)
 
     def __str__(self):
         return f"Item - Order: {self.order}, Token: {self.token}, Assigned_ID: {self.item_real_ID}, State: {self.state}"

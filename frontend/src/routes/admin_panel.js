@@ -42,7 +42,7 @@ const TABS = [
   },
   {
     key: "items",
-    label: "Przedmioty",
+    label: "Słuchawki",
     icon: FiPackage,
     component: <AdminItems />,
   },
