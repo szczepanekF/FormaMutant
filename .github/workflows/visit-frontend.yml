@@ -1,0 +1,28 @@
+name: Visit Frontend Page Every 10 Minutes
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  visit-page:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright and dependencies
+        run: |
+          pip install playwright
+          playwright install --with-deps
+
+      - name: Run visit script
+        run: python backend/scripts/visit_frontend.py
+
