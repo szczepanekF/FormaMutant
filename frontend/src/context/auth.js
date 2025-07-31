@@ -1,8 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { login, is_auth, refresh, logout, getIsAdmin } from "../endpoints/api";
@@ -39,13 +35,13 @@ export const AuthProvider = ({ children }) => {
             nav("/login");
           } else {
             toast.error(
-              refreshError.response?.data?.reason + '.' || "Wystąpił błąd."
+              refreshError.response?.data?.reason + "." || "Wystąpił błąd."
             );
           }
           onFail?.();
         }
       } else {
-        toast.error(error.response?.data?.reason + '.' || "Wystąpił błąd.");
+        toast.error(error.response?.data?.reason + "." || "Wystąpił błąd.");
 
         onFail?.();
       }
@@ -61,12 +57,13 @@ export const AuthProvider = ({ children }) => {
         const message = errorString.match(
           /ErrorDetail\(string='(.*?)', code='(.*?)'\)/
         )[1];
-        toast.error(message + '.');
+        toast.error(message + ".");
       } else if (error?.message) {
-        toast.error(error.message + '.');
+        toast.error(error.message + ".");
       } else {
         toast.error("Wystąpił nieznany błąd.");
       }
+      console.log(error);
       onFail?.();
     }
   };
