@@ -1,0 +1,14 @@
+/* Normal state*/
+.slide-image {
+  transform: scale(1);
+  transition: transform 1s ease, filter 1s ease;
+}
+
+/* Only during drag */
+.swiper.dragging .slide-image {
+  transform: scale(0.90);
+  transition: transform 0.5s ease;
+  /* opacity: 0.85; */
+} 
+
+

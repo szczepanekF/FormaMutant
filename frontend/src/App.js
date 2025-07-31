@@ -33,7 +33,7 @@ function App() {
             <Route
               element={
                 <Flex direction="column" minH="100vh">
-                  <Navbar />
+                  {/* <Navbar /> */}
                   <Flex flex="1">
                     <Outlet />
                   </Flex>
