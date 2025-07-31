@@ -1,58 +1,127 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Potwierdzenie płatności</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      padding: 0;
-      margin: 0;
-    }
-    .container {
-      background-color: #ffffff;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .name {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .qr-image {
-      margin: 20px 0;
-    }
-    .footer {
-      font-size: 12px;
-      color: #888888;
-      margin-top: 30px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="name">
-      {{ first_name }} {{ last_name }}
+  <head>
+    <meta charset="UTF-8" />
+    <title>Opłata rezerwacji słuchawek</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f4e7f5; /* Subtle purple background */
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #fff5f7 100%
+        ); /* Subtle gradient */
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .header {
+        background-color: rgba(227, 11, 78, 0.1); /* Subtle pink header */
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        margin: -40px -40px 20px -40px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      .name {
+        font-size: 22px;
+        font-weight: bold;
+        color: #460c6d; /* Darker shade of purple */
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 16px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .btn {
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 6px;
+        margin: 20px 0;
+        transition: background-color 0.3s;
+      }
+      .btn span {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #e30b4e; /* Pink button */
+        color: #ffffff !important; /* Force white text */
+        font-weight: bold;
+        border-radius: 6px;
+      }
+      .btn:hover span {
+        background-color: #fb4826; /* Orange hover effect */
+      }
+      .highlight {
+        color: #e3b230; /* Yellow highlight */
+        font-weight: bold;
+      }
+      .footer {
+        font-size: 12px;
+        color: #666666;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(70, 12, 109, 0.2); /* Purple border */
+      }
+      .footer a {
+        color: #460c6d; /* Purple link */
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://www.planetaluzu.pl/logo.png" alt="PlanetaLuzu Logo" />
+      </div>
+      <div class="name">Cześć {{first_name}}</div>
+      <div class="content">
+        <p>
+          Twoja rezerwacja słuchawek o numerze
+          <span class="highlight">{{order_code}}</span> została pomyślnie
+          zarejestrowana.
+        </p>
+        <p>
+          Aby potwierdzić ją, prosimy o dokonanie opłaty rezerwacyjnej w
+          wysokości <strong class="highlight">{{full_price}} PLN</strong> w
+          ciągu <strong>12 godzin</strong>.
+        </p>
+        <p>
+          Tytuł płatności:
+          <strong class="highlight">{{first_name}} {{last_name}}</strong>
+        </p>
+        <a
+          href="https://revolut.me/michalg02"
+          class="btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Opłać rezerwację</span>
+        </a>
+        <p>🗿 Dzięki! – PlanetaLuzu</p>
+      </div>
+      <div class="footer">
+        &copy; 2025 PlanetaLuzu. Wszystkie prawa zastrzeżone.<br />
+        <a href="https://planetaluzu.pl">Odwiedź naszą stronę</a> |
+        <a href="mailto:planetaluzu.sd@gmail.com">Kontakt</a>
+      </div>
     </div>
-    {{ order_code }}
-    <p>Cześć {{first_name}},</p>
-    <p> Twoja wstępna rezerwacja słuchawek została zarejestrowana.</p>
-    <p>Aby potwierdzić rezerwację, prosimy o dokonanie opłaty rezerwacyjnej w wysokości <strong>{{ full_price }} PLN</strong>.</p>
-    <a href="https://revolut.me/michalg02" class="btn" target="_blank" rel="noopener noreferrer">
-        Opłać rezerwację
-      </a>
-
-      <p>Prosimy o dokonanie płatności w ciągu <strong>12h</strong>, aby zachować rezerwację.</p>
-
-    <p>🗿DOZO</p>
-    <div class="footer">
-      &copy; planetaluzu. All rights reserved.
-    </div>
-  </div>
-</body>
+  </body>
 </html>

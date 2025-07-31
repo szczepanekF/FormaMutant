@@ -14,6 +14,7 @@ const CHANGE_ITEM_STATE = `${BASE_URL}updateItemState/`;
 const GET_ACCOUNT_FOR_ITEM = `${BASE_URL}getAccountForItem/`;
 const SET_ITEM_NUMBER = `${BASE_URL}setItemNumber/`;
 const GET_ACCOUNT_BY_NUMBER = `${BASE_URL}getAccountForNumber/`;
+const SEND_ORDER_REMINDER = `${BASE_URL}sendOrderReminder/`;
 
 export const login = async (username, password) => {
   await axios.post(
@@ -49,8 +50,10 @@ export const getAllOrders = async () => {
 };
 
 export const getOrder = async (id) => {
-    const response = await axios.get(`${ORDER_URL}${id}/`, { withCredentials: true });
-    return response.data;
+  const response = await axios.get(`${ORDER_URL}${id}/`, {
+    withCredentials: true,
+  });
+  return response.data;
 };
 
 export const getAllItems = async () => {
@@ -111,5 +114,18 @@ export const getAccountByNumber = async (number) => {
   const res = await axios.get(`${GET_ACCOUNT_BY_NUMBER}${number}/`, {
     withCredentials: true,
   });
+  return res.data;
+};
+
+export const sendOrderReminder = async (id) => {
+  console.log("wtf");
+  console.log(id);
+  const res = await axios.post(
+    `${SEND_ORDER_REMINDER}${id}/`,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
   return res.data;
 };

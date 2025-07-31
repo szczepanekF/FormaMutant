@@ -68,7 +68,7 @@ const AdminTokenLookup = () => {
         await set_item_number(form, token);
         handleCancel();
         setShouldRefocusToken(true);
-        toast.success("Pomyślnie przypisano słuchawki")
+        toast.success("Pomyślnie przypisano słuchawki");
       },
       () => {
         console.log("error");
@@ -135,7 +135,7 @@ const AdminTokenLookup = () => {
 
             <Box display="flex" justifyContent="space-between">
               <Button colorScheme="blue" onClick={handleSubmit}>
-                Wyślij
+                Przypisz
               </Button>
               <Button variant="outline" onClick={handleCancel}>
                 Anuluj

@@ -1,58 +1,110 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Potwierdzenie płatności</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      padding: 0;
-      margin: 0;
-    }
-    .container {
-      background-color: #ffffff;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .name {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .qr-image {
-      margin: 20px 0;
-    }
-    .footer {
-      font-size: 12px;
-      color: #888888;
-      margin-top: 30px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="name">
-      {{ first_name }} {{ last_name }}
+  <head>
+    <meta charset="UTF-8" />
+    <title>Potwierdzenie płatności i kod do obioru słuchawek</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f4e7f5; /* Subtle purple background */
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #fff5f7 100%
+        ); /* Subtle gradient */
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .header {
+        background-color: rgba(227, 11, 78, 0.1); /* Subtle pink header */
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        margin: -40px -40px 20px -40px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+      }
+      .name {
+        font-size: 22px;
+        font-weight: bold;
+        color: #460c6d; /* Darker shade of purple */
+        margin-bottom: 20px;
+      }
+      .content {
+        font-size: 16px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .highlight {
+        color: #e3b230; /* Yellow highlight */
+        font-weight: bold;
+      }
+      .qr-image {
+        margin: 20px 0;
+      }
+      .qr-image img {
+        border: 1px solid rgba(70, 12, 109, 0.2); /* Purple border */
+        border-radius: 8px;
+        width: 200px;
+        height: 200px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #666666;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(70, 12, 109, 0.2); /* Purple border */
+      }
+      .footer a {
+        color: #460c6d; /* Purple link */
+        text-decoration: none;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://www.planetaluzu.pl/logo.png" alt="PlanetaLuzu Logo" />
+      </div>
+      <div class="name">Cześć {{first_name}}</div>
+      <div class="content">
+        <p>
+          Twoja rezerwacja słuchawek o numerze
+          <span class="highlight">{{order_code}}</span> została opłacona.
+          Poniżej znajdziesz kody QR potrzebne do odbioru słuchawek:
+        </p>
+        {% for qr in qr_codes %}
+        <div class="qr-image">
+          <p>
+            <strong>Kod słuchawek:</strong>
+            <span class="highlight">{{ qr.item_id }}</span>
+          </p>
+          <img src="cid:{{ qr.cid }}" alt="QR Code for {{ qr.item_id }}" />
+        </div>
+        {% endfor %}
+        <p>🗿 DOZO! – PlanetaLuzu</p>
+      </div>
+      <div class="footer">
+        &copy; 2025 PlanetaLuzu. Wszystkie prawa zastrzeżone.<br />
+        <a href="https://planetaluzu.pl">Odwiedź naszą stronę</a> |
+        <a href="mailto:planetaluzu.sd@gmail.com">Kontakt</a>
+      </div>
     </div>
-    {{ order_code }}
-    <p>Cześć {{first_name}}, trzymaj kody qr potrzebne do odbioru słuchawek:</p>
-
-    {% for qr in qr_codes %}
-    <div style="margin: 20px 0;">
-      <p><strong>Item ID:</strong> {{ qr.item_id }}</p>
-      <img src="cid:{{ qr.cid }}" alt="QR Code for {{ qr.item_id }}" width="200" height="200" style="border:1px solid #ddd; border-radius:8px;" />
-    </div>
-    {% endfor %}
-
-    <p>🗿DOZO</p>
-    <div class="footer">
-      &copy; planetaluzu. All rights reserved.
-    </div>
-  </div>
-</body>
+  </body>
 </html>

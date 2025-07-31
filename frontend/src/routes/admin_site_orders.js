@@ -26,10 +26,14 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { IconButton } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { TriangleDownIcon, TriangleUpIcon, BellIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
-import { getAllOrders, change_order_state } from "../endpoints/api";
+import {
+  getAllOrders,
+  change_order_state,
+  sendOrderReminder,
+} from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -53,6 +57,7 @@ const Admin = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
 
   const nav = useNavigate();
 
@@ -94,10 +99,61 @@ const Admin = () => {
         );
         setSelectedOrder(null);
         setIsModalOpen(false);
-        toast.success("Pomyślnie zmieniono status zamówienia")
+        toast.success("Pomyślnie zmieniono status zamówienia");
       },
       () => {
         console.error("Błąd przy zmianie statusu");
+      }
+    );
+  };
+  const isOlderThan = (dateStr, hours) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffInMs = now - date;
+    return diffInMs > hours * 60 * 60 * 1000;
+  };
+
+  const isOlderThan8Hours = (dateStr) => {
+    return isOlderThan(dateStr, 8);
+  };
+  const isOlderThan12Hours = (dateStr) => {
+    return isOlderThan(dateStr, 12);
+  };
+
+  const getRowStyle = (state, dateStr, index) => {
+    const baseColor = index % 2 === 0 ? "gray.200" : "white";
+
+    if (state !== "oczekujące") return baseColor;
+
+    if (isOlderThan12Hours(dateStr)) return "red.100";
+    if (isOlderThan8Hours(dateStr)) return "yellow.100";
+
+    return baseColor;
+  };
+
+  const getHoverBgColor = (state, dateStr) => {
+    if (state !== "oczekujące") return "gray.300";
+
+    if (isOlderThan12Hours(dateStr)) return "red.200";
+    if (isOlderThan8Hours(dateStr)) return "yellow.200";
+
+    return "gray.300";
+  };
+  const handleSendReminder = async (order) => {
+    setSelectedOrder(order);
+    setIsReminderModalOpen(true);
+  };
+  const sendReminder = async () => {
+    await withRefresh(
+      async () => {
+        console.log(selectedOrder.id);
+        await sendOrderReminder(selectedOrder.id);
+        setSelectedOrder(null);
+        setIsReminderModalOpen(false);
+        toast.success("Pomyślnie wysłano maila");
+      },
+      () => {
+        console.error("Błąd podczas wysyłania maila");
       }
     );
   };
@@ -114,7 +170,6 @@ const Admin = () => {
       [orderId]: value,
     }));
   };
-
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -181,7 +236,9 @@ const Admin = () => {
     setSortDirection(direction);
     setFilteredOrders(sorted);
   };
-
+  function formatPhoneNumber(phone) {
+    return phone.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+  }
   return (
     <Box p={4}>
       <Box mt={4} mb={4}>
@@ -199,20 +256,19 @@ const Admin = () => {
           </Box>
         ) : (
           <TableContainer>
-            <Table variant="striped" colorScheme="blue">
+            <Table variant="simple" colorScheme="blue" size="sm" fontSize="sm">
               <Thead>
                 <Tr>
-                  <Th>Numer zamówienia
-
-                  <IconButton
+                  <Th fontSize="xs">
+                    Numer zamówienia
+                    <IconButton
                       aria-label="Sort ascending"
                       icon={<TriangleUpIcon />}
                       size="xs"
                       ml={2}
                       onClick={() => handleSort("order_code", "asc")}
                       isActive={
-                        sortField === "order_code" &&
-                        sortDirection === "asc"
+                        sortField === "order_code" && sortDirection === "asc"
                       }
                     />
                     <IconButton
@@ -222,12 +278,11 @@ const Admin = () => {
                       ml={1}
                       onClick={() => handleSort("order_code", "desc")}
                       isActive={
-                        sortField === "order_code" &&
-                        sortDirection === "desc"
+                        sortField === "order_code" && sortDirection === "desc"
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Imię
                     <IconButton
                       aria-label="Sort ascending"
@@ -252,7 +307,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Nazwisko
                     <IconButton
                       aria-label="Sort ascending"
@@ -277,7 +332,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Email
                     <IconButton
                       aria-label="Sort ascending"
@@ -301,7 +356,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Telefon
                     <IconButton
                       aria-label="Sort ascending"
@@ -326,7 +381,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Status
                     <IconButton
                       aria-label="Sort ascending"
@@ -349,7 +404,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Utworzono
                     <IconButton
                       aria-label="Sort ascending"
@@ -373,7 +428,7 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="xs">
                     Ostatnia zmiana
                     <IconButton
                       aria-label="Sort ascending"
@@ -398,45 +453,46 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>Akcje</Th>
+                  <Th fontSize="xs" colSpan={2} textAlign="center">
+                    Akcje
+                  </Th>
                 </Tr>
                 <Tr>
-    
-                <Th>
+                  <Th fontSize="sm">
                     <Input
-                      size="sm"
+                      size="xs"
                       onChange={(e) =>
                         handleFilterChange("order_code", e.target.value)
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="sm">
                     <Input
-                      size="sm"
+                      size="xs"
                       onChange={(e) =>
                         handleFilterChange("account.first_name", e.target.value)
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="sm">
                     <Input
-                      size="sm"
+                      size="xs"
                       onChange={(e) =>
                         handleFilterChange("account.last_name", e.target.value)
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="sm">
                     <Input
-                      size="sm"
+                      size="xs"
                       onChange={(e) =>
                         handleFilterChange("account.email", e.target.value)
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="sm">
                     <Input
-                      size="sm"
+                      size="xs"
                       onChange={(e) =>
                         handleFilterChange(
                           "account.phone_number",
@@ -445,9 +501,9 @@ const Admin = () => {
                       }
                     />
                   </Th>
-                  <Th>
+                  <Th fontSize="sm">
                     <Select
-                      size="sm"
+                      size="xs"
                       placeholder="Wszystkie"
                       variant="filled"
                       onChange={(e) =>
@@ -459,17 +515,23 @@ const Admin = () => {
                       <option value="anulowane">anulowane</option>
                     </Select>
                   </Th>
-                  <Th colSpan={3} />
+                  <Th fontSize="sm" colSpan={4} />
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredOrders.map((order) => (
-                  <Tr key={order.order_code}>
+                {filteredOrders.map((order, index) => (
+                  <Tr
+                    key={order.order_code}
+                    bg={getRowStyle(order.state, order.creation_date, index)}
+                    _hover={{
+                      bg: getHoverBgColor(order.state, order.creation_date),
+                    }}
+                  >
                     <Td>{order.order_code}</Td>
                     <Td>{order.account.first_name}</Td>
                     <Td>{order.account.last_name}</Td>
                     <Td>{order.account.email}</Td>
-                    <Td>{order.account.phone_number}</Td>
+                    <Td>{formatPhoneNumber(order.account.phone_number)}</Td>
                     <Td>
                       {order.state === "oczekujące" ? (
                         <Select
@@ -521,6 +583,15 @@ const Admin = () => {
                         </Button>
                       )}
                     </Td>
+                    <Td>
+                      <IconButton
+                        size="sm"
+                        icon={<BellIcon />}
+                        aria-label="Wyślij przypomnienie"
+                        colorScheme="orange"
+                        onClick={() => handleSendReminder(order)}
+                      />
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -534,12 +605,16 @@ const Admin = () => {
           <ModalHeader>Potwierdź zmianę statusu</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            Czy na pewno chcesz zmienić status zamówienia dla{" "}
+            Czy na pewno chcesz zmienić status zamówienia{" "}
+            <Box as="span" whiteSpace="nowrap">
+              {selectedOrder?.order_code}
+            </Box>{" "}
+            dla{" "}
             <strong>
               {selectedOrder?.account?.first_name}{" "}
               {selectedOrder?.account?.last_name}
             </strong>{" "}
-            (ID: {selectedOrder?.id}) na <strong>{newStatus}</strong>?
+            na <strong>{newStatus}</strong>?
           </ModalBody>
 
           <ModalFooter>
@@ -547,6 +622,40 @@ const Admin = () => {
               Potwierdź
             </Button>
             <Button variant="ghost" onClick={() => setIsModalOpen(false)}>
+              Anuluj
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={isReminderModalOpen}
+        onClose={() => setIsReminderModalOpen(false)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Potwierdź wysłanie powiadomienia</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Czy na pewno chcesz wysłać ponownie powiadomienie mailowe do{" "}
+            <strong>
+              {selectedOrder?.account?.first_name}{" "}
+              {selectedOrder?.account?.last_name}
+            </strong>
+            {", "}numer zamówienia:{" "}
+            <Box as="span" whiteSpace="nowrap">
+              {selectedOrder?.order_code}?
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={sendReminder}>
+              Potwierdź
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsReminderModalOpen(false)}
+            >
               Anuluj
             </Button>
           </ModalFooter>

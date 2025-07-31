@@ -50,5 +50,5 @@ urlpatterns = [
     path("api/getAccountForItem/<str:token>/", get_account_with_token),
     path("api/setItemNumber/<str:token>/", set_item_number),
     path("api/getAccountForNumber/<str:number>/", get_account_with_number),
-    path("api/sendOrderReminder/<str:number>/", send_order_reminder),
+    path("api/sendOrderReminder/<int:id>/", send_order_reminder),
 ]

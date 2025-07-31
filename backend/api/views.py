@@ -346,12 +346,12 @@ def set_item_number(request, token):
 
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
-def send_order_reminder(request, number):
+def send_order_reminder(request, id):
     try:
-        order = Order.objects.select_related("account").prefetch_related("items").get(item_real_ID=number)
+        order = Order.objects.select_related("account").prefetch_related("items").get(id=id)
     except Order.DoesNotExist:
         return Response(
-            {"reason": f"Nie znaleziono zamówienia o numerze {number}"},
+            {"reason": f"Nie znaleziono zamówienia o ID {id}"},
             status=status.HTTP_404_NOT_FOUND,
         )
     if order.state == "anulowane":
