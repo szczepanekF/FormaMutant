@@ -22,10 +22,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { loginUser, user } = useAuth();
 
   const handleLogin = async () => {
+    setLoading(true);
     await loginUser(username, password);
+    setLoading(false);
   };
   useEffect(() => {
     if (user) {
@@ -82,6 +85,7 @@ const Login = () => {
               <Button
                 bg="#507DBC"
                 color={"white"}
+                isLoading={loading}
                 onClick={handleLogin}
                 _hover={{
                   bg: "blue.700",

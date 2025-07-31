@@ -11,6 +11,7 @@ import {
   Modal,
   Heading,
   Box,
+  Checkbox,
   ModalOverlay,
   ModalBody,
   ModalContent,
@@ -37,6 +38,7 @@ const Order = () => {
     email: "",
     phone_number: "",
     number_of_headphones: "1",
+    agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -50,6 +52,7 @@ const Order = () => {
       email: "",
       phone_number: "",
       number_of_headphones: "1",
+      agreeTerms: false,
     });
     setLoading(false);
     onClose();
@@ -57,10 +60,8 @@ const Order = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.first_name.trim())
-      newErrors.first_name = "Wprowadź imię";
-    if (!formData.last_name.trim())
-      newErrors.last_name = "Wprowadź nazwisko";
+    if (!formData.first_name.trim()) newErrors.first_name = "Wprowadź imię";
+    if (!formData.last_name.trim()) newErrors.last_name = "Wprowadź nazwisko";
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email))
       newErrors.email = "Wprowadź poprawny adres email";
     if (
@@ -68,6 +69,8 @@ const Order = () => {
       !/^\d{3}\s\d{3}\s\d{3}$/.test(formData.phone_number)
     )
       newErrors.phone_number = "Numer telefonu musi mieć 9 cyfr";
+    if (!formData.agreeTerms)
+      newErrors.agreeTerms = "Zatwierdzenie regulaminu jest wymagane";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -86,62 +89,35 @@ const Order = () => {
     return digits.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
   };
 
-  function formatErrorsForUser(errorString) {
-    // Preprocess the string to make it valid JSON
-    const jsonString = errorString
-      .replace(/ErrorDetail\(string='(.*?)', code='(.*?)'\)/g, '"$1"')
-      .replace(/'/g, '"');
-
-    let errors;
-    try {
-      errors = JSON.parse(jsonString);
-    } catch (e) {
-      return "Błąd parsowania danych wejściowych.";
-    }
-
-    function extractMessages(errObj, parentKey = "") {
-      let messages = [];
-
-      for (const key in errObj) {
-        const value = errObj[key];
-        if (Array.isArray(value)) {
-          value.forEach((err) => {
-            const message = typeof err === "string" ? err : String(err);
-            messages.push(`${message}`);
-          });
-        } else if (typeof value === "object" && value !== null) {
-          messages = messages.concat(extractMessages(value, key));
-        }
-      }
-      return messages;
-    }
-
-    const formattedErrors = extractMessages(errors).join("\n");
-    return formattedErrors || "nested_error: Nieprawidłowy numer";
-  }
-
   const handleCreateUser = async () => {
-    try {
-      setLoading(true);
-      const user = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone_number: formData.phone_number.replace(/\s+/g, ""),
-      };
-      const amount = 1; //formData.number_of_headphones;
-      const response = await order_creation(user, amount);
-      reset();
-      setLoading(false);
-      toast.success("Pomyślnie utworzono rezerwacje");
-    } catch (error) {
-      setLoading(false);
-      toast.error(formatErrorsForUser(error.response.data.reason));
-      console.error("Błąd przy zmianie statusu");
-    }
+    await withErrorHandler(
+      async () => {
+        setLoading(true);
+        const user = {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          phone_number: formData.phone_number.replace(/\s+/g, ""),
+        };
+        const amount = 1; //formData.number_of_headphones;
+        const response = await order_creation(user, amount);
+        reset();
+        setLoading(false);
+        toast.success("Pomyślnie utworzono rezerwacje");
+      },
+      () => {
+        setLoading(false);
+      }
+    );
   };
 
-  const fieldMap = {"first_name": "Imię", "last_name": "Nazwisko", "email": "Email", "phone_number": "Numer telefonu"}
+  const fieldMap = {
+    first_name: "Imię",
+    last_name: "Nazwisko",
+    email: "Email",
+    phone_number: "Numer telefonu",
+  };
+
   return (
     <Flex
       minH={"100%"}
@@ -185,9 +161,7 @@ const Order = () => {
               // "number_of_headphones",
             ].map((field) => (
               <FormControl key={field} isInvalid={!!errors[field]}>
-                <FormLabel color="#04080F">
-                  {fieldMap[field]}
-                </FormLabel>
+                <FormLabel color="#04080F">{fieldMap[field]}</FormLabel>
 
                 {field === "number_of_headphones" ? (
                   <NumberInput
@@ -234,6 +208,16 @@ const Order = () => {
                 <FormErrorMessage>{errors[field]}</FormErrorMessage>
               </FormControl>
             ))}
+            <FormControl isInvalid={!!errors.agreeTerms}>
+              <Checkbox
+                isChecked={formData.agreeTerms}
+                onChange={(e) => handleChange("agreeTerms", e.target.checked)}
+                color="#04080F"
+              >
+                Akceptuję regulamin
+              </Checkbox>
+              <FormErrorMessage>{errors.agreeTerms}</FormErrorMessage>
+            </FormControl>
             <Button
               bg="#507DBC"
               // mt={3}

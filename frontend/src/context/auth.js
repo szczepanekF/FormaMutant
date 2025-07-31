@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 
 import { login, is_auth, refresh, logout, getIsAdmin } from "../endpoints/api";
@@ -24,8 +28,10 @@ export const AuthProvider = ({ children }) => {
           await refresh();
           await fn();
         } catch (refreshError) {
-
-          if (refreshError.response?.status === 401 || refreshError.response?.status == 400 ) {
+          if (
+            refreshError.response?.status === 401 ||
+            refreshError.response?.status == 400
+          ) {
             // console.error("Nie udało się odświeżyć tokena", refreshError);
             setUser(false);
             toast.error("Twoja sesja wygasła. Zaloguj się ponownie.");
@@ -33,13 +39,13 @@ export const AuthProvider = ({ children }) => {
             nav("/login");
           } else {
             toast.error(
-              refreshError.response?.data?.reason || "Wystąpił błąd."
+              refreshError.response?.data?.reason + '.' || "Wystąpił błąd."
             );
           }
           onFail?.();
         }
       } else {
-        toast.error(error.response?.data?.reason || "Wystąpił błąd.");
+        toast.error(error.response?.data?.reason + '.' || "Wystąpił błąd.");
 
         onFail?.();
       }
@@ -50,12 +56,17 @@ export const AuthProvider = ({ children }) => {
     try {
       await fn();
     } catch (error) {
-      const message =
-        error?.response?.data?.reason ||
-        error?.message ||
-        "Wystąpił nieznany błąd.";
-
-      toast.error(message);
+      if (error?.response?.data?.reason) {
+        const errorString = error?.response?.data?.reason;
+        const message = errorString.match(
+          /ErrorDetail\(string='(.*?)', code='(.*?)'\)/
+        )[1];
+        toast.error(message + '.');
+      } else if (error?.message) {
+        toast.error(error.message + '.');
+      } else {
+        toast.error("Wystąpił nieznany błąd.");
+      }
       onFail?.();
     }
   };
@@ -63,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   const get_authenticated = async () => {
     await withRefresh(
       async () => {
-        console.log('BBBBBBBBB');
+        console.log("BBBBBBBBB");
         const response = await is_auth();
         const isAdmin = await getIsAdmin();
         setADmin(isAdmin);
@@ -178,7 +189,7 @@ export const AuthProvider = ({ children }) => {
         admin,
         userName,
         deleteUser,
-        withRefresh
+        withRefresh,
       }}
     >
       {children}

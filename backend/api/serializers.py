@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Account, Order, Item, MAX_ITEM_AMOUNT
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.utils.timezone import now
+from datetime import datetime
 
 MAX_ITEM_AMOUNT = 1
 
@@ -20,19 +22,19 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[], required=True, error_messages={
-        "invalid": ("Wprowadź poprawny adres e-mail."),
-        "required": ("Adres e-mail jest wymagany."),
+        "invalid": ("Wprowadź poprawny adres e-mail"),
+        "required": ("Adres e-mail jest wymagany"),
     })
     first_name = serializers.CharField(max_length=50, required=True, error_messages={
-        "max_length": ("Imię musi być krótsze niż 50 znaków."),
-        "required": ("Imię jest wymagane."),
+        "max_length": ("Imię musi być krótsze niż 50 znaków"),
+        "required": ("Imię jest wymagane"),
     })
     last_name = serializers.CharField(max_length=50, required=True, error_messages={
-        "max_length": ("Nazwisko musi być krótsze niż 50 znaków."),
-        "required": ("Nazwisko jest wymagane."),
+        "max_length": ("Nazwisko musi być krótsze niż 50 znaków"),
+        "required": ("Nazwisko jest wymagane"),
     })
     phone_number = serializers.CharField(required=True, error_messages={
-        "required": ("Numer telefonu jest wymagany."),
+        "required": ("Numer telefonu jest wymagany"),
     })
     class Meta:
         model = Account
@@ -42,13 +44,13 @@ class AccountSerializer(serializers.ModelSerializer):
 class OrderCreateSerializer(serializers.Serializer):
     user = AccountSerializer()
     items_count = serializers.IntegerField(min_value=1, error_messages={
-        "min_value": ("Liczba słuchawek musi być większa niż zero."),
-        "required": ("Podaj liczbę słuchawek."),
+        "min_value": ("Liczba słuchawek musi być większa niż zero"),
+        "required": ("Podaj liczbę słuchawek"),
     })
 
     def validate(self, data):
         user_serializer = AccountSerializer(data=data["user"])
-        user_serializer.is_valid(raise_exception=True) 
+        user_serializer.is_valid(raise_exception=True)
         data["user"] = user_serializer.validated_data
         return data
 
@@ -56,7 +58,7 @@ class OrderCreateSerializer(serializers.Serializer):
         account_data = validated_data["user"]
         items_count = validated_data["items_count"]
         
-        account, _ = Account.objects.get_or_create(
+        account, created = Account.objects.get_or_create(
             email=account_data["email"],
             defaults={
                 "first_name": account_data["first_name"],
@@ -64,18 +66,29 @@ class OrderCreateSerializer(serializers.Serializer):
                 "phone_number": account_data["phone_number"],
             },
         )
-
-        total_items = (
-            Order.objects
-            .filter(account=account)
-            .exclude(state="anulowane")
-            .aggregate(total=Sum("items_count"))
-            .get("total") or 0
-        )
-        if total_items + items_count > MAX_ITEM_AMOUNT:
+        min_allowed_date = datetime(2025, 8, 20, tzinfo=now().tzinfo)
+        print(min_allowed_date.strftime("%d %m %Y"))
+        if now() > min_allowed_date:
             raise serializers.ValidationError(
-                f"Przekroczono dozwoloną liczbę słuchawek o: {total_items + items_count - MAX_ITEM_AMOUNT}."
+                f"Rejestracja zamówień była możliwa do {min_allowed_date.strftime("%d.%m.%Y")}"
             )
+
+        if not created:
+            raise serializers.ValidationError(
+                f"Rezerwacja dla tego adresu e-mail już istnieje"
+            )
+            # For other MAX_ITEM_AMOUNT than 1
+        # total_items = (
+        #     Order.objects
+        #     .filter(account=account)
+        #     .exclude(state="anulowane")
+        #     .aggregate(total=Sum("items_count"))
+        #     .get("total") or 0
+        # )
+        # if total_items + items_count > MAX_ITEM_AMOUNT:
+        #     raise serializers.ValidationError(
+        #         f"Przekroczono dozwoloną liczbę słuchawek o: {total_items + items_count - MAX_ITEM_AMOUNT}"
+        #     )
 
         order = Order.objects.create(account=account, items_count=items_count)
         return order
@@ -89,7 +102,7 @@ class OrderStateUpdateSerializer(serializers.ModelSerializer):
     def validate(self, value):
         allowed_states = [choice[0] for choice in Order.STATE_CHOICES]
         if value["state"] not in allowed_states:
-            raise serializers.ValidationError("Nieprawidłowy stan.")
+            raise serializers.ValidationError("Nieprawidłowy stan")
         return value
 
     def update(sllef, instance, validated_data):
@@ -153,5 +166,5 @@ class ItemRealIdUpdateSerializer(serializers.ModelSerializer):
     def validate(self, value):
         allowed_states = [choice[0] for choice in Order.STATE_CHOICES]
         if value["state"] not in allowed_states:
-            raise serializers.ValidationError("Nieprawidłowy stan.")
+            raise serializers.ValidationError("Nieprawidłowy stan")
         return value

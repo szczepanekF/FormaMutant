@@ -1,3 +1,4 @@
+import time
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
@@ -33,7 +34,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             data["refresh"] = refresh
             if not refresh:
                 return Response(
-                    {"refreshed": False, "reason": "No refresh token provided."},
+                    {"refreshed": False, "reason": "No refresh token provided"},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
             request._full_data = data
@@ -62,6 +63,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         ip_address = request.META.get("HTTP_X_FORWARDED_FOR")
+        time.sleep(3)
         if ip_address:
             ip_address = ip_address.split(",")[0]
         else:
@@ -167,10 +169,10 @@ def get_account_with_token(request, token):
     try:
         item = Item.objects.select_related("order__account").get(token=token)
     except Item.DoesNotExist:
-        return Response({"reason": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"reason": f"Nie znaleziono słuchawek o numerze \"{token}\""}, status=status.HTTP_404_NOT_FOUND)
     if item.state is None or item.state != "zarezerwowane":
         return Response(
-            {"reason": "Item is not in a valid state to retrieve account information"},
+            {"reason": "Słuchawki muszą w stanie \"zarezerwowane\""},
             status=status.HTTP_400_BAD_REQUEST,
         )
     account = item.order.account
@@ -185,7 +187,7 @@ def get_account_with_number(request, number):
         item = Item.objects.select_related("order__account").get(item_real_ID=number)
     except Item.DoesNotExist:
         return Response(
-            {"reason": f"Item with number '{number}' not found"},
+            {"reason": f"Nie znaleziono słuchawek o numerze \"{number}\""},
             status=status.HTTP_404_NOT_FOUND,
         )
     except Exception as e:
@@ -197,7 +199,7 @@ def get_account_with_number(request, number):
     if item.state is None or item.state != "wydane":
         return Response(
             {
-                "reason": f"Item is not in a valid state to retrieve account information ({item.state})"
+                "reason": f"Słuchawki muszą być \"wydane\""
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -259,7 +261,7 @@ def change_order_state(request, order_id):
             old_state = order.state
             if old_state != "oczekujące":
                 raise Exception(
-                    "Nie można zmienić stanu zamówienia, które nie jest oczekujące."
+                    "Nie można zmienić stanu zamówienia, które nie jest oczekujące"
                 )
             serializer.save()
             new_state = serializer.validated_data.get("state")

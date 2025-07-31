@@ -15,7 +15,7 @@ class Account(models.Model):
             RegexValidator(
                 r"^(?:\+48)?\d{9}$",
                 message=(
-                    "Nieprawidłowy numer telefonu. Wprowadź 9-cyfrowy numer, opcjonalnie poprzedzony kodem kraju +48."
+                    "Nieprawidłowy numer telefonu. Wprowadź 9-cyfrowy numer, opcjonalnie poprzedzony kodem kraju +48"
                 ),
             )
         ]
