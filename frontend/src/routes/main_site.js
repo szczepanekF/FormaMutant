@@ -4,7 +4,7 @@ import { motion, useAnimation, useAnimate } from "framer-motion";
 import Slider from "../components/swiper";
 import NoiseBackground from "../components/noiseBackground";
 import GradientBackground from "../components/gradientBackground";
-import { Global, css } from "@emotion/react";
+import CurvedTextComponent from "../components/curvedTextComponent";
 
 // W komponencie Menu, przed zwróceniem JSX:
 
@@ -12,6 +12,7 @@ import { Global, css } from "@emotion/react";
 const MotionBox = motion(Box);
 const MotionImage = motion(Image);
 const MotionContainer = motion(Container);
+const MotionText = motion(Text);
 
 // Main component
 const Menu = () => {
@@ -20,42 +21,92 @@ const Menu = () => {
   const [animationDone, setAnimationDone] = useState(false);
   const [noiseRef, noiseAnimate] = useAnimate();
   const [gradientRef, gradientAnimate] = useAnimate();
+  const [textRef] = useAnimate();
 
   async function myAnimation() {
     await animate(
-      scope.current,
-      {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        x: "-50%",
-        y: "-50%",
-        scale: 1.5,
-        opacity: 1,
-        zIndex: 10,
-      },
+      [
+        [
+          scope.current,
+          {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            x: "-50%",
+            y: "-50%",
+            scale: 2,
+            opacity: 1,
+            zIndex: 10,
+          },
+          { at: 0 },
+        ], // at: 0 oznacza start w tym samym czasie
+        [
+          textRef.current,
+          {
+            position: "absolute",
+            top: "calc(50% )",
+            left: "50%",
+            x: "-50%",
+            y: "-50%",
+            scale: 2.5,
+            opacity: 1,
+            zIndex: 10,
+          },
+          { at: 0 },
+        ], // at: 0 dla synchronicznego startu
+      ],
       {
         ease: "easeInOut",
-        duration: 1,
+        duration: 2,
       }
     );
+    await new Promise((res) => setTimeout(res, 900));
     await animate(
-      scope.current,
-      {
-        top: "3vh",
-        scale: 1,
-        opacity: 1,
-        y: 0,
-        x: "-50%",
-      },
+      [
+        [
+          scope.current,
+          {
+            top: "3vh",
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            x: "-50%",
+          },
+          { at: 0 },
+        ],
+        [
+          textRef.current,
+          {
+            top: "calc(0vh)",
+            scale: 1,
+            opacity: 0,
+            y: 0,
+            x: "-50%",
+          },
+          { at: 0 },
+        ],
+      ],
       {
         ease: "easeInOut",
-        duration: 1,
+        duration: 1.5,
       }
     );
+    // Rozpocznij równolegle:
+    // 1. Animację przejścia tła
+    // 2. Timer do pokazania zawartości
     await Promise.all([
-      noiseAnimate(noiseRef.current, { opacity: 0 }, { duration: 0.8 }),
-      gradientAnimate(gradientRef.current, { opacity: 1 }, { duration: 0.7 }),
+      // Animacja tła
+      Promise.all([
+        noiseAnimate(noiseRef.current, { opacity: 0 }, { duration: 0.7 }),
+        gradientAnimate(gradientRef.current, { opacity: 1 }, { duration: 0.7 }),
+      ]),
+      // Timer do pokazania zawartości (50% czasu animacji tła)
+      new Promise((resolve) =>
+        setTimeout(() => {
+          setAnimationDone(true);
+          resolve();
+        }, 300)
+      ), // 0.4s to około połowa czasu animacji tła
     ]);
   }
 
@@ -131,7 +182,7 @@ const Menu = () => {
             left: "50%",
             x: "-50%",
             y: "-50%",
-            scale: 1.5,
+            scale: 10,
             opacity: 0,
             zIndex: 10,
           }}
@@ -139,6 +190,7 @@ const Menu = () => {
           boxSize="18vh"
           mx="auto"
         />
+        <CurvedTextComponent textRef={textRef} />
         {animationDone && (
           <VStack
             spacing={12}

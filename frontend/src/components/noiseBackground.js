@@ -36,7 +36,7 @@ function NoiseBackground() {
     let frameCount = 0;
     const animate = () => {
       frameCount++;
-      if (frameCount % 7 === 0) {
+      if (frameCount % 5 === 0) {
         generateNoise();
       }
       animationFrameId = requestAnimationFrame(animate);
