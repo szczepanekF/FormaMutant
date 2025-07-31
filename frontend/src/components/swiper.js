@@ -44,10 +44,10 @@ export default function Slider() {
       loop={true}
       speed={600}
       navigation
-      style={{ height: "100%" }}
+      style={{ height: "100%",touchAction: 'pan-y'}}
       breakpoints={{
         768: { slidesPerView: 2.2 },
-        1024: { slidesPerView: 1.8 },
+        1024: { slidesPerView: 2.2 },
       }}
       onSwiper={(swiper) => (swiperRef.current = swiper)}
       onTouchStart={handleTouchStart}

@@ -73,12 +73,38 @@ const Menu = () => {
 
   return (
     <>
+      <MotionBox
+        ref={noiseRef}
+        initial={{ opacity: 1 }}
+        position="fixed"
+        w="100%"
+        h="100%"
+        zIndex={0}
+      >
+        <NoiseBackground />
+      </MotionBox>
+
+      {/* GradientBackground z początkowym opacity 0 i animowanym do 1 */}
+      <MotionBox
+        ref={gradientRef}
+        initial={{ opacity: 0 }}
+        position="fixed"
+        w="100%"
+        h="100%"
+        zIndex={1}
+      >
+        <GradientBackground />
+      </MotionBox>
+      {/* Zawsze to samo logo, które zmienia styl i pozycję */}
+
       <Box
         position="relative"
+        // border={"10px solid green"}
+        zIndex={2}
         h="100vh"
         w="100vw"
         overflowX="hidden"
-        overflowY="auto" // Scrollbar zawsze widoczny
+        overflowY="auto"
         css={{
           scrollbarGutter: "stable",
           "&::-webkit-scrollbar": {
@@ -95,33 +121,12 @@ const Menu = () => {
           },
         }}
       >
-        <MotionBox
-          ref={noiseRef}
-          initial={{ opacity: 1 }}
-          position="absolute"
-          w="100%"
-          h="100%"
-        >
-          <NoiseBackground />
-        </MotionBox>
-
-        {/* GradientBackground z początkowym opacity 0 i animowanym do 1 */}
-        <MotionBox
-          ref={gradientRef}
-          initial={{ opacity: 0 }}
-          position="absolute"
-          w="100%"
-          h="100%"
-        >
-          <GradientBackground />
-        </MotionBox>
-        {/* Zawsze to samo logo, które zmienia styl i pozycję */}
         <MotionImage
           src="/assets/logo.png"
           alt="Logo"
           ref={scope}
           initial={{
-            position: "absolute",
+            position: "fixed",
             top: "50%",
             left: "50%",
             x: "-50%",
@@ -134,16 +139,19 @@ const Menu = () => {
           boxSize="18vh"
           mx="auto"
         />
-
         {animationDone && (
           <VStack
             spacing={12}
+            // border={"10px solid green"}
             align="stretch"
-            w="100vw"
-            minH="100vh"
+            w="100%" // ZMIANA: z 100vw na 100%
+            minH="100%"
+            p={0} // Zapewnia brak paddingu
+            m={0} // Zapewnia brak marginesu
+            // pb="20px"
             // overflowY="auto"
-            overflowX="hidden"
-            style={{ scrollbarGutter: "stable" }}
+            // overflowX="hidden"
+            // style={{ scrollbarGutter: "stable" }}
 
             // border ="20px solid red"
           >
@@ -155,6 +163,7 @@ const Menu = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
+              px={0}
             >
               <Heading as="h1" size="xl" mb={4}>
                 Witamy na naszej stronie!
@@ -165,20 +174,21 @@ const Menu = () => {
             </MotionContainer>
 
             {/* Slider */}
-            <MotionContainer
-              maxW="95%"
-              maxH="55%"
-              px={0}
-              marginTop={4}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              // border ="50px solid"
-              mx="auto"
-            >
-              <Slider />
-            </MotionContainer>
-
+            <Box w="100%" px={0}>
+              <MotionContainer
+                maxW="100%"
+                maxH="55%"
+                px={0}
+                marginTop={4}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                // border="50px solid"
+                mx="auto"
+              >
+                <Slider />
+              </MotionContainer>
+            </Box>
             {/* Blok tekstowy #1 */}
             <MotionContainer
               maxW="container.lg"
@@ -186,6 +196,7 @@ const Menu = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
+              px={0}
               // border ="50px solid"
             >
               <Heading as="h2" size="lg" mb={4}>
@@ -198,6 +209,51 @@ const Menu = () => {
             </MotionContainer>
 
             {/* Blok tekstowy #2 */}
+            <MotionContainer
+              maxW="container.lg"
+              py={8}
+              bg="gray.50"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              <Heading as="h2" size="lg" mb={4}>
+                Nasza misja
+              </Heading>
+              <Text>
+                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
+              </Text>
+            </MotionContainer>
+            <MotionContainer
+              maxW="container.lg"
+              py={8}
+              bg="gray.50"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              <Heading as="h2" size="lg" mb={4}>
+                Nasza misja
+              </Heading>
+              <Text>
+                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
+              </Text>
+            </MotionContainer>
+            <MotionContainer
+              maxW="container.lg"
+              py={8}
+              bg="gray.50"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              <Heading as="h2" size="lg" mb={4}>
+                Nasza misja
+              </Heading>
+              <Text>
+                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
+              </Text>
+            </MotionContainer>
             <MotionContainer
               maxW="container.lg"
               py={8}
