@@ -63,7 +63,6 @@ class CookieTokenRefreshView(TokenRefreshView):
 class CookieTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         ip_address = request.META.get("HTTP_X_FORWARDED_FOR")
-        time.sleep(3)
         if ip_address:
             ip_address = ip_address.split(",")[0]
         else:
