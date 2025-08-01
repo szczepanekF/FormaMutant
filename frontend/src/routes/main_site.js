@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, VStack, Heading, Text, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  VStack,
+  Heading,
+  Text,
+  Image,
+  Button,
+  Link as ChakraLink,
+} from "@chakra-ui/react";
 import { motion, useAnimation, useAnimate } from "framer-motion";
 import Slider from "../components/swiper";
 import NoiseBackground from "../components/noiseBackground";
 import GradientBackground from "../components/gradientBackground";
 import CurvedTextComponent from "../components/curvedTextComponent";
+import Footer from "../components/footer";
+import { Link as RouterLink } from "react-router-dom";
 
 // W komponencie Menu, przed zwróceniem JSX:
 
@@ -61,7 +72,9 @@ const Menu = () => {
       }
     );
     await new Promise((res) => setTimeout(res, 900));
-    await animate(
+
+    // 1. Animacja głównych elementów (scope i textRef)
+    const mainAnimation = animate(
       [
         [
           scope.current,
@@ -91,28 +104,31 @@ const Menu = () => {
         duration: 1.5,
       }
     );
-    // Rozpocznij równolegle:
-    // 1. Animację przejścia tła
-    // 2. Timer do pokazania zawartości
-    await Promise.all([
-      // Animacja tła
-      Promise.all([
-        noiseAnimate(noiseRef.current, { opacity: 0 }, { duration: 0.7 }),
-        gradientAnimate(gradientRef.current, { opacity: 1 }, { duration: 0.7 }),
-      ]),
-      // Timer do pokazania zawartości (50% czasu animacji tła)
-      new Promise((resolve) =>
-        setTimeout(() => {
-          setAnimationDone(true);
-          resolve();
-        }, 300)
-      ), // 0.4s to około połowa czasu animacji tła
+
+    // 2. Równolegle uruchamiamy animacje tła
+    const backgroundAnimations = Promise.all([
+      noiseAnimate(noiseRef.current, { opacity: 0 }, { duration: 15 }),
+      gradientAnimate(gradientRef.current, { opacity: 1 }, { duration: 3 }),
     ]);
+
+    // 3. Ustawiamy timer na wywołanie setAnimationDone w połowie głównej animacji
+    const contentReveal = new Promise((resolve) => {
+      setTimeout(() => {
+        setAnimationDone(true);
+        resolve();
+      }, 750); // Połowa czasu trwania głównej animacji (1.5s / 2)
+    });
+
+    // Czekamy na:
+    // - zakończenie głównej animacji
+    // - zakończenie animacji tła (choć noise trwa 15s, nie blokujemy)
+    // - pokazanie zawartości
+    await Promise.all([mainAnimation, backgroundAnimations, contentReveal]);
   }
 
   useEffect(() => {
     const animateLogo = async () => {
-      await new Promise((res) => setTimeout(res, 1000)); // tylko Noise przez 1s
+      await new Promise((res) => setTimeout(res, 1)); // tylko Noise przez 1s
 
       await myAnimation();
 
@@ -187,7 +203,7 @@ const Menu = () => {
             zIndex: 10,
           }}
           // animate={controls}
-          boxSize="18vh"
+          boxSize="20vh"
           mx="auto"
         />
         <CurvedTextComponent textRef={textRef} />
@@ -217,11 +233,25 @@ const Menu = () => {
               transition={{ delay: 0.2, duration: 0.6 }}
               px={0}
             >
-              <Heading as="h1" size="xl" mb={4}>
-                Witamy na naszej stronie!
+              <Heading as="h1" fontSize="3rem" color="white" mb={4}>
+                Silent Disco{" "}
+                <Box
+                  as="span"
+                  sx={{
+                    background:
+                      "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
+
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    fontWeight: "bold",
+                  }}
+                >
+                  PIRACI
+                </Box>
               </Heading>
-              <Text fontSize="lg">
-                Tu znajdziesz wyjątkowe treści, zdjęcia i więcej.
+
+              <Text fontSize="1.5rem" color="white">
+                Dobranka, 22.08.2025 20:00
               </Text>
             </MotionContainer>
 
@@ -249,94 +279,162 @@ const Menu = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
               px={0}
-              // border ="50px solid"
+              textAlign="center" // Wyśrodkowanie tekstu
+              color="white" // Biały kolor tekstu
             >
-              <Heading as="h2" size="lg" mb={4}>
-                Kim jesteśmy?
-              </Heading>
-              <Text>
-                Jesteśmy pasjonatami, którzy tworzą niesamowite rzeczy z pasją i
-                zaangażowaniem...
-              </Text>
+              <VStack spacing={4} align="center" mb={8}>
+                <Heading as="h3" fontSize="4rem" fontWeight="bold">
+                  Dołącz do{" "}
+                  <Box
+                    as="span"
+                    bgGradient="linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))"
+                    bgClip="text"
+                    display="inline"
+                  >
+                    NAS 22 sierpnia
+                  </Box>
+                </Heading>
+
+                <Text fontSize="1.5rem">
+                  Wypełnij formularz i zarezerwuj miejsce na imprezie
+                </Text>
+
+                <Text fontSize="1rem" fontStyle="italic">
+                  Formularz aktywny do 20.08
+                </Text>
+              </VStack>
+
+              <ChakraLink
+                as={RouterLink}
+                to="/order"
+                _hover={{ textDecoration: "none" }}
+              >
+                <Button
+                  height="auto"
+                  width="auto"
+                  px={12}
+                  py={5}
+                  borderRadius="full"
+                  fontSize={"1.5rem"}
+                  bg="white"
+                  color="black"
+                  transition="all 0.3s ease"
+                  position="relative"
+                  _hover={{
+                    color: "white", // tekst na biały
+                    bg: "rgba(255, 255, 255, 0)", // tło całkowicie przezroczyste
+                    boxShadow: "lg",
+                    // transform: "none" - usunięte, aby nie zmieniać rozmiaru
+                  }}
+                >
+                  Zarezerwuj miejsce
+                </Button>
+              </ChakraLink>
             </MotionContainer>
 
-            {/* Blok tekstowy #2 */}
             <MotionContainer
-              maxW="container.lg"
+              maxW="85%"
               py={8}
-              bg="gray.50"
+              bg="transparent"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.6 }}
+              textAlign="left"
+              color="white"
             >
-              <Heading as="h2" size="lg" mb={4}>
-                Nasza misja
-              </Heading>
-              <Text>
-                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
-              </Text>
-            </MotionContainer>
-            <MotionContainer
-              maxW="container.lg"
-              py={8}
-              bg="gray.50"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              <Heading as="h2" size="lg" mb={4}>
-                Nasza misja
-              </Heading>
-              <Text>
-                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
-              </Text>
-            </MotionContainer>
-            <MotionContainer
-              maxW="container.lg"
-              py={8}
-              bg="gray.50"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              <Heading as="h2" size="lg" mb={4}>
-                Nasza misja
-              </Heading>
-              <Text>
-                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
-              </Text>
-            </MotionContainer>
-            <MotionContainer
-              maxW="container.lg"
-              py={8}
-              bg="gray.50"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              <Heading as="h2" size="lg" mb={4}>
-                Nasza misja
-              </Heading>
-              <Text>
-                Pragniemy inspirować, uczyć i dzielić się tym, co najlepsze...
-              </Text>
+              <Box mb={14}>
+                <Heading
+                  as="h2"
+                  size="lg"
+                  mb={4}
+                  fontSize="3.5rem"
+                  bgGradient="linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))"
+                  bgClip="text"
+                  css={{
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  Rezerwacja trzy etapowa
+                </Heading>
+
+                <Box
+                  width={{ base: "100%", md: "70%", lg: "55%" }} // Responsywna szerokość
+                  fontSize="1.3rem"
+                >
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Mauris consequat metus nec neque dignissim elementum. Sed
+                  dapibus venenatis urna a aliquam.
+                </Box>
+              </Box>
+
+              <VStack spacing={12} align="flex-start" pl={8}>
+                {" "}
+                {/* Wyrównanie do lewej */}
+                <Box>
+                  <Heading as="h3" size="md" mb={0.5} fontSize="0.9rem" color="gray.300">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    1. Krok pierwszy
+                  </Heading>
+                  <Text fontWeight="bold" mb={2} fontSize="2.5rem">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    Wypełnij formularz!
+                  </Text>
+                  <Box
+                    width={{ base: "100%", md: "70%", lg: "55%" }} // Responsywna szerokość
+                    fontSize="1.1rem"
+                  >
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Mauris consequat metus nec neque dignissim elementum. Sed
+                    dapibus venenatis urna a aliquam.
+                  </Box>
+                </Box>
+                <Box>
+                  <Heading as="h3" size="md" mb={0.5} fontSize="0.9rem" color="gray.300">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    2. Krok drugi
+                  </Heading>
+                  <Text fontWeight="bold" mb={2} fontSize="2.5rem">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    Wypełnij formularz!
+                  </Text>
+                  <Box
+                    width={{ base: "100%", md: "70%", lg: "55%" }} // Responsywna szerokość
+                    fontSize="1.1rem"
+                  >
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Mauris consequat metus nec neque dignissim elementum. Sed
+                    dapibus venenatis urna a aliquam.
+                  </Box>
+                </Box>
+                <Box>
+                  <Heading as="h3" size="md" mb={0.5} fontSize="0.9rem" color="gray.300">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    3. Krok treci
+                  </Heading>
+                  <Text fontWeight="bold" mb={2} fontSize="2.5rem">
+                    {" "}
+                    {/* Rozmiar w rem */}
+                    Wypełnij formularz!
+                  </Text>
+                  <Box
+                    width={{ base: "100%", md: "70%", lg: "55%" }} // Responsywna szerokość
+                    fontSize="1.1rem"
+                  >
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Mauris consequat metus nec neque dignissim elementum. Sed
+                    dapibus venenatis urna a aliquam.
+                  </Box>
+                </Box>
+              </VStack>
             </MotionContainer>
 
-            {/* Footer */}
-            <MotionBox
-              as="footer"
-              py={6}
-              textAlign="center"
-              bg="gray.100"
-              mt="auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.6 }}
-            >
-              <Text fontSize="sm">
-                © 2025 Twoja Firma. Wszelkie prawa zastrzeżone.
-              </Text>
-            </MotionBox>
+            <Footer />
           </VStack>
         )}
       </Box>

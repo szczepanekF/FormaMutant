@@ -40,6 +40,7 @@ export default function Slider() {
       spaceBetween={spaceBetween}
       slidesPerView={1.5}
       centeredSlides={true}
+      pagination={{ clickable: true }}
       grabCursor={true}
       loop={true}
       speed={600}
@@ -71,7 +72,7 @@ export default function Slider() {
               objectFit="cover"
               w="100%"
               h="100%"
-              filter="grayscale(100%)"
+              filter="grayscale(45%)"
             />
           </Box>
         </SwiperSlide>

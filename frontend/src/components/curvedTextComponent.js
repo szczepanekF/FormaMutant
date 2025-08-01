@@ -35,10 +35,10 @@ const CurvedTextComponent = ({ textRef }) => (
       width={200}
       height={200}
       cx={99}
-      cy={70}
+      cy={75}
       rx={100}
       ry={100}
-      startOffset={61.5}
+      startOffset={56}
       reversed={false}
       text="PLANETA LUZU ZAPRASZA"
       textProps={{

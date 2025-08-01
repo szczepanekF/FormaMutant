@@ -21,7 +21,7 @@ function NoiseBackground() {
       const imageData = ctx.createImageData(width, height);
       const data = imageData.data;
 
-      const color = { r: 75, g: 60, b: 75 }; // niebieski kolor bazowy
+      const color = { r: 40, g: 20, b: 60 }; // niebieski kolor bazowy
 
       for (let i = 0; i < data.length; i += 4) {
         const value = Math.random() * 255;
