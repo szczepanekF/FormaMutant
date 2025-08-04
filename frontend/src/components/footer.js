@@ -16,7 +16,14 @@ const Footer = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1, duration: 0.6 }}
     >
-      <Box maxW="85%" mx="auto" px={1} borderTop="1px solid white" mb={8} pb={0}>
+      <Box
+        maxW="85%"
+        mx="auto"
+        px={1}
+        borderTop="1px solid white"
+        mb={8}
+        pb={0}
+      >
         <Flex
           direction={{ base: "column", md: "row" }}
           justify="space-between"

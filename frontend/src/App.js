@@ -42,7 +42,6 @@ function App() {
               }
             >
               <Route path="/menu" element={<Menu />}></Route>
-              <Route path="/menu2" element={<Menu2 />}></Route>
               <Route
                 path="/admin"
                 element={

@@ -15,7 +15,10 @@ import {
   ModalOverlay,
   ModalBody,
   ModalContent,
+  ModalHeader,
+  ModalFooter,
   ModalCloseButton,
+  Link as ChakraLink,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -29,6 +32,11 @@ import { useState } from "react";
 import { order_creation } from "../endpoints/api";
 import { useAuth } from "../context/auth";
 import { toast } from "sonner";
+import GradientBackground from "../components/gradientBackground";
+import Footer from "../components/footer";
+import { Image } from "@chakra-ui/react";
+import { motion } from "framer-motion";
+import { Link as RouterLink } from "react-router-dom";
 
 const Order = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,6 +52,14 @@ const Order = () => {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const { withErrorHandler } = useAuth();
+
+  const formatDisplayPhone = (value) => {
+    if (!value) return "";
+    const match = value.match(/^(\d{3})(\d{3})(\d{3})(\d{2})?$/);
+    return match
+      ? `${match[1]} ${match[2]} ${match[3]}${match[4] ? ` ${match[4]}` : ""}`
+      : value;
+  };
 
   const reset = () => {
     setFormData({
@@ -104,6 +120,7 @@ const Order = () => {
         reset();
         setLoading(false);
         toast.success("Pomyślnie utworzono rezerwacje");
+        nav("/menu");
       },
       () => {
         setLoading(false);
@@ -119,199 +136,378 @@ const Order = () => {
   };
 
   return (
-    <Flex
-      minH={"100%"}
-      maxW={"100%"}
-      align={"center"}
-      justify={"center"}
-      bg="#DAE3E5"
-      flex="1"
-    >
-      <Stack
-        spacing={2}
-        display={"flex"}
-        align={"center"}
-        justify={"center"}
-        width={"600px"}
-        height="100%"
-        maxW={"100%"}
-        py={5}
-        //  border="4px solid black"
+    <>
+      <Flex
+        minH="100vh"
+        w="100%"
+        align="center"
+        justify="center"
+        position="relative"
+        overflow="hidden"
+        flexDirection="column"
       >
-        {/* <Stack align={"center"}>
-          <Heading fontSize={"4xl"} color="#04080F">
-            Create user
-          </Heading>
-        </Stack> */}
-        <Box
-          rounded={"lg"}
-          bg={"white"}
-          boxShadow={"lg"}
-          px={6}
-          py={4}
-          minH="65%"
-          width={"100%"}
-        >
-          <Stack spacing={4}>
-            {[
-              "first_name",
-              "last_name",
-              "email",
-              "phone_number",
-              // "number_of_headphones",
-            ].map((field) => (
-              <FormControl key={field} isInvalid={!!errors[field]}>
-                <FormLabel color="#04080F">{fieldMap[field]}</FormLabel>
+        {/* Gradient Background */}
+        <Box position="absolute" top={0} left={0} w="100%" h="100%" zIndex={0}>
+          <GradientBackground />
+        </Box>
 
-                {field === "number_of_headphones" ? (
-                  <NumberInput
-                    min={1}
-                    value={parseInt(formData[field]) || 1}
-                    onChange={(_, valueNumber) =>
-                      handleChange(field, String(Math.max(1, valueNumber || 1)))
-                    }
-                    clampValueOnBlur
-                  >
-                    <NumberInputField
-                      pointerEvents="none"
-                      color="#04080F"
-                      boxShadow="md"
-                    />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                ) : (
-                  <Input
-                    color="#04080F"
-                    boxShadow="md"
-                    value={formData[field]}
-                    maxLength={
-                      field === "phone_number"
-                        ? 11
-                        : field === "first_name" || field === "last_name"
-                        ? 50
-                        : undefined
-                    }
-                    inputMode={field === "phone_number" ? "numeric" : undefined}
-                    onChange={(e) => {
-                      const raw = e.target.value;
-                      if (field === "phone_number") {
-                        handleChange(field, formatPhone(raw));
-                      } else {
-                        handleChange(field, raw);
-                      }
-                    }}
-                  />
-                )}
-                <FormErrorMessage>{errors[field]}</FormErrorMessage>
-              </FormControl>
-            ))}
-            <FormControl isInvalid={!!errors.agreeTerms}>
-              <Checkbox
-                isChecked={formData.agreeTerms}
-                onChange={(e) => handleChange("agreeTerms", e.target.checked)}
-                color="#04080F"
+        {/* Nagłówek NAD Stackiem */}
+        <Heading
+          fontSize="3rem"
+          color="white"
+          mb={8}
+          zIndex={1}
+          sx={{
+            background:
+              "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: "bold",
+          }}
+        >
+          Rezerwacja Silent Disco
+        </Heading>
+
+        {/* Formularz - Stack z nowymi wymiarami */}
+        <Stack
+          spacing={6}
+          w="50%"
+          minH="60%"
+          position="relative"
+          p={8}
+          rounded="lg"
+          zIndex={1}
+          _before={{
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            borderRadius: "lg",
+            padding: "2px",
+            background:
+              "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+            WebkitMask:
+              "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+            pointerEvents: "none",
+          }}
+          sx={{
+            background:
+              "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {/* Pola formularza */}
+          {["first_name", "last_name", "email"].map((field) => (
+            <FormControl key={field} isInvalid={!!errors[field]}>
+              <FormLabel color="white" fontSize="1.1rem" mb={2}>
+                {fieldMap[field]}
+              </FormLabel>
+              <Box
+                position="relative"
+                borderRadius="md"
+                _focusWithin={{
+                  // Gradientowe obramowanie
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: "-2px",
+                    left: "-2px",
+                    right: "-2px",
+                    bottom: "-2px",
+                    borderRadius: "md",
+                    background:
+                      "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+                    zIndex: -1,
+                    padding: "2px",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                  },
+                }}
               >
-                Akceptuję regulamin
-              </Checkbox>
-              <FormErrorMessage>{errors.agreeTerms}</FormErrorMessage>
+                <Input
+                  value={formData[field]}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  color="white"
+                  bg="rgba(255, 255, 255, 0.1)"
+                  border="2px solid rgba(255, 255, 255, 0.3)"
+                  borderRadius="md"
+                  _hover={{
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  }}
+                  _focus={{
+                    bg: "rgba(255, 255, 255, 0.2)",
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                    outline: "none",
+                  }}
+                  _placeholder={{
+                    color: "rgba(255, 255, 255, 0.5)",
+                  }}
+                  maxLength={
+                    field === "first_name" || field === "last_name"
+                      ? 50
+                      : undefined
+                  }
+                  autoComplete="off"
+                />
+              </Box>
+              <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
+                {errors[field]}
+              </FormErrorMessage>
             </FormControl>
+          ))}
+
+          {/* Pole telefonu */}
+          <FormControl isInvalid={!!errors.phone_number}>
+            <FormLabel color="white" fontSize="1.1rem" mb={2}>
+              Numer telefonu
+            </FormLabel>
+            <Box
+              position="relative"
+              borderRadius="md"
+              _focusWithin={{
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: "-2px",
+                  left: "-2px",
+                  right: "-2px",
+                  bottom: "-2px",
+                  borderRadius: "md",
+                  background:
+                    "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+                  zIndex: -1,
+                  padding: "2px",
+                  WebkitMask:
+                    "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                },
+              }}
+            >
+              <Input
+                value={formData.phone_number}
+                maxLength={11}
+                inputMode="numeric"
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  handleChange("phone_number", formatPhone(raw));
+                }}
+                color="white"
+                bg="rgba(255, 255, 255, 0.1)"
+                border="2px solid rgba(255, 255, 255, 0.3)"
+                borderRadius="md"
+                _hover={{
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                }}
+                _focus={{
+                  bg: "rgba(255, 255, 255, 0.2)",
+                  borderColor: "transparent",
+                  boxShadow: "none",
+                  outline: "none",
+                }}
+                _placeholder={{
+                  color: "rgba(255, 255, 255, 0.5)",
+                }}
+                autoComplete="off"
+              />
+            </Box>
+            <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
+              {errors.phone_number}
+            </FormErrorMessage>
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.agreeTerms}>
+            <Checkbox
+              isChecked={formData.agreeTerms}
+              onChange={(e) => handleChange("agreeTerms", e.target.checked)}
+              colorScheme="pink"
+              color="white"
+            >
+              Akceptuję{" "}
+              <ChakraLink
+                href="/rules"
+                color="pink.500"
+                textDecoration="underline"
+              >
+                regulamin
+              </ChakraLink>{" "}
+              i zapoznałem/am się z{" "}
+              <ChakraLink
+                href="/rodo"
+                color="pink.500"
+                textDecoration="underline"
+              >
+                polityką prywatności
+              </ChakraLink>
+            </Checkbox>
+            <FormErrorMessage>{errors.agreeTerms}</FormErrorMessage>
+          </FormControl>
+
+          <Flex width="100%" gap={4}>
             <Button
-              bg="#507DBC"
-              // mt={3}
-              color={"white"}
+              flex={1}
+              bg="rgba(255, 255, 255, 0.15)"
+              color="white"
+              backdropFilter="blur(4px)"
+              border="1px solid rgba(255, 255, 255, 0.2)"
               _hover={{
-                bg: "blue.700",
+                bg: "rgba(255, 255, 255, 0.25)",
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              }}
+              onClick={() => nav("/menu")} // Tutaj przekierowanie
+              size="lg"
+            >
+              Anuluj
+            </Button>
+            <Button
+              flex={1}
+              bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
+              color="white"
+              _hover={{
+                bgGradient: "linear(to-r, rgb(130, 70, 190), rgb(249,72,38))",
               }}
               onClick={handleSubmit}
-              boxShadow="md"
+              size="lg"
             >
-              Złóz zamówienie
+              Złóż zamówienie
             </Button>
-          </Stack>
-        </Box>
+          </Flex>
+        </Stack>
+
+        {/* Modal */}
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent bg="#DAE3E5" rounded="lg" boxShadow="xl">
-            <ModalCloseButton />
-            <ModalBody p={6}>
-              <Heading size="md" color="#04080F" mb={4} textAlign="center">
-                Składanie zamówienia
-              </Heading>
-              <Text fontSize="lg" color="#04080F" mb={2} textAlign="center">
-                Na pewno chcesz złożyć zamówienie na poniższe dane?
-              </Text>
-              <Box bg="white" p={4} rounded="md" shadow="md" mb={4}>
-                {/* <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Username:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.username}
-                  </Text>
-                </Text> */}
-                <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Imię:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.first_name}
-                  </Text>
+          <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
+          <Box
+            position="relative"
+            borderRadius="lg"
+            overflow="hidden"
+            mx={4}
+            _before={{
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: "lg",
+              padding: "2px",
+              background:
+                "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+              WebkitMask:
+                "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+              pointerEvents: "none",
+            }}
+          >
+            <ModalContent
+              bg="linear-gradient(to bottom, rgb(20, 10, 30), #0d0d0d)"
+              border="1px solid rgba(255, 255, 255, 0.1)"
+              borderRadius="lg"
+              // boxShadow="0 0 30px rgba(130, 70, 190, 0.5)"
+            >
+              <ModalHeader
+                bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
+                color="white"
+                borderTopRadius="lg"
+                py={4}
+              >
+                Potwierdzenie zamówienia
+              </ModalHeader>
+              <ModalCloseButton color="white" />
+              <ModalBody py={6}>
+                <Text color="white" mb={4} textAlign="center" fontSize="lg">
+                  Czy na pewno chcesz złożyć zamówienie?
                 </Text>
-                <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Nazwisko:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.last_name}
-                  </Text>
-                </Text>
-                <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Email:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.email}
-                  </Text>
-                </Text>
-                <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Numer telefonu:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.phone_number}
-                  </Text>
-                </Text>
-                {/* <Text color="#04080F" fontWeight="semibold" ml={3}>
-                  Liczba sluchawek:{" "}
-                  <Text as="span" color="#04080F" fontWeight="normal">
-                    {formData.number_of_headphones}
-                  </Text>
-                </Text> */}
-              </Box>
-              <Stack direction="row" justify="center" spacing={4}>
-                <Button
-                  bg="#507DBC"
-                  color="white"
-                  _hover={{ bg: "blue.700" }}
-                  onClick={handleCreateUser}
-                  isLoading={loading}
-                  boxShadow="md"
-                  width={"100%"}
+
+                <Box
+                  bg="rgba(255, 255, 255, 0.05)"
+                  p={4}
+                  rounded="md"
+                  border="1px solid rgba(158, 27, 27, 0.8)"
+                  _before={{
+                    content: '""',
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "lg",
+                    padding: "2px",
+                    background:
+                      "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                    pointerEvents: "none",
+                  }}
+                  sx={{
+                    background:
+                      "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
+                    backdropFilter: "blur(8px)",
+                  }}
                 >
-                  Złóż zamówienie
-                </Button>
+                  {Object.entries(formData)
+                    .filter(
+                      ([key]) =>
+                        key !== "agreeTerms" && key !== "number_of_headphones"
+                    )
+                    .map(([key, value]) => (
+                      <Text key={key} mb={2} color="white">
+                        <Text
+                          as="span"
+                          fontWeight="bold"
+                          color="whiteAlpha.800"
+                        >
+                          {fieldMap[key]}:{" "}
+                        </Text>
+                        {key === "phone_number"
+                          ? formatDisplayPhone(value)
+                          : value}
+                      </Text>
+                    ))}
+                </Box>
+              </ModalBody>
+
+              <ModalFooter display="flex" justifyContent="center" pt={0} pb={6}>
                 <Button
-                  // variant="outline"
-                  bg="#DB504A"
-                  color={"white"}
+                  bg="rgba(255, 255, 255, 0.15)"
+                  color="white"
+                  backdropFilter="blur(4px)"
+                  border="1px solid rgba(255, 255, 255, 0.2)"
                   _hover={{
-                    bg: "red.700",
+                    bg: "rgba(255, 255, 255, 0.25)",
+                    borderColor: "rgba(255, 255, 255, 0.4)",
                   }}
                   onClick={onClose}
-                  boxShadow="md"
-                  width={"100%"}
+                  mr={4}
                 >
                   Anuluj
                 </Button>
-              </Stack>
-            </ModalBody>
-          </ModalContent>
+
+                <Button
+                  bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
+                  color="white"
+                  _hover={{
+                    bgGradient:
+                      "linear(to-r, rgb(130, 70, 190), rgb(249,72,38))",
+                    transform: "translateY(-2px)",
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                  }}
+                  onClick={handleCreateUser}
+                >
+                  Potwierdź
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Box>
         </Modal>
-      </Stack>
-    </Flex>
+      </Flex>
+    </>
   );
 };
 
