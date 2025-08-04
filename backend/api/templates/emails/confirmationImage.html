@@ -9,20 +9,7 @@
         text-align: center;
         border-radius: 28px 28px 0 0;
       }
-      .header img {
-        max-width: 200px;
-        width: auto;
-        height: auto;
-        max-height: 100px;
-        display: inline-block;
-      }
 
-      @media (max-width: 480px) {
-        .header img {
-          max-width: 200px;
-          max-height: 80px;
-        }
-      }
 
       .qr-image {
         margin: 20px 0;
@@ -58,34 +45,11 @@
         text-align: center;
       "
     >
-      <div class="header">
-        <img
-          src="https://www.planetaluzu.pl/logo.png"
-          alt="PlanetaLuzu Logo"
-          style="
-            display: inline-block;
-            max-width: 300px;
-            max-height: 150px;
-            width: auto;
-            height: auto;
-          "
-        />
-      </div>
-      <div
-        style="
-          font-size: 22px;
-          font-weight: bold;
-          color: #e3b230;
-          margin: 20px 0;
-        "
-      >
-        Cześć {{first_name}}
-      </div>
+
       <div style="font-size: 16px; color: #f0f0f0; line-height: 1.6">
         <p>
-          Twoja rezerwacja słuchawek o numerze
-          <span style="color: #e3b230">{{order_code}}</span> została opłacona.
-          Poniżej znajdziesz kody QR potrzebne do odbioru słuchawek:
+          Numer zamówienia:
+          <span style="color: #e3b230">{{order_code}}</span>.
         </p>
         {% for qr in qr_codes %}
         <div class="qr-image">

@@ -168,10 +168,13 @@ def get_account_with_token(request, token):
     try:
         item = Item.objects.select_related("order__account").get(token=token)
     except Item.DoesNotExist:
-        return Response({"reason": f"Nie znaleziono słuchawek o numerze \"{token}\""}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"reason": f'Nie znaleziono słuchawek o numerze "{token}"'},
+            status=status.HTTP_404_NOT_FOUND,
+        )
     if item.state is None or item.state != "zarezerwowane":
         return Response(
-            {"reason": "Słuchawki muszą w stanie \"zarezerwowane\""},
+            {"reason": 'Słuchawki muszą w stanie "zarezerwowane"'},
             status=status.HTTP_400_BAD_REQUEST,
         )
     account = item.order.account
@@ -186,7 +189,7 @@ def get_account_with_number(request, number):
         item = Item.objects.select_related("order__account").get(item_real_ID=number)
     except Item.DoesNotExist:
         return Response(
-            {"reason": f"Nie znaleziono słuchawek o numerze \"{number}\""},
+            {"reason": f'Nie znaleziono słuchawek o numerze "{number}"'},
             status=status.HTTP_404_NOT_FOUND,
         )
     except Exception as e:
@@ -197,9 +200,7 @@ def get_account_with_number(request, number):
 
     if item.state is None or item.state != "wydane":
         return Response(
-            {
-                "reason": f"Słuchawki muszą być \"wydane\""
-            },
+            {"reason": f'Słuchawki muszą być "wydane"'},
             status=status.HTTP_400_BAD_REQUEST,
         )
     account = item.order.account
@@ -247,7 +248,11 @@ def create_order(request):
 def change_order_state(request, order_id):
 
     try:
-        order = Order.objects.select_related("account").prefetch_related("items").get(id=order_id)
+        order = (
+            Order.objects.select_related("account")
+            .prefetch_related("items")
+            .get(id=order_id)
+        )
     except Order.DoesNotExist:
         return Response(
             {"reason": f"Nie znaleziono zamówienia o id {order_id}"},
@@ -285,8 +290,6 @@ def change_order_state(request, order_id):
         )
 
 
-
-
 @api_view(["PATCH"])
 @permission_classes([IsAdminUser])
 def set_item_state(request, token):
@@ -301,10 +304,15 @@ def set_item_state(request, token):
             {"reason": "item_real_ID field is required"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
+    if item.state != "wydane":
+        return Response(
+            {"reason": 'Słuchawki muszą być w stanie "wydane"'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     item.state = new_state
     item.save()
     return Response({"message": "item_real_ID updated successfully"})
+
 
 @api_view(["PATCH"])
 @permission_classes([IsAdminUser])
@@ -313,7 +321,10 @@ def set_item_number(request, token):
     try:
         item = Item.objects.get(token=token)
     except Item.DoesNotExist:
-        return Response({"reason": "Nie znaleziono przedmiotu dla tokenu:"}, status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {"reason": "Nie znaleziono przedmiotu dla tokenu:"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
 
     new_state = request.data.get("state")
     if not new_state:
@@ -325,6 +336,16 @@ def set_item_number(request, token):
     if not number:
         return Response(
             {"reason": "Pole numer jest wymagane"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if item.item_real_ID is not None:
+        return Response(
+            {"reason": f"Przedmiot posiada już przypisany numer"},
+            status=status.HTTP_409_CONFLICT,
+        )
+    if item.state != "zarezerwowane":
+        return Response(
+            {"reason": 'Słuchawki muszą być w stanie "zarezerwowane"'},
             status=status.HTTP_400_BAD_REQUEST,
         )
     try:
@@ -343,11 +364,14 @@ def set_item_number(request, token):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
+
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
 def send_order_reminder(request, id):
     try:
-        order = Order.objects.select_related("account").prefetch_related("items").get(id=id)
+        order = (
+            Order.objects.select_related("account").prefetch_related("items").get(id=id)
+        )
     except Order.DoesNotExist:
         return Response(
             {"reason": f"Nie znaleziono zamówienia o ID {id}"},

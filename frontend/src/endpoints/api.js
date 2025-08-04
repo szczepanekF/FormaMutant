@@ -118,8 +118,6 @@ export const getAccountByNumber = async (number) => {
 };
 
 export const sendOrderReminder = async (id) => {
-  console.log("wtf");
-  console.log(id);
   const res = await axios.post(
     `${SEND_ORDER_REMINDER}${id}/`,
     {},

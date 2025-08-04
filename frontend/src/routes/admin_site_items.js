@@ -28,10 +28,10 @@ import { FiEdit } from "react-icons/fi";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
-import { getAllItems, getOrder, change_item_state } from "../endpoints/api";
+import { getOrder, change_item_state } from "../endpoints/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { useItemsContext } from "../context/itemsContext";
 const AdminItems = () => {
   const {
     logoutUser,
@@ -40,7 +40,7 @@ const AdminItems = () => {
     withErrorHandler,
     withRefresh,
   } = useAuth();
-  const [items, setItems] = useState([]);
+  const { items, setItems, loadItems } = useItemsContext();
   const [headphoneCount, setHeadphoneCount] = useState(0);
 
   const [filteredItems, setFilteredItems] = useState([]);
@@ -81,9 +81,6 @@ const AdminItems = () => {
     setModalData({ item, targetState });
     onOpen();
   };
-  const handleLogout = async () => {
-    await logoutUser();
-  };
 
   const getColor = (state) => {
     switch (state) {
@@ -115,7 +112,7 @@ const AdminItems = () => {
           )
         );
         setSelectedItem(null);
-        toast.success("Pomyślnie zmieniono status słuchawek")
+        toast.success("Pomyślnie zmieniono status słuchawek");
       },
       () => {
         console.log("error");
@@ -135,20 +132,8 @@ const AdminItems = () => {
   };
   useEffect(() => {
     const fetchItems = async () => {
-      console.log("items");
       setLoading(true);
-      const items = await getAllItems();
-      setItems(items);
-      setFilteredItems(items);
-
-      const initialStatuses = items.reduce(
-        (acc, order) => ({
-          ...acc,
-          [order.id]: order.state,
-        }),
-        {}
-      );
-      setSelectedStatuses(initialStatuses);
+      await loadItems();
       setLoading(false);
     };
 
@@ -160,6 +145,15 @@ const AdminItems = () => {
     });
   }, []);
   useEffect(() => {
+    setFilteredItems(items);
+    const initialStatuses = items.reduce(
+      (acc, order) => ({
+        ...acc,
+        [order.id]: order.state,
+      }),
+      {}
+    );
+    setSelectedStatuses(initialStatuses);
     updateHeadphoneCount(items);
   }, [items]);
   const handleFilterChange = (field, value) => {
@@ -540,7 +534,8 @@ const AdminItems = () => {
                   <strong>Imię:</strong> {selectedOrderInfo.account?.first_name}
                 </Text>
                 <Text mt={2}>
-                  <strong>Nazwisko:</strong> {selectedOrderInfo.account?.last_name}
+                  <strong>Nazwisko:</strong>{" "}
+                  {selectedOrderInfo.account?.last_name}
                 </Text>
                 <Text mt={2}>
                   <strong>Email:</strong> {selectedOrderInfo.account?.email}

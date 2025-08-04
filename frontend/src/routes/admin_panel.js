@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Flex,
@@ -32,6 +32,7 @@ import AdminOrders from "./admin_site_orders";
 import AdminTokenLookup from "./admin_site_register";
 import AdminNumberLookup from "./admin_site_return";
 import { useAuth } from "../context/auth";
+import { useOrdersContext } from "../context/ordersContext";
 
 const TABS = [
   {
@@ -62,8 +63,18 @@ const TABS = [
 
 const AdminPanel = () => {
   const [view, setView] = useState("orders");
-  const { logoutUser, get_authenticated } = useAuth();
+  const { logoutUser, get_authenticated, withErrorHandler } = useAuth();
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const { loadOrders, setOrders } = useOrdersContext();
+  useEffect(() => {
+    withErrorHandler(
+      async () => loadOrders(),
+      () => {
+        setOrders([]);
+      }
+    );
+  }, []);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
   const tabIndex = Math.max(

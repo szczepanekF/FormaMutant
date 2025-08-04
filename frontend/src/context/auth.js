@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await fn();
     } catch (error) {
+      console.log(error);
       if (error.response?.status === 401) {
         try {
           await refresh();
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         } catch (refreshError) {
           if (
             refreshError.response?.status === 401 ||
-            refreshError.response?.status == 400
+            refreshError.response?.status === 400
           ) {
             // console.error("Nie udało się odświeżyć tokena", refreshError);
             setUser(false);
@@ -35,15 +36,22 @@ export const AuthProvider = ({ children }) => {
             nav("/login");
           } else {
             toast.error(
-              refreshError.response?.data?.reason + "." || "Wystąpił błąd."
+              refreshError.response?.data?.reason
+                ? `${error.response.data.reason}.`
+                : "Wystąpił błąd."
             );
           }
           onFail?.();
         }
       } else {
-        toast.error(error.response?.data?.reason + "." || "Wystąpił błąd.");
+        toast.error(
+          error?.response?.data?.reason
+            ? `${error.response.data.reason}.`
+            : "Wystąpił błąd."
+        );
 
         onFail?.();
+        console.log(error);
       }
     }
   };
@@ -53,29 +61,32 @@ export const AuthProvider = ({ children }) => {
       await fn();
     } catch (error) {
       if (error?.response?.data?.reason) {
-        const errorString = error?.response?.data?.reason;
-        const message = errorString.match(
+        const errorString = error.response.data.reason;
+        const match = errorString.match(
           /ErrorDetail\(string='(.*?)', code='(.*?)'\)/
-        )[1];
-        toast.error(message + ".");
+        );
+        if (match && match[1]) {
+          const message = match[1];
+          toast.error(message + ".");
+        } else {
+          toast.error(errorString + ".");
+        }
       } else if (error?.message) {
         toast.error(error.message + ".");
       } else {
         toast.error("Wystąpił nieznany błąd.");
       }
-      console.log(error);
       onFail?.();
+      console.log(error);
     }
   };
 
   const get_authenticated = async () => {
     await withRefresh(
       async () => {
-        console.log("BBBBBBBBB");
         const response = await is_auth();
         const isAdmin = await getIsAdmin();
         setADmin(isAdmin);
-        console.log("true_auth");
         setUser(true);
         if (response.data.first_name === "") {
           setUserName("Admin");
@@ -89,51 +100,14 @@ export const AuthProvider = ({ children }) => {
         nav("/login");
         setUser(false);
         setLoading(false);
+        console.log("error");
       }
     );
   };
 
-  // const get_authenticated = async () => {
-  //   try {
-  //     const response = await is_auth();
-  //     const isAdmin = await getIsAdmin();
-  //     setADmin(isAdmin);
-  //     console.log("true_auth");
-  //     setUser(true);
-  //     if (response.data.first_name === "") {
-  //       setUserName("Admin");
-  //     } else {
-  //       setUserName(`${response.data.first_name} ${response.data.last_name}`);
-  //     }
-  //   } catch (error) {
-  //     try {
-  //       await refresh();
-  //       const response = await is_auth();
-  //       const isAdmin = await getIsAdmin();
-  //       setADmin(isAdmin);
-  //       console.log("true_refresh");
-  //       setUser(true);
-  //       if (response.data.first_name === "") {
-  //         setUserName("Admin");
-  //       } else {
-  //         setUserName(`${response.data.first_name} ${response.data.last_name}`);
-  //       }
-  //     } catch {
-  //       console.log("false");
-  //       setNavigatingToLogin(true);
-  //       nav("/login");
-  //       setUser(false);
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const loginUser = async (username, password) => {
     try {
-      console.log("proba");
       const info = await login(username, password);
-      console.log("Udalo sie");
       setUser(info);
       const isAdmin = await getIsAdmin();
       setADmin(isAdmin);
@@ -166,10 +140,6 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
-
-  // useEffect(() => {
-  //   get_authenticated();
-  // }, [window.location.pathname]);
 
   return (
     <AuthContext.Provider
