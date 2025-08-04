@@ -133,7 +133,14 @@ def send_confirmation_mail(user, order_code, item_tokens):
         image.add_header("Content-ID", f"<{cid}>")
         image.add_header("Content-Disposition", "inline", filename=f"{cid}.png")
         email_message.attach(image)
+        qr_buffer.seek(0)
 
+        # Dodanie jako załącznik
+        image_attachment = MIMEImage(qr_buffer.read(), _subtype="png")
+        image_attachment.add_header(
+            "Content-Disposition", "attachment", filename=f"{cid}.png"
+        )
+        email_message.attach(image_attachment)
     email_message.send()
 
 

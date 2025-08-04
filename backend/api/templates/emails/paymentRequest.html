@@ -4,50 +4,26 @@
     <meta charset="UTF-8" />
     <title>Opłata rezerwacji słuchawek</title>
     <style>
-      body {
-        font-family: "Segoe UI", Arial, sans-serif;
-        background-color: #f4e7f5; /* Subtle purple background */
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
-      .container {
-        background: linear-gradient(
-          135deg,
-          #ffffff 0%,
-          #fff5f7 100%
-        ); /* Subtle gradient */
-        max-width: 600px;
-        margin: 40px auto;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        text-align: center;
-      }
       .header {
-        background-color: rgba(227, 11, 78, 0.1); /* Subtle pink header */
-        padding: 20px;
-        border-radius: 8px 8px 0 0;
-        margin: -40px -40px 20px -40px;
+        padding: 10px 0;
+        text-align: center;
+        border-radius: 28px 28px 0 0;
       }
       .header img {
-        max-width: 150px;
+        max-width: 200px;
+        width: auto;
         height: auto;
+        max-height: 100px;
+        display: inline-block;
       }
-      .name {
-        font-size: 22px;
-        font-weight: bold;
-        color: #460c6d; /* Darker shade of purple */
-        margin-bottom: 20px;
+
+      @media (max-width: 480px) {
+        .header img {
+          max-width: 200px;
+          max-height: 80px;
+        }
       }
-      .content {
-        font-size: 16px;
-        color: #333333;
-        line-height: 1.6;
-      }
+
       .btn {
         display: inline-block;
         text-decoration: none;
@@ -58,69 +34,125 @@
       .btn span {
         display: inline-block;
         padding: 12px 24px;
-        background-color: #e30b4e; /* Pink button */
-        color: #ffffff !important; /* Force white text */
+        background-color: #e30b4e;
+        color: #ffffff !important;
         font-weight: bold;
         border-radius: 6px;
       }
       .btn:hover span {
-        background-color: #fb4826; /* Orange hover effect */
-      }
-      .highlight {
-        color: #e3b230; /* Yellow highlight */
-        font-weight: bold;
-      }
-      .footer {
-        font-size: 12px;
-        color: #666666;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(70, 12, 109, 0.2); /* Purple border */
-      }
-      .footer a {
-        color: #460c6d; /* Purple link */
-        text-decoration: none;
-      }
-      .footer a:hover {
-        text-decoration: underline;
+        background-color: #fb4826;
       }
     </style>
   </head>
-  <body>
-    <div class="container">
+  <body
+    style="
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #f0f0f0;
+    "
+  >
+    <div
+      style="
+        background-color: #121212;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+        text-align: center;
+      "
+    >
       <div class="header">
-        <img src="https://www.planetaluzu.pl/logo.png" alt="PlanetaLuzu Logo" />
+        <img
+          src="https://www.planetaluzu.pl/logo.png"
+          alt="PlanetaLuzu Logo"
+          style="
+            display: inline-block;
+            max-width: 300px;
+            max-height: 150px;
+            width: auto;
+            height: auto;
+          "
+        />
       </div>
-      <div class="name">Cześć {{first_name}}</div>
-      <div class="content">
+      <div
+        style="
+          font-size: 22px;
+          font-weight: bold;
+          color: #e3b230;
+          margin: 20px 0;
+        "
+      >
+        Cześć {{first_name}}
+      </div>
+      <div style="font-size: 16px; color: #f0f0f0; line-height: 1.6">
         <p>
           Twoja rezerwacja słuchawek o numerze
-          <span class="highlight">{{order_code}}</span> została pomyślnie
-          zarejestrowana.
+          <span style="color: #e3b230; font-weight: bold">{{order_code}}</span>
+          została pomyślnie zarejestrowana.
         </p>
         <p>
           Aby potwierdzić ją, prosimy o dokonanie opłaty rezerwacyjnej w
-          wysokości <strong class="highlight">{{full_price}} PLN</strong> w
+          wysokości <strong style="color: #e3b230">{{full_price}} PLN</strong> w
           ciągu <strong>12 godzin</strong>.
         </p>
         <p>
           Tytuł płatności:
-          <strong class="highlight">{{first_name}} {{last_name}}</strong>
+          <strong style="color: #e3b230">{{first_name}} {{last_name}}</strong>.
         </p>
+        <p>RevolutId: @michalg02</p>
         <a
           href="https://revolut.me/michalg02"
           class="btn"
           target="_blank"
           rel="noopener noreferrer"
+          style="
+            display: inline-block;
+            text-decoration: none;
+            margin: 20px 0;
+            border-radius: 6px;
+          "
         >
-          <span>Opłać rezerwację</span>
+          <span
+            style="
+              display: inline-block;
+              padding: 12px 24px;
+              background-color: #e30b4e;
+              color: #ffffff;
+              font-weight: bold;
+              border-radius: 6px;
+            "
+            >Opłać rezerwację</span
+          >
         </a>
         <p>🗿 Dzięki! – PlanetaLuzu</p>
       </div>
-      <div class="footer">
-        &copy; 2025 PlanetaLuzu. Wszystkie prawa zastrzeżone.<br />
-        <a href="https://planetaluzu.pl">Odwiedź naszą stronę</a> |
-        <a href="mailto:planetaluzu.sd@gmail.com">Kontakt</a>
+      <div
+        style="
+          font-size: 12px;
+          color: #aaaaaa;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        "
+      >
+        &copy; 2025 PlanetaLuzu.<br />
+        <a
+          href="https://planetaluzu.pl"
+          style="color: #e3b230; text-decoration: none"
+          >Odwiedź naszą stronę</a
+        >
+        |
+        <a
+          href="mailto:planetaluzu.sd@gmail.com"
+          style="color: #e3b230; text-decoration: none"
+          >Kontakt</a
+        >
       </div>
     </div>
   </body>

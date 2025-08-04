@@ -10,27 +10,28 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react";
-import { getAccountForItem, set_item_number } from "../endpoints/api";
+import { set_item_number } from "../endpoints/api";
 import { useAuth } from "../context/auth";
 import { toast } from "sonner";
+import { useItemsContext } from "../context/itemsContext";
 
 const AdminTokenLookup = () => {
   const [token, setToken] = useState("");
   const [userData, setUserData] = useState(null);
   const [numberValue, setNumberValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const { withRefresh, witheErrorHandler } = useAuth();
+  const { withRefresh } = useAuth();
   const [shouldRefocusToken, setShouldRefocusToken] = useState(false);
+  const { getAccountByItem } = useItemsContext();
 
   const numberInputRef = useRef(null);
   const tokenInputRef = useRef(null);
   useEffect(() => {
     const fetchUserData = async () => {
-      const res = await getAccountForItem(token);
+      const res = await getAccountByItem(token);
       setUserData(res);
       setLoading(false);
     };
-
     const run = async () => {
       if (token.length === 32) {
         setLoading(true);

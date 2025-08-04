@@ -1,7 +1,6 @@
-import React, { use } from "react";
+import React from "react";
 import {
   Box,
-  Heading,
   Table,
   Thead,
   Tbody,
@@ -14,7 +13,6 @@ import {
   TableContainer,
   Input,
   Select,
-  Badge,
 } from "@chakra-ui/react";
 import {
   Modal,
@@ -28,25 +26,14 @@ import {
 import { IconButton } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon, BellIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
+import { useOrdersContext } from "../context/ordersContext";
 import { useEffect, useState } from "react";
-import {
-  getAllOrders,
-  change_order_state,
-  sendOrderReminder,
-} from "../endpoints/api";
-import { useNavigate } from "react-router-dom";
+import { change_order_state, sendOrderReminder } from "../endpoints/api";
 import { toast } from "sonner";
 
 const Admin = () => {
-  const {
-    logoutUser,
-    refresh,
-    navigatingToLogin,
-    setNavigatingToLogin,
-    withErrorHandler,
-    withRefresh,
-  } = useAuth();
-  const [orders, setOrders] = useState([]);
+  const { withErrorHandler, withRefresh } = useAuth();
+  const { orders, setOrders, loadOrders } = useOrdersContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [filters, setFilters] = useState({});
   const [sortField, setSortField] = useState(null);
@@ -58,12 +45,6 @@ const Admin = () => {
   const [newStatus, setNewStatus] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
-
-  const nav = useNavigate();
-
-  const handleLogout = async () => {
-    await logoutUser();
-  };
 
   const getColor = (state) => {
     switch (state) {
@@ -175,18 +156,7 @@ const Admin = () => {
     const fetchOrders = async () => {
       console.log("orders");
       setLoading(true);
-      const orders = await getAllOrders();
-      setOrders(orders);
-      setFilteredOrders(orders);
-
-      const initialStatuses = orders.reduce(
-        (acc, order) => ({
-          ...acc,
-          [order.id]: order.state,
-        }),
-        {}
-      );
-      setSelectedStatuses(initialStatuses);
+      await loadOrders();
       setLoading(false);
     };
 
@@ -200,6 +170,15 @@ const Admin = () => {
 
   useEffect(() => {
     updateHeadphoneCount(orders);
+    const initialStatuses = orders.reduce(
+      (acc, order) => ({
+        ...acc,
+        [order.id]: order.state,
+      }),
+      {}
+    );
+    setFilteredOrders(orders);
+    setSelectedStatuses(initialStatuses);
   }, [orders]);
 
   const handleFilterChange = (field, value) => {

@@ -11,7 +11,8 @@ import {
   Radio,
   Stack,
 } from "@chakra-ui/react";
-import { getAccountByNumber, change_item_state } from "../endpoints/api";
+import { change_item_state } from "../endpoints/api";
+import { useItemsContext } from "../context/itemsContext";
 import { useAuth } from "../context/auth";
 import { toast } from "sonner";
 
@@ -22,12 +23,12 @@ const AdminNumberLookup = () => {
   const [selectedState, setSelectedState] = useState("zwrócone");
   const [loading, setLoading] = useState(false);
   const { withRefresh } = useAuth();
-
+  const { getAccountForNumber } = useItemsContext();
   const handleFetch = async () => {
     await withRefresh(
       async () => {
         setLoading(true);
-        const res = await getAccountByNumber(itemNumber);
+        const res = await getAccountForNumber(itemNumber);
         setUserData(res);
         setToken(res.token);
         setLoading(false);
@@ -58,7 +59,7 @@ const AdminNumberLookup = () => {
       async () => {
         await change_item_state(selectedState, token);
         handleCancel();
-        toast.success("Pomyślnie odebrano słuchawki")
+        toast.success("Pomyślnie odebrano słuchawki");
       },
       () => {
         console.log("error");

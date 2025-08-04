@@ -6,6 +6,7 @@ import Admin from "./routes/admin_site_orders";
 import AdminPanel from "./routes/admin_panel";
 import AdminItems from "./routes/admin_site_items";
 import { AuthProvider } from "./context/auth";
+import { OrdersProvider } from "./context/ordersContext";
 import Login from "./routes/login";
 import Order from "./routes/order_site";
 import Rodo from "./routes/rodo_site";
@@ -23,6 +24,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import ProtectedRoute from "./routes/protected_route";
+import { ItemsProvider } from "./context/itemsContext";
 
 function App() {
   return (
@@ -46,7 +48,11 @@ function App() {
                 path="/admin"
                 element={
                   <ProtectedRoute>
-                    <AdminPanel />
+                    <OrdersProvider>
+                      <ItemsProvider>
+                        <AdminPanel />
+                      </ItemsProvider>
+                    </OrdersProvider>
                   </ProtectedRoute>
                 }
               ></Route>
