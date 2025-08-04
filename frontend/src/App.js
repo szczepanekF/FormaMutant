@@ -11,6 +11,7 @@ import Order from "./routes/order_site";
 import Rodo from "./routes/rodo_site";
 import Rules from "./routes/rules";
 import Navbar from "./components/navbar";
+import Menu2 from "./routes/main_site_copy";
 import NotFound from "./routes/null_site";
 import theme from "./assets/theme";
 import { Toaster } from "sonner";
@@ -33,7 +34,7 @@ function App() {
             <Route
               element={
                 <Flex direction="column" minH="100vh">
-                  <Navbar />
+                  {/* <Navbar /> */}
                   <Flex flex="1">
                     <Outlet />
                   </Flex>
@@ -41,6 +42,7 @@ function App() {
               }
             >
               <Route path="/menu" element={<Menu />}></Route>
+              <Route path="/menu2" element={<Menu2 />}></Route>
               <Route
                 path="/admin"
                 element={

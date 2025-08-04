@@ -1,0 +1,33 @@
+/* Normal state*/
+.slide-image {
+  transform: scale(1);
+  transition: transform 1s ease, filter 1s ease;
+}
+
+/* Only during drag */
+.swiper.dragging .slide-image {
+  transform: scale(0.90);
+  transition: transform 0.5s ease;
+  /* opacity: 0.85; */
+} 
+
+
+/* .swiper-pagination-bullet {
+  background-color: #ccc;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+} */
+
+.swiper-pagination-bullet {
+  background-color: #3182ce; /* Chakra blue.500 */
+  opacity: 0.5; /* Zmniejszona przezroczystość dla nieaktywnych kropek */
+  width: 10px;
+  height: 10px;
+  transition: all 0.3s ease; /* Płynne przejście przy zmianie */
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #3182ce; /* Chakra blue.500 */
+  opacity: 1;
+  transform: scale(1.3);
+}
