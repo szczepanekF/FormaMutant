@@ -108,8 +108,8 @@ CORS_ALLOWED_ORIGINS = [
     os.environ.get("CORS_ALLOWED_ORIGIN", "http://localhost:3000"),
 ]
 
-SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

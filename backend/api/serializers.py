@@ -153,6 +153,7 @@ class AllOrdersSerializer(serializers.ModelSerializer):
 class AllItemsSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
+    order_code = serializers.SerializerMethodField()
 
     class Meta:
         model = Item
@@ -164,6 +165,7 @@ class AllItemsSerializer(serializers.ModelSerializer):
             "order",
             "first_name",
             "last_name",
+            "order_code",
         ]
 
     def get_first_name(self, obj):
@@ -171,6 +173,9 @@ class AllItemsSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.order.account.last_name if obj.order and obj.order.account else None
+
+    def get_order_code(self, obj):
+        return obj.order.order_code if obj.order else None
 
 
 class ItemRealIdUpdateSerializer(serializers.ModelSerializer):

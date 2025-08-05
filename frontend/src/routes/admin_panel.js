@@ -33,6 +33,7 @@ import AdminTokenLookup from "./admin_site_register";
 import AdminNumberLookup from "./admin_site_return";
 import { useAuth } from "../context/auth";
 import { useOrdersContext } from "../context/ordersContext";
+import GradientBackground from "../components/gradientBackground";
 
 const TABS = [
   {
@@ -93,83 +94,148 @@ const AdminPanel = () => {
   };
 
   return (
-    <Container maxW={{ base: "100%", md: "container.xxl" }} py={6}>
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        align={{ base: "flex-start", md: "center" }}
-        gap={4}
-        mb={6}
-      >
-        <Heading as="h1" size="lg">
-          Panel Admina
-        </Heading>
-
-        <Spacer />
-
-        <HStack spacing={2} alignSelf={{ base: "stretch", md: "center" }}>
-          <Button
-            as="a"
-            href={`${process.env.REACT_APP_API_BASE_URL}/admin`}
-            target="_blank"
-            rel="noopener noreferrer"
-            leftIcon={<FiExternalLink />}
-            colorScheme="blue"
-            variant={isMobile ? "outline" : "solid"}
-          >
-            Panel Django
-          </Button>
-
-          <IconButton
-            aria-label={
-              colorMode === "light" ? "Włącz tryb ciemny" : "Włącz tryb jasny"
-            }
-            icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
-            onClick={toggleColorMode}
-            variant="ghost"
-          />
-
-          <Button
-            onClick={handleLogout}
-            leftIcon={<FiLogOut />}
-            colorScheme="red"
-            variant={isMobile ? "outline" : "ghost"}
-          >
-            Wyloguj
-          </Button>
-        </HStack>
-      </Flex>
+   <>
+      <Box position="fixed" w="100%" h="100%" zIndex={1}>
+        <GradientBackground />
+      </Box>
 
       <Box
-        bg={colorMode === "light" ? "white" : "gray.800"}
-        borderRadius="md"
-        boxShadow="sm"
-        p={{ base: 2, md: 4 }}
+        position="relative"
+        zIndex={2}
+        h="100vh"
+        w="100vw"
+        overflowX="hidden"
+        sx={{
+          scrollbarGutter: "stable",
+          "&::-webkit-scrollbar": {
+            width: "12px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "rgba(0,0,0,0.05)",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "6px",
+            border: "3px solid transparent",
+            backgroundClip: "content-box",
+          },
+        }}
       >
-        <Tabs
-          index={tabIndex}
-          onChange={handleTabChange}
-          isLazy
-          variant={isMobile ? "enclosed" : "soft-rounded"}
-          colorScheme="blue"
-        >
-          <TabList overflowX="auto" py={2}>
-            {TABS.map(({ key, label, icon: Icon }) => (
-              <Tab key={key} fontSize={{ base: "sm", md: "md" }} gap={2}>
-                <Icon /> {label}
-              </Tab>
-            ))}
-          </TabList>
+        <Container maxW={{ base: "100%", md: "container.xxl" }} py={6}>
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            align={{ base: "flex-start", md: "center" }}
+            gap={4}
+            mb={6}
+          >
+            <Heading
+              as="h1"
+              size="lg"
+              sx={{
+                background:
+                  "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: "bold",
+              }}
+            >
+              Panel Admina
+            </Heading>
 
-          <TabPanels mt={4}>
-            {TABS.map(({ key, component }) => (
-              <TabPanel key={key} px={{ base: 0, md: 2 }}>
-                {component}
-              </TabPanel>
-            ))}
-          </TabPanels>
-        </Tabs>
+            <HStack
+              spacing={2}
+              alignSelf={{ base: "stretch", md: "center" }}
+              ml={{ md: "auto" }}
+            >
+
+              <IconButton
+                aria-label={
+                  colorMode === "light"
+                    ? "Włącz tryb ciemny"
+                    : "Włącz tryb jasny"
+                }
+                icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
+                onClick={toggleColorMode}
+                bg="rgba(255, 255, 255, 0.15)"
+                color="white"
+                backdropFilter="blur(4px)"
+                border="1px solid rgba(255, 255, 255, 0.2)"
+                _hover={{
+                  bg: "rgba(255, 255, 255, 0.25)",
+                  borderColor: "rgba(255, 255, 255, 0.4)",
+                }}
+              />
+
+              <Button
+                onClick={handleLogout}
+                leftIcon={<FiLogOut />}
+                bg="rgba(255, 0, 0, 0.2)"
+                color="white"
+                backdropFilter="blur(4px)"
+                border="1px solid rgba(255, 0, 0, 0.3)"
+                _hover={{
+                  bg: "rgba(255, 0, 0, 0.3)",
+                  borderColor: "rgba(255, 0, 0, 0.5)",
+                }}
+                variant={isMobile ? "outline" : "ghost"}
+              >
+                Wyloguj
+              </Button>
+            </HStack>
+          </Flex>
+
+          <Box
+            borderRadius="md"
+            p={{ base: 2, md: 4 }}
+            sx={{
+              background:
+                "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
+              backdropFilter: "blur(8px)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <Tabs
+              index={tabIndex}
+              onChange={handleTabChange}
+              isLazy
+              variant={isMobile ? "enclosed" : "soft-rounded"}
+            >
+              <TabList overflowX="auto" py={2}>
+                {TABS.map(({ key, label, icon: Icon }) => (
+                  <Tab
+                    key={key}
+                    fontSize={{ base: "sm", md: "md" }}
+                    gap={2}
+                    color="white"
+                    _selected={{
+                      bg: "rgba(255, 255, 255, 0.2)",
+                      color: "white",
+                    }}
+                    _hover={{
+                      bg: "rgba(255, 255, 255, 0.1)",
+                    }}
+                  >
+                    <Icon /> {label}
+                  </Tab>
+                ))}
+              </TabList>
+
+              <TabPanels mt={4}>
+                {TABS.map(({ key, component }) => (
+                  <TabPanel
+                    key={key}
+                    px={{ base: 0, md: 2 }}
+                    color="white"
+                  >
+                    {component}
+                  </TabPanel>
+                ))}
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </Container>
       </Box>
-    </Container>
+    </>
   );
 };
 
