@@ -122,10 +122,12 @@ const AdminItems = () => {
       [orderId]: value,
     }));
   };
+
   const updateHeadphoneCount = (items) => {
     const count = items.filter((item) => item.state === "wydane").length;
     setHeadphoneCount(count);
   };
+
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
@@ -209,7 +211,7 @@ const AdminItems = () => {
           <TableContainer overflowX="auto" maxW="100%" withSpace="nowrap">
             <Table variant="simple">
               <Thead>
-                <Tr >
+                <Tr>
                   <Th color={"white"}>Token</Th>
                   <Th color={"white"}>
                     Imię

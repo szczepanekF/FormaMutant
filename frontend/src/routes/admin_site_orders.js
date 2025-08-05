@@ -103,9 +103,7 @@ const Admin = () => {
 
   const getRowStyle = (state, dateStr, index) => {
     const baseColor =
-      index % 2 === 0
-        ? "rgba(255, 255, 255, 0.2)"
-        : "rgba(255, 255, 255, 0.1)";
+      index % 2 === 0 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)";
 
     if (state !== "oczekujące") return baseColor;
 

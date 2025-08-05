@@ -10,13 +10,13 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    if ( location.pathname !== "/login") {
+    if (location.pathname !== "/login") {
       get_authenticated();
     }
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!loading && !user ) {
+    if (!loading && !user) {
       nav("/login");
     }
   }, [loading, user]);

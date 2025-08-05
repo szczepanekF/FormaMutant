@@ -32,6 +32,7 @@ import AdminNumberLookup from "./admin_site_return";
 import { useAuth } from "../context/auth";
 import { useOrdersContext } from "../context/ordersContext";
 import GradientBackground from "../components/gradientBackground";
+import { useItemsContext } from "../context/itemsContext";
 
 const TABS = [
   {
@@ -66,20 +67,27 @@ const AdminPanel = () => {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const { loadOrders, setOrders } = useOrdersContext();
+  const { loadItems, setItems } = useItemsContext();
   useEffect(() => {
+    if (colorMode === "light") {
+      toggleColorMode();
+    }
     withErrorHandler(
       async () => loadOrders(),
       () => {
         setOrders([]);
       }
     );
+
+    withErrorHandler(
+      async () => loadItems(),
+      () => {
+        setItems([]);
+      }
+    );
   }, []);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
-  const tabIndex = Math.max(
-    0,
-    TABS.findIndex((t) => t.key === view)
-  );
 
   const handleLogout = async () => {
     await logoutUser();
@@ -92,7 +100,7 @@ const AdminPanel = () => {
   };
 
   return (
-   <>
+    <>
       <Box position="fixed" w="100%" h="100%" zIndex={1}>
         <GradientBackground />
       </Box>
@@ -145,25 +153,6 @@ const AdminPanel = () => {
               alignSelf={{ base: "stretch", md: "center" }}
               ml={{ md: "auto" }}
             >
-
-              <IconButton
-                aria-label={
-                  colorMode === "light"
-                    ? "Włącz tryb ciemny"
-                    : "Włącz tryb jasny"
-                }
-                icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
-                onClick={toggleColorMode}
-                bg="rgba(255, 255, 255, 0.15)"
-                color="white"
-                backdropFilter="blur(4px)"
-                border="1px solid rgba(255, 255, 255, 0.2)"
-                _hover={{
-                  bg: "rgba(255, 255, 255, 0.25)",
-                  borderColor: "rgba(255, 255, 255, 0.4)",
-                }}
-              />
-
               <Button
                 onClick={handleLogout}
                 leftIcon={<FiLogOut />}
@@ -193,7 +182,6 @@ const AdminPanel = () => {
             }}
           >
             <Tabs
-              index={tabIndex}
               onChange={handleTabChange}
               isLazy
               variant={isMobile ? "enclosed" : "soft-rounded"}
@@ -220,11 +208,7 @@ const AdminPanel = () => {
 
               <TabPanels mt={4}>
                 {TABS.map(({ key, component }) => (
-                  <TabPanel
-                    key={key}
-                    px={{ base: 0, md: 2 }}
-                    color="white"
-                  >
+                  <TabPanel key={key} px={{ base: 0, md: 2 }} color="white">
                     {component}
                   </TabPanel>
                 ))}
