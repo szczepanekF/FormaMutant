@@ -24,7 +24,7 @@ const AdminTokenLookup = () => {
   const [loading, setLoading] = useState(false);
   const { withRefresh } = useAuth();
   const [shouldRefocusToken, setShouldRefocusToken] = useState(false);
-  const { getAccountByItem } = useItemsContext();
+  const { updateItemStateByToken, getAccountByItem } = useItemsContext();
 
   const numberInputRef = useRef(null);
   const tokenInputRef = useRef(null);
@@ -69,6 +69,7 @@ const AdminTokenLookup = () => {
       async () => {
         let form = { state: "wydane", number: parseInt(numberValue) };
         await set_item_number(form, token);
+        updateItemStateByToken(token, "wydane");
         handleCancel();
         setShouldRefocusToken(true);
         toast.success("Pomyślnie przypisano słuchawki");

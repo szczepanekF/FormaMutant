@@ -25,7 +25,7 @@ const AdminNumberLookup = () => {
   const [selectedState, setSelectedState] = useState("zwrócone");
   const [loading, setLoading] = useState(false);
   const { withRefresh } = useAuth();
-  const { getAccountForNumber } = useItemsContext();
+  const { getAccountForNumber, updateItemStateByToken } = useItemsContext();
   const handleFetch = async () => {
     await withRefresh(
       async () => {
@@ -61,6 +61,7 @@ const AdminNumberLookup = () => {
       async () => {
         await change_item_state(selectedState, token);
         handleCancel();
+        updateItemStateByToken(token, selectedState);
         toast.success("Pomyślnie odebrano słuchawki");
       },
       () => {
