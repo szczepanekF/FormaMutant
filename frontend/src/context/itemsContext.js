@@ -39,14 +39,6 @@ export const ItemsProvider = ({ children }) => {
     return account;
   };
 
-  const updateItemStateByToken = (token, new_state) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.token === token ? { ...item, state: new_state } : item
-      )
-    );
-  };
-
   const getAccountForNumber = async (number) => {
     let account;
 
@@ -72,7 +64,6 @@ export const ItemsProvider = ({ children }) => {
     loadItems,
     getAccountByItem,
     getAccountForNumber,
-    updateItemStateByToken,
   };
 
   return (

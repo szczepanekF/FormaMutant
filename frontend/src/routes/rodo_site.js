@@ -20,10 +20,12 @@ const Rodo = () => {
       <Box initial={1} position="fixed" w="100%" h="100%" zIndex={1}>
         <GradientBackground />
       </Box>
+
+      {/* Logo */}
       <Box
         position="fixed"
-        top="20px"
-        left="20px"
+        top={{ base: "10px", md: "20px" }}
+        left={{ base: "10px", md: "20px" }}
         zIndex={3}
         p={2}
         bg="rgba(255, 255, 255, 0)"
@@ -36,11 +38,13 @@ const Rodo = () => {
         <Image
           src="/assets/logo.png"
           alt="Logo"
-          maxH="100px"
+          maxH={{ base: "70px", md: "100px" }}
           onClick={() => nav("/menu")}
           cursor="pointer"
         />
       </Box>
+
+      {/* Główna zawartość */}
       <Box
         position="relative"
         zIndex={2}
@@ -65,28 +69,30 @@ const Rodo = () => {
       >
         <VStack
           spacing={0}
-          minH="100vh" // Zapewnia odpowiednią wysokość
+          minH="100vh"
           overflow="visible"
           position="relative"
           align="stretch"
-          w="100%" // ZMIANA: z 100vw na 100%
-          p={0} // Zapewnia brak paddingu
-          m={0} // Zapewnia brak marginesu
+          w="100%"
+          p={0}
+          m={0}
         >
-          <Box h="5vh" />
+          {/* Odstęp na górze */}
+          <Box h={{ base: "3vh", md: "5vh" }} />
 
+          {/* Nagłówek */}
           <Container
             maxW="container.md"
             textAlign="center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            px={0}
+            px={{ base: 4, md: 0 }}
           >
             <Heading
-              fontSize="2.7rem"
+              fontSize={{ base: "2rem", md: "2.7rem" }}
               color="white"
-              mb={8}
+              mb={{ base: 6, md: 8 }}
               zIndex={1}
               sx={{
                 background:
@@ -99,24 +105,26 @@ const Rodo = () => {
               Polityka Prywatności RODO
             </Heading>
           </Container>
+
+          {/* Treść polityki */}
           <Container
             maxW="container.md"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            px={0}
+            px={{ base: 4, md: 0 }}
           >
             <Box
               w="100%"
               position="relative"
-              p={8}
+              p={{ base: 4, md: 8 }}
               rounded="lg"
               zIndex={1}
               sx={{
                 background:
                   "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
                 backdropFilter: "blur(8px)",
-                mb: 8,
+                mb: { base: 6, md: 8 },
               }}
             >
               <OrderedList spacing={4} color="white">
@@ -124,14 +132,28 @@ const Rodo = () => {
                   <ListItem key={i} mb={4}>
                     <Text as="span" fontWeight="bold">
                       {i + 1}. Punkt polityki RODO
-                      fdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdffdsfdsfdsfsdf
+                      <Text
+                        as="span"
+                        fontWeight="normal"
+                        display="block"
+                        mt={2}
+                      >
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Nullam in dui mauris. Vivamus hendrerit arcu sed erat
+                        molestie vehicula. Sed auctor neque eu tellus rhoncus ut
+                        eleifend nibh porttitor. Ut in nulla enim. Phasellus
+                        molestie magna non est bibendum non venenatis nisl
+                        tempor.
+                      </Text>
                     </Text>
                   </ListItem>
                 ))}
               </OrderedList>
             </Box>
           </Container>
-          <Container maxW="container.md" px={0}>
+
+          {/* Przycisk powrotu */}
+          <Container maxW="container.md" px={{ base: 4, md: 0 }}>
             <Button
               onClick={() => nav("/menu")}
               w="100%"
@@ -143,17 +165,20 @@ const Rodo = () => {
                 bg: "rgba(255, 255, 255, 0.25)",
                 borderColor: "rgba(255, 255, 255, 0.4)",
               }}
-              h="50px" // stała wysokość
+              h="50px"
               display="flex"
               alignItems="center"
               justifyContent="center"
               borderRadius="md"
               fontWeight="bold"
               transition="all 0.2s"
+              mb={{ base: 6, md: 8 }}
             >
               Powrót na stronę główną
             </Button>
           </Container>
+
+          {/* Stopka */}
           <Footer />
         </VStack>
       </Box>
