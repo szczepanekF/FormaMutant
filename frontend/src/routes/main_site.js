@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -19,20 +19,14 @@ import { motion, useAnimation, useAnimate } from "framer-motion";
 import Slider from "../components/swiper";
 import NoiseBackground from "../components/noiseBackground";
 import GradientBackground from "../components/gradientBackground";
-import CurvedTextComponent from "../components/curvedTextComponent";
 import Footer from "../components/footer";
 import { Link as RouterLink } from "react-router-dom";
 import Menu2 from "./main_site_copy";
 
-// W komponencie Menu, przed zwróceniem JSX:
-
-// Motion components
 const MotionBox = motion(Box);
 const MotionImage = motion(Image);
 const MotionContainer = motion(Container);
-const MotionText = motion(Text);
 
-// Main component
 const Menu = () => {
   const controls = useAnimation();
   const [scope, animate] = useAnimate();
@@ -42,8 +36,6 @@ const Menu = () => {
   );
   const [noiseRef, noiseAnimate] = useAnimate();
   const [gradientRef, gradientAnimate] = useAnimate();
-  const [textRef] = useAnimate();
-  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   async function myAnimation() {
     await animate(
@@ -70,9 +62,8 @@ const Menu = () => {
     );
     await new Promise((res) => setTimeout(res, 900));
     const getTopValue = () => {
-      return window.innerWidth < 768 ? "2vh" : "3vh"; // 768 to typowy breakpoint md w Chakra
+      return window.innerWidth < 768 ? "2vh" : "3vh";
     };
-    // 1. Animacja głównych elementów (scope i textRef)
     const mainAnimation = animate(
       [
         [
@@ -93,31 +84,25 @@ const Menu = () => {
       }
     );
 
-    // 2. Równolegle uruchamiamy animacje tła
     const backgroundAnimations = Promise.all([
       noiseAnimate(noiseRef.current, { opacity: 0 }, { duration: 3 }),
       gradientAnimate(gradientRef.current, { opacity: 1 }, { duration: 3 }),
     ]);
 
-    // 3. Ustawiamy timer na wywołanie setAnimationDone w połowie głównej animacji
     const contentReveal = new Promise((resolve) => {
       setTimeout(() => {
         setAnimationDone(true);
         resolve();
-      }, 750); // Połowa czasu trwania głównej animacji (1.5s / 2)
+      }, 750);
     });
 
-    // Czekamy na:
-    // - zakończenie głównej animacji
-    // - zakończenie animacji tła (choć noise trwa 15s, nie blokujemy)
-    // - pokazanie zawartości
     await Promise.all([mainAnimation, backgroundAnimations, contentReveal]);
     localStorage.setItem("hasSeenAnimation", "true");
   }
 
   useEffect(() => {
     const animateLogo = async () => {
-      await new Promise((res) => setTimeout(res, 1000)); // tylko Noise przez 1s
+      await new Promise((res) => setTimeout(res, 1000));
 
       await myAnimation();
 
@@ -210,7 +195,6 @@ const Menu = () => {
             <NoiseBackground />
           </MotionBox>
 
-          {/* GradientBackground z początkowym opacity 0 i animowanym do 1 */}
           <MotionBox
             ref={gradientRef}
             initial={0}
@@ -221,19 +205,13 @@ const Menu = () => {
           >
             <GradientBackground />
           </MotionBox>
-          {/* Zawsze to samo logo, które zmienia styl i pozycję */}
 
           <Box
             position="relative"
-            // border={"10px solid green"}
-            // h={animationDone ? "auto" : "100vh"}
             zIndex={2}
-            // h="100vh"
-            // h={animationDone ? "auto" : "100vh"}
             h="100vh"
             w="100vw"
             overflowX="hidden"
-            // overflowY="auto"
             sx={{
               scrollbarGutter: "stable",
               "&::-webkit-scrollbar": {
@@ -256,14 +234,6 @@ const Menu = () => {
               src="/assets/logo.png"
               alt="Logo"
               ref={scope}
-              style={
-                {
-                  // willChange: "opacity", // Informuje przeglądarkę, że będzie zmiana
-                  // imageRendering: "crisp-edges", // Lepsza jakość dla skalowania
-                  //         filter: "blur(0)", // Hack dla Safari
-                  // transform: "translateZ(0)", // Wymusza warstwę GPU
-                }
-              }
               initial={{
                 position: "fixed",
                 top: "50%",
@@ -274,8 +244,6 @@ const Menu = () => {
                 opacity: 0,
                 zIndex: 10,
               }}
-              // animate={controls}
-              // transition={{ type: "spring", damping: 20 }}
               boxSize={{ base: "15vh", md: "20vh" }}
               mx="auto"
               style={{
@@ -328,7 +296,7 @@ const Menu = () => {
                     fontSize={{ base: "1.2rem", md: "1.5rem" }}
                     color="white"
                   >
-                    Dobranka, 22.08.2025 20:00
+                    Dobronianka, 22.08.2025 20:00
                   </Text>
                 </MotionContainer>
 
@@ -407,10 +375,9 @@ const Menu = () => {
                       transition="all 0.3s ease"
                       position="relative"
                       _hover={{
-                        color: "white", // tekst na biały
-                        bg: "rgba(255, 255, 255, 0)", // tło całkowicie przezroczyste
+                        color: "white",
+                        bg: "rgba(255, 255, 255, 0)",
                         boxShadow: "lg",
-                        // transform: "none" - usunięte, aby nie zmieniać rozmiaru
                       }}
                     >
                       Zarezerwuj miejsce

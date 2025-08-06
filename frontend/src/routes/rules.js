@@ -5,12 +5,10 @@ import {
   VStack,
   Container,
   ListItem,
-  Link,
   Image,
   Box,
   Button,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import GradientBackground from "../components/gradientBackground";
 import Footer from "../components/footer";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +20,6 @@ const Rules = () => {
         <GradientBackground />
       </Box>
 
-      {/* Logo */}
       <Box
         position="fixed"
         top={{ base: "10px", md: "20px" }}
@@ -44,8 +41,6 @@ const Rules = () => {
           cursor="pointer"
         />
       </Box>
-
-      {/* Główna zawartość */}
       <Box
         position="relative"
         zIndex={2}
@@ -78,10 +73,8 @@ const Rules = () => {
           p={0}
           m={0}
         >
-          {/* Odstęp na górze */}
           <Box h={{ base: "3vh", md: "5vh" }} />
 
-          {/* Nagłówek */}
           <Container
             maxW="container.md"
             textAlign="center"
@@ -107,7 +100,6 @@ const Rules = () => {
             </Heading>
           </Container>
 
-          {/* Treść regulaminu */}
           <Container
             maxW="container.md"
             initial={{ opacity: 0, y: 20 }}
@@ -159,7 +151,6 @@ const Rules = () => {
             </Box>
           </Container>
 
-          {/* Przycisk powrotu */}
           <Container
             maxW="container.md"
             px={{ base: 4, md: 0 }}
@@ -187,8 +178,6 @@ const Rules = () => {
               Powrót na stronę główną
             </Button>
           </Container>
-
-          {/* Stopka */}
           <Footer />
         </VStack>
       </Box>

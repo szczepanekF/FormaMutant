@@ -1,0 +1,92 @@
+.toastContainer {
+    width: 400px;
+    padding: 15px 25px;
+    height: auto;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    gap: 15px;
+    z-index: 1000;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Nowe style */
+    background: linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15));
+    backdrop-filter: blur(8px);
+    margin: 0 auto; /* Dodane dla pewności */
+}
+
+.toastContainer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    padding: 2px;
+    background: linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* Reszta stylów pozostaje bez zmian */
+.toastContainer.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toastContainer .message {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.toastContainer .message .head {
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    margin-bottom: 3px;
+}
+
+.toastContainer .message .saved {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.toastContainer .icon {
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.toastContainer .closeBtn {
+    color: rgba(255, 255, 255, 0.8);
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.toastContainer .closeBtn:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+}

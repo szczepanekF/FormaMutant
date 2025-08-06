@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { login, is_auth, refresh, logout, getIsAdmin } from "../endpoints/api";
 import { toast } from "sonner";
+import ToastNotification from "../components/toast";
 
 const AuthContext = createContext();
 
@@ -14,6 +15,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const nav = useNavigate();
   const [navigatingToLogin, setNavigatingToLogin] = useState(false);
+  const [toastConfig, setToastConfig] = useState({
+    show: false,
+    variant: "success",
+    message: "",
+  });
+  const showToast = (variant, message) => {
+    setToastConfig({
+      show: true,
+      variant,
+      message,
+    });
+  };
 
   const withRefresh = async (fn, onFail) => {
     try {
@@ -31,12 +44,13 @@ export const AuthProvider = ({ children }) => {
           ) {
             // console.error("Nie udało się odświeżyć tokena", refreshError);
             setUser(false);
-            toast.error("Twoja sesja wygasła. Zaloguj się ponownie.");
+            showToast("error", "Twoja sesja wygasła. Zaloguj się ponownie.");
             setNavigatingToLogin(true);
             nav("/login");
           } else {
-            toast.error(
-              refreshError.response?.data?.reason
+            showToast(
+              "error",
+              error?.response?.data?.reason
                 ? `${error.response.data.reason}.`
                 : "Wystąpił błąd."
             );
@@ -44,7 +58,8 @@ export const AuthProvider = ({ children }) => {
           onFail?.();
         }
       } else {
-        toast.error(
+        showToast(
+          "error",
           error?.response?.data?.reason
             ? `${error.response.data.reason}.`
             : "Wystąpił błąd."
@@ -67,14 +82,14 @@ export const AuthProvider = ({ children }) => {
         );
         if (match && match[1]) {
           const message = match[1];
-          toast.error(message + ".");
+          showToast("error", message + ".");
         } else {
-          toast.error(errorString + ".");
+          showToast("error", errorString + ".");
         }
       } else if (error?.message) {
-        toast.error(error.message + ".");
+        showToast("error", error.message + ".");
       } else {
-        toast.error("Wystąpił nieznany błąd.");
+        showToast("error", "Wystąpił nieznany błąd.");
       }
       onFail?.();
       console.log(error);
@@ -114,7 +129,7 @@ export const AuthProvider = ({ children }) => {
       setNavigatingToLogin(false);
       nav("/admin");
     } catch (error) {
-      toast.error("Bad credentials");
+      showToast("error", "Nieprawidłowe dane logowania");
     }
   };
   const deleteUser = async () => {
@@ -160,6 +175,14 @@ export const AuthProvider = ({ children }) => {
       }}
     >
       {children}
+      {toastConfig.show && (
+        <ToastNotification
+          variant={toastConfig.variant}
+          message={toastConfig.message}
+          open={toastConfig.show}
+          onClose={() => setToastConfig((prev) => ({ ...prev, show: false }))}
+        />
+      )}
     </AuthContext.Provider>
   );
 };

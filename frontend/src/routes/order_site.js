@@ -19,24 +19,14 @@ import {
   ModalFooter,
   ModalCloseButton,
   Link as ChakraLink,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
 } from "@chakra-ui/react";
-import React from "react";
-// import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { order_creation } from "../endpoints/api";
 import { useAuth } from "../context/auth";
 import { toast } from "sonner";
 import GradientBackground from "../components/gradientBackground";
-import Footer from "../components/footer";
-import { Image } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import { Link as RouterLink } from "react-router-dom";
+import ToastNotification from "../components/toast";
 
 const Order = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,6 +42,7 @@ const Order = () => {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const { withErrorHandler } = useAuth();
+  const [showCustomToast, setShowCustomToast] = useState(false);
 
   const formatDisplayPhone = (value) => {
     if (!value) return "";
@@ -115,12 +106,13 @@ const Order = () => {
           email: formData.email,
           phone_number: formData.phone_number.replace(/\s+/g, ""),
         };
-        const amount = 1; //formData.number_of_headphones;
-        const response = await order_creation(user, amount);
+        const amount = 1;
+        await order_creation(user, amount);
         reset();
         setLoading(false);
-        toast.success("Pomyślnie utworzono rezerwacje");
-        nav("/menu");
+        // toast.success("Pomyślnie utworzono rezerwacje");
+        setShowCustomToast(true);
+        setTimeout(() => nav("/menu"), 4000);
       },
       () => {
         setLoading(false);
@@ -145,21 +137,18 @@ const Order = () => {
         position="relative"
         overflow="hidden"
         flexDirection="column"
-        px={4} // Dodajemy padding po bokach na małych ekranach
+        px={4}
       >
-        {/* Gradient Background */}
         <Box position="absolute" top={0} left={0} w="100%" h="100%" zIndex={0}>
           <GradientBackground />
         </Box>
-
-        {/* Nagłówek NAD Stackiem */}
         <Heading
-          fontSize={{ base: "2.2rem", md: "3rem" }} // Mniejsza czcionka na małych ekranach
+          fontSize={{ base: "2.2rem", md: "3rem" }}
           color="white"
           mb={8}
           zIndex={1}
-          textAlign="center" // Wyśrodkowanie tekstu
-          px={4} // Padding po bokach
+          textAlign="center"
+          px={4}
           sx={{
             background:
               "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
@@ -170,14 +159,12 @@ const Order = () => {
         >
           Rezerwacja Silent Disco
         </Heading>
-
-        {/* Formularz - Stack z nowymi wymiarami */}
         <Stack
           spacing={6}
-          w={{ base: "100%", md: "90%", lg: "70%", xl: "50%" }} // Responsywna szerokość
+          w={{ base: "100%", md: "90%", lg: "70%", xl: "50%" }}
           minH="60%"
           position="relative"
-          p={{ base: 4, md: 8 }} // Mniejszy padding na małych ekranach
+          p={{ base: 4, md: 8 }}
           rounded="lg"
           zIndex={1}
           _before={{
@@ -200,7 +187,6 @@ const Order = () => {
             backdropFilter: "blur(8px)",
           }}
         >
-          {/* Pola formularza */}
           {["first_name", "last_name", "email"].map((field) => (
             <FormControl key={field} isInvalid={!!errors[field]}>
               <FormLabel
@@ -265,8 +251,6 @@ const Order = () => {
               </FormErrorMessage>
             </FormControl>
           ))}
-
-          {/* Pole telefonu */}
           <FormControl isInvalid={!!errors.phone_number}>
             <FormLabel
               color="white"
@@ -336,17 +320,16 @@ const Order = () => {
               onChange={(e) => handleChange("agreeTerms", e.target.checked)}
               colorScheme="pink"
               color="white"
-              size={{ base: "md", md: "lg" }} // Rozmiar checkboxa dostosowany do ekranu
+              size={{ base: "md", md: "lg" }}
             >
               <Text fontSize={{ base: "sm", md: "md" }}>
                 {" "}
-                {/* Responsywny rozmiar tekstu */}
                 Akceptuję{" "}
                 <ChakraLink
                   href="/rules"
                   color="pink.500"
                   textDecoration="underline"
-                  fontSize="inherit" // Dziedziczy rozmiar z rodzica
+                  fontSize="inherit"
                 >
                   regulamin
                 </ChakraLink>{" "}
@@ -355,7 +338,7 @@ const Order = () => {
                   href="/rodo"
                   color="pink.500"
                   textDecoration="underline"
-                  fontSize="inherit" // Dziedziczy rozmiar z rodzica
+                  fontSize="inherit"
                 >
                   polityką prywatności
                 </ChakraLink>
@@ -367,11 +350,11 @@ const Order = () => {
           <Flex
             width="100%"
             gap={4}
-            direction={{ base: "row", sm: "row" }} // Zawsze w rzędzie, ale dostosujemy szerokość
-            flexWrap="wrap" // Na bardzo małych ekranach może przejść do nowej linii
+            direction={{ base: "row", sm: "row" }}
+            flexWrap="wrap"
           >
             <Button
-              flex={{ base: "1 1 120px", sm: 1 }} // Minimalna szerokość 120px na małych ekranach
+              flex={{ base: "1 1 120px", sm: 1 }}
               bg="rgba(255, 255, 255, 0.15)"
               color="white"
               backdropFilter="blur(4px)"
@@ -382,13 +365,13 @@ const Order = () => {
               }}
               onClick={() => nav("/menu")}
               size="lg"
-              whiteSpace="nowrap" // Zapobiega zawijaniu tekstu
+              whiteSpace="nowrap"
               fontSize={{ base: "0.9rem", md: "1.1rem" }}
             >
               Anuluj
             </Button>
             <Button
-              flex={{ base: "1 1 120px", sm: 1 }} // Minimalna szerokość 120px na małych ekranach
+              flex={{ base: "1 1 120px", sm: 1 }}
               bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
               color="white"
               _hover={{
@@ -396,15 +379,13 @@ const Order = () => {
               }}
               onClick={handleSubmit}
               size="lg"
-              whiteSpace="nowrap" // Zapobiega zawijaniu tekstu
+              whiteSpace="nowrap"
               fontSize={{ base: "0.9rem", md: "1.1rem" }}
             >
               Złóż zamówienie
             </Button>
           </Flex>
         </Stack>
-
-        {/* Modal */}
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
           <Box
@@ -434,7 +415,6 @@ const Order = () => {
               bg="linear-gradient(to bottom, rgb(20, 10, 30), #0d0d0d)"
               border="1px solid rgba(255, 255, 255, 0.1)"
               borderRadius="lg"
-              // boxShadow="0 0 30px rgba(130, 70, 190, 0.5)"
             >
               <ModalHeader
                 bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
@@ -533,6 +513,17 @@ const Order = () => {
           </Box>
         </Modal>
       </Flex>
+      {showCustomToast && (
+        <ToastNotification
+          variant="success"
+          message="Pomyślnie utworzono rezerwację"
+          open={showCustomToast}
+          onClose={() => {
+            setShowCustomToast(false);
+            nav("/menu");
+          }}
+        />
+      )}
     </>
   );
 };

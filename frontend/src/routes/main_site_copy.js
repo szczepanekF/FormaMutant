@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -15,30 +15,19 @@ import {
   Button,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-import { motion, useAnimation, useAnimate } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 import Slider from "../components/swiper";
-import NoiseBackground from "../components/noiseBackground";
 import GradientBackground from "../components/gradientBackground";
-import CurvedTextComponent from "../components/curvedTextComponent";
 import Footer from "../components/footer";
 import { Link as RouterLink } from "react-router-dom";
 
-// W komponencie Menu, przed zwróceniem JSX:
-
-// Motion components
 const MotionBox = motion(Box);
 const MotionImage = motion(Image);
 const MotionContainer = motion(Container);
-const MotionText = motion(Text);
 
-// Main component
 const Menu2 = () => {
-  const controls = useAnimation();
   const [scope, animate] = useAnimate();
-  const [noiseRef, noiseAnimate] = useAnimate();
   const [gradientRef, gradientAnimate] = useAnimate();
-  const [textRef] = useAnimate();
-  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   const benefits = [
     {
@@ -152,9 +141,18 @@ const Menu2 = () => {
             left: "50%",
             x: "-50%",
             y: "0",
+            scale: 0.5,
+            opacity: 0,
+            zIndex: 10,
+          }}
+          animate={{
             scale: 1,
             opacity: 1,
-            zIndex: 10,
+            transition: {
+              delay: 0.3,
+              duration: 1,
+              ease: "backOut",
+            },
           }}
           boxSize={{ base: "15vh", md: "20vh" }}
           mx="auto"
@@ -180,7 +178,7 @@ const Menu2 = () => {
             textAlign="center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            transition={{ delay: 0.2, duration: 1 }}
             px={{ base: 4, md: 0 }}
           >
             <Heading
@@ -205,11 +203,11 @@ const Menu2 = () => {
             </Heading>
 
             <Text fontSize={{ base: "1.2rem", md: "1.5rem" }} color="white">
-              Dobranka, 22.08.2025 20:00
+              Dobronianka, 22.08.2025 20:00
             </Text>
           </MotionContainer>
 
-          <Box w="100%" px={0} >
+          <Box w="100%" px={0}>
             <MotionContainer
               maxW="100%"
               maxH="60%"
@@ -217,7 +215,7 @@ const Menu2 = () => {
               marginTop={4}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              transition={{ delay: 0.4, duration: 1 }}
               mx="auto"
             >
               <Slider />
@@ -228,7 +226,7 @@ const Menu2 = () => {
             py={{ base: 6, md: 8 }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
+            transition={{ delay: 0.6, duration: 1 }}
             px={{ base: 4, md: 0 }}
             textAlign="center"
             color="white"
@@ -299,7 +297,7 @@ const Menu2 = () => {
             bg="transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            transition={{ delay: 0.8, duration: 1 }}
             textAlign="left"
             color="white"
           >
@@ -367,7 +365,7 @@ const Menu2 = () => {
             bg="transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            transition={{ delay: 0.8, duration: 1 }}
             textAlign="center"
             color="white"
           >
@@ -419,7 +417,7 @@ const Menu2 = () => {
             bg="transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            transition={{ delay: 0.8, duration: 1 }}
             textAlign="center"
             color="white"
           >
@@ -498,7 +496,7 @@ const Menu2 = () => {
             bg="transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
+            transition={{ delay: 0.8, duration: 1 }}
             textAlign="left"
             color="white"
             px={{ base: 4, md: 0 }}
@@ -570,7 +568,7 @@ const Menu2 = () => {
                               opacity: isExpanded ? 1 : 0,
                               height: isExpanded ? "auto" : 0,
                             }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 1 }}
                           >
                             <Text
                               fontSize={{ base: "1rem", md: "1.2rem" }}

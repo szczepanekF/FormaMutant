@@ -5,7 +5,6 @@ import {
   VStack,
   Container,
   ListItem,
-  Link,
   Box,
   Image,
   Button,
@@ -21,7 +20,6 @@ const Rodo = () => {
         <GradientBackground />
       </Box>
 
-      {/* Logo */}
       <Box
         position="fixed"
         top={{ base: "10px", md: "20px" }}
@@ -44,7 +42,6 @@ const Rodo = () => {
         />
       </Box>
 
-      {/* Główna zawartość */}
       <Box
         position="relative"
         zIndex={2}
@@ -77,10 +74,8 @@ const Rodo = () => {
           p={0}
           m={0}
         >
-          {/* Odstęp na górze */}
           <Box h={{ base: "3vh", md: "5vh" }} />
 
-          {/* Nagłówek */}
           <Container
             maxW="container.md"
             textAlign="center"
@@ -105,8 +100,6 @@ const Rodo = () => {
               Polityka Prywatności RODO
             </Heading>
           </Container>
-
-          {/* Treść polityki */}
           <Container
             maxW="container.md"
             initial={{ opacity: 0, y: 20 }}
@@ -151,8 +144,6 @@ const Rodo = () => {
               </OrderedList>
             </Box>
           </Container>
-
-          {/* Przycisk powrotu */}
           <Container maxW="container.md" px={{ base: 4, md: 0 }}>
             <Button
               onClick={() => nav("/menu")}
@@ -177,8 +168,6 @@ const Rodo = () => {
               Powrót na stronę główną
             </Button>
           </Container>
-
-          {/* Stopka */}
           <Footer />
         </VStack>
       </Box>

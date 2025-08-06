@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Flex,
@@ -14,10 +14,8 @@ import {
   useBreakpointValue,
   Box,
   HStack,
-  Spacer,
 } from "@chakra-ui/react";
 import {
-  FiExternalLink,
   FiLogOut,
   FiShoppingCart,
   FiPackage,

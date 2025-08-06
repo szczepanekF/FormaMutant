@@ -1,18 +1,14 @@
 import logo from "./logo.svg";
-import { ChakraProvider, Stack, Flex } from "@chakra-ui/react";
+import { ChakraProvider, Flex } from "@chakra-ui/react";
 import "./App.css";
 import Menu from "./routes/main_site";
-import Admin from "./routes/admin_site_orders";
 import AdminPanel from "./routes/admin_panel";
-import AdminItems from "./routes/admin_site_items";
 import { AuthProvider } from "./context/auth";
 import { OrdersProvider } from "./context/ordersContext";
 import Login from "./routes/login";
 import Order from "./routes/order_site";
 import Rodo from "./routes/rodo_site";
 import Rules from "./routes/rules";
-import Navbar from "./components/navbar";
-import Menu2 from "./routes/main_site_copy";
 import NotFound from "./routes/null_site";
 import theme from "./assets/theme";
 import { Toaster } from "sonner";
@@ -20,11 +16,11 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
   Outlet,
 } from "react-router-dom";
 import ProtectedRoute from "./routes/protected_route";
 import { ItemsProvider } from "./context/itemsContext";
+import TEST from "./components/Test";
 
 function App() {
   return (
@@ -56,6 +52,7 @@ function App() {
                   </ProtectedRoute>
                 }
               ></Route>
+              <Route path="/toast" element={<TEST/>}></Route>
               <Route path="/login" element={<Login />}></Route>
               <Route path="/order" element={<Order />}></Route>
               <Route path="/rodo" element={<Rodo />}></Route>

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Table,
@@ -25,7 +24,6 @@ import {
   Text,
   IconButton,
 } from "@chakra-ui/react";
-import { FiEdit } from "react-icons/fi";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/auth";
 import { useEffect, useState } from "react";
@@ -35,9 +33,6 @@ import { toast } from "sonner";
 import { useItemsContext } from "../context/itemsContext";
 const AdminItems = () => {
   const {
-    logoutUser,
-    refresh,
-    navigatingToLogin,
     withErrorHandler,
     withRefresh,
   } = useAuth();
@@ -67,12 +62,12 @@ const AdminItems = () => {
     setOrderModalLoading(true);
     setOrderModalError(null);
     try {
-      const data = await getOrder(orderId); // <- your API call
+      const data = await getOrder(orderId); 
       setSelectedOrderInfo(data);
       onOrderModalOpen();
     } catch (e) {
       setOrderModalError(e?.message || "Failed to load order");
-      onOrderModalOpen(); // optionally still open to show the error
+      onOrderModalOpen(); 
     } finally {
       setOrderModalLoading(false);
     }
