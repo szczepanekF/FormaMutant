@@ -5,6 +5,7 @@ import { Box, Container, Image } from "@chakra-ui/react";
 import "./style.css"; // Custom Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const slideData = [
   { imgSrc: "/assets/1.jpg" },
@@ -16,7 +17,21 @@ const slideData = [
 
 export default function Slider() {
   const swiperRef = useRef(null);
-  const [spaceBetween, setSpaceBetween] = useState(50);
+  const spaceBetween = useBreakpointValue({
+    base: 20, // dla telefonów
+    sm: 30, // małe tablety
+    md: 30, // średnie ekrany
+    lg: 40, // duże ekrany
+    xl: 50, // bardzo duże ekrany
+  });
+  const slidesPerView = useBreakpointValue({
+    base: 1.3, // telefony
+    sm: 1.3, // małe tablety
+    md: 1.5, // średnie ekrany
+    lg: 1.7, // duże ekrany
+    xl: 2.0, // bardzo duże ekrany
+  });
+
   const [isDragging, setIsDragging] = useState(false);
 
   const handleTouchStart = () => {
@@ -38,17 +53,28 @@ export default function Slider() {
     <Swiper
       modules={[Pagination]}
       spaceBetween={spaceBetween}
-      slidesPerView={1.5}
+      slidesPerView={slidesPerView}
       centeredSlides={true}
       pagination={{ clickable: true }}
       grabCursor={true}
       loop={true}
       speed={600}
       navigation
-      style={{ height: "100%", touchAction: "pan-y" }}
+      style={{
+        height: "100%",
+        touchAction: "pan-y",
+      }}
       breakpoints={{
-        768: { slidesPerView: 2.2 },
-        1024: { slidesPerView: 2.2 },
+        480: {
+          slidesPerView: 1.5,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 1.5,
+        },
+        1024: {
+          slidesPerView: 1.7,
+        },
       }}
       onSwiper={(swiper) => (swiperRef.current = swiper)}
       onTouchStart={handleTouchStart}
@@ -72,8 +98,8 @@ export default function Slider() {
             <Image
               src={slide.imgSrc}
               objectFit="cover"
+              h={{ base: "40vh", md: "65vh" }}
               w="100%"
-              h="100%"
               filter="grayscale(20%) contrast(1.05) brightness(1.1)"
             />
             <Box

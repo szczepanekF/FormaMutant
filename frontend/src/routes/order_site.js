@@ -138,250 +138,271 @@ const Order = () => {
   return (
     <>
       <Flex
-  minH="100vh"
-  w="100%"
-  align="center"
-  justify="center"
-  position="relative"
-  overflow="hidden"
-  flexDirection="column"
-  px={4} // Dodajemy padding po bokach na małych ekranach
->
-  {/* Gradient Background */}
-  <Box position="absolute" top={0} left={0} w="100%" h="100%" zIndex={0}>
-    <GradientBackground />
-  </Box>
+        minH="100vh"
+        w="100%"
+        align="center"
+        justify="center"
+        position="relative"
+        overflow="hidden"
+        flexDirection="column"
+        px={4} // Dodajemy padding po bokach na małych ekranach
+      >
+        {/* Gradient Background */}
+        <Box position="absolute" top={0} left={0} w="100%" h="100%" zIndex={0}>
+          <GradientBackground />
+        </Box>
 
-  {/* Nagłówek NAD Stackiem */}
-  <Heading
-    fontSize={{ base: "2rem", md: "3rem" }} // Mniejsza czcionka na małych ekranach
-    color="white"
-    mb={8}
-    zIndex={1}
-    textAlign="center" // Wyśrodkowanie tekstu
-    px={4} // Padding po bokach
-    sx={{
-      background:
-        "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      fontWeight: "bold",
-    }}
-  >
-    Rezerwacja Silent Disco
-  </Heading>
-
-  {/* Formularz - Stack z nowymi wymiarami */}
-  <Stack
-    spacing={6}
-    w={{ base: "100%", md: "90%", lg: "70%", xl: "50%" }} // Responsywna szerokość
-    minH="60%"
-    position="relative"
-    p={{ base: 4, md: 8 }} // Mniejszy padding na małych ekranach
-    rounded="lg"
-    zIndex={1}
-    _before={{
-      content: '""',
-      position: "absolute",
-      inset: 0,
-      borderRadius: "lg",
-      padding: "2px",
-      background:
-        "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
-      WebkitMask:
-        "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-      WebkitMaskComposite: "xor",
-      maskComposite: "exclude",
-      pointerEvents: "none",
-    }}
-    sx={{
-      background:
-        "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
-      backdropFilter: "blur(8px)",
-    }}
-  >
-    {/* Pola formularza */}
-    {["first_name", "last_name", "email"].map((field) => (
-      <FormControl key={field} isInvalid={!!errors[field]}>
-        <FormLabel color="white" fontSize={{ base: "1rem", md: "1.1rem" }} mb={2}>
-          {fieldMap[field]}
-        </FormLabel>
-        <Box
-          position="relative"
-          borderRadius="md"
-          _focusWithin={{
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: "-2px",
-              left: "-2px",
-              right: "-2px",
-              bottom: "-2px",
-              borderRadius: "md",
-              background:
-                "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
-              zIndex: -1,
-              padding: "2px",
-              WebkitMask:
-                "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              WebkitMaskComposite: "xor",
-              maskComposite: "exclude",
-            },
+        {/* Nagłówek NAD Stackiem */}
+        <Heading
+          fontSize={{ base: "2.2rem", md: "3rem" }} // Mniejsza czcionka na małych ekranach
+          color="white"
+          mb={8}
+          zIndex={1}
+          textAlign="center" // Wyśrodkowanie tekstu
+          px={4} // Padding po bokach
+          sx={{
+            background:
+              "linear-gradient(90deg, rgb(130, 70, 190), rgb(227,11,78), rgb(249,72,38))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontWeight: "bold",
           }}
         >
-          <Input
-            value={formData[field]}
-            onChange={(e) => handleChange(field, e.target.value)}
-            color="white"
-            bg="rgba(255, 255, 255, 0.1)"
-            border="2px solid rgba(255, 255, 255, 0.3)"
-            borderRadius="md"
-            _hover={{
-              borderColor: "rgba(255, 255, 255, 0.5)",
-            }}
-            _focus={{
-              bg: "rgba(255, 255, 255, 0.2)",
-              borderColor: "transparent",
-              boxShadow: "none",
-              outline: "none",
-            }}
-            _placeholder={{
-              color: "rgba(255, 255, 255, 0.5)",
-            }}
-            maxLength={
-              field === "first_name" || field === "last_name" ? 50 : undefined
-            }
-            autoComplete="off"
-          />
-        </Box>
-        <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
-          {errors[field]}
-        </FormErrorMessage>
-      </FormControl>
-    ))}
+          Rezerwacja Silent Disco
+        </Heading>
 
-    {/* Pole telefonu */}
-    <FormControl isInvalid={!!errors.phone_number}>
-      <FormLabel color="white" fontSize={{ base: "1rem", md: "1.1rem" }} mb={2}>
-        Numer telefonu
-      </FormLabel>
-      <Box
-        position="relative"
-        borderRadius="md"
-        _focusWithin={{
-          "&::before": {
+        {/* Formularz - Stack z nowymi wymiarami */}
+        <Stack
+          spacing={6}
+          w={{ base: "100%", md: "90%", lg: "70%", xl: "50%" }} // Responsywna szerokość
+          minH="60%"
+          position="relative"
+          p={{ base: 4, md: 8 }} // Mniejszy padding na małych ekranach
+          rounded="lg"
+          zIndex={1}
+          _before={{
             content: '""',
             position: "absolute",
-            top: "-2px",
-            left: "-2px",
-            right: "-2px",
-            bottom: "-2px",
-            borderRadius: "md",
+            inset: 0,
+            borderRadius: "lg",
+            padding: "2px",
             background:
               "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
-            zIndex: -1,
-            padding: "2px",
             WebkitMask:
               "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
             WebkitMaskComposite: "xor",
             maskComposite: "exclude",
-          },
-        }}
-      >
-        <Input
-          value={formData.phone_number}
-          maxLength={11}
-          inputMode="numeric"
-          onChange={(e) => {
-            const raw = e.target.value;
-            handleChange("phone_number", formatPhone(raw));
+            pointerEvents: "none",
           }}
-          color="white"
-          bg="rgba(255, 255, 255, 0.1)"
-          border="2px solid rgba(255, 255, 255, 0.3)"
-          borderRadius="md"
-          _hover={{
-            borderColor: "rgba(255, 255, 255, 0.5)",
+          sx={{
+            background:
+              "linear-gradient(135deg, rgba(130, 70, 190, 0.15), rgba(227, 11, 78, 0.15))",
+            backdropFilter: "blur(8px)",
           }}
-          _focus={{
-            bg: "rgba(255, 255, 255, 0.2)",
-            borderColor: "transparent",
-            boxShadow: "none",
-            outline: "none",
-          }}
-          _placeholder={{
-            color: "rgba(255, 255, 255, 0.5)",
-          }}
-          autoComplete="off"
-        />
-      </Box>
-      <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
-        {errors.phone_number}
-      </FormErrorMessage>
-    </FormControl>
+        >
+          {/* Pola formularza */}
+          {["first_name", "last_name", "email"].map((field) => (
+            <FormControl key={field} isInvalid={!!errors[field]}>
+              <FormLabel
+                color="white"
+                fontSize={{ base: "1rem", md: "1.1rem" }}
+                mb={2}
+              >
+                {fieldMap[field]}
+              </FormLabel>
+              <Box
+                position="relative"
+                borderRadius="md"
+                _focusWithin={{
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: "-2px",
+                    left: "-2px",
+                    right: "-2px",
+                    bottom: "-2px",
+                    borderRadius: "md",
+                    background:
+                      "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+                    zIndex: -1,
+                    padding: "2px",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    maskComposite: "exclude",
+                  },
+                }}
+              >
+                <Input
+                  value={formData[field]}
+                  onChange={(e) => handleChange(field, e.target.value)}
+                  color="white"
+                  bg="rgba(255, 255, 255, 0.1)"
+                  border="2px solid rgba(255, 255, 255, 0.3)"
+                  borderRadius="md"
+                  _hover={{
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                  }}
+                  _focus={{
+                    bg: "rgba(255, 255, 255, 0.2)",
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                    outline: "none",
+                  }}
+                  _placeholder={{
+                    color: "rgba(255, 255, 255, 0.5)",
+                  }}
+                  maxLength={
+                    field === "first_name" || field === "last_name"
+                      ? 50
+                      : undefined
+                  }
+                  autoComplete="off"
+                />
+              </Box>
+              <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
+                {errors[field]}
+              </FormErrorMessage>
+            </FormControl>
+          ))}
 
-    <FormControl isInvalid={!!errors.agreeTerms}>
-      <Checkbox
-        isChecked={formData.agreeTerms}
-        onChange={(e) => handleChange("agreeTerms", e.target.checked)}
-        colorScheme="pink"
-        color="white"
-        size={{ base: "md", md: "lg" }} // Rozmiar checkboxa dostosowany do ekranu
-      >
-        <Text fontSize={{ base: "sm", md: "md" }}> {/* Responsywny rozmiar tekstu */}
-          Akceptuję{" "}
-          <ChakraLink
-            href="/rules"
-            color="pink.500"
-            textDecoration="underline"
-            fontSize="inherit" // Dziedziczy rozmiar z rodzica
-          >
-            regulamin
-          </ChakraLink>{" "}
-          i zapoznałem/am się z{" "}
-          <ChakraLink
-            href="/rodo"
-            color="pink.500"
-            textDecoration="underline"
-            fontSize="inherit" // Dziedziczy rozmiar z rodzica
-          >
-            polityką prywatności
-          </ChakraLink>
-        </Text>
-      </Checkbox>
-      <FormErrorMessage>{errors.agreeTerms}</FormErrorMessage>
-    </FormControl>
+          {/* Pole telefonu */}
+          <FormControl isInvalid={!!errors.phone_number}>
+            <FormLabel
+              color="white"
+              fontSize={{ base: "1rem", md: "1.1rem" }}
+              mb={2}
+            >
+              Numer telefonu
+            </FormLabel>
+            <Box
+              position="relative"
+              borderRadius="md"
+              _focusWithin={{
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: "-2px",
+                  left: "-2px",
+                  right: "-2px",
+                  bottom: "-2px",
+                  borderRadius: "md",
+                  background:
+                    "linear-gradient(90deg, rgba(130, 70, 190, 0.8), rgba(227, 11, 78, 0.8))",
+                  zIndex: -1,
+                  padding: "2px",
+                  WebkitMask:
+                    "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                },
+              }}
+            >
+              <Input
+                value={formData.phone_number}
+                maxLength={11}
+                inputMode="numeric"
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  handleChange("phone_number", formatPhone(raw));
+                }}
+                color="white"
+                bg="rgba(255, 255, 255, 0.1)"
+                border="2px solid rgba(255, 255, 255, 0.3)"
+                borderRadius="md"
+                _hover={{
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                }}
+                _focus={{
+                  bg: "rgba(255, 255, 255, 0.2)",
+                  borderColor: "transparent",
+                  boxShadow: "none",
+                  outline: "none",
+                }}
+                _placeholder={{
+                  color: "rgba(255, 255, 255, 0.5)",
+                }}
+                autoComplete="off"
+              />
+            </Box>
+            <FormErrorMessage color="rgb(249,72,38)" fontSize="0.9rem">
+              {errors.phone_number}
+            </FormErrorMessage>
+          </FormControl>
 
-    <Flex width="100%" gap={4} direction={{ base: "column", sm: "row" }}> {/* Kolumna na małych ekranach, rząd na większych */}
-      <Button
-        flex={1}
-        bg="rgba(255, 255, 255, 0.15)"
-        color="white"
-        backdropFilter="blur(4px)"
-        border="1px solid rgba(255, 255, 255, 0.2)"
-        _hover={{
-          bg: "rgba(255, 255, 255, 0.25)",
-          borderColor: "rgba(255, 255, 255, 0.4)",
-        }}
-        onClick={() => nav("/menu")}
-        size="lg"
-      >
-        Anuluj
-      </Button>
-      <Button
-        flex={1}
-        bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
-        color="white"
-        _hover={{
-          bgGradient: "linear(to-r, rgb(130, 70, 190), rgb(249,72,38))",
-        }}
-        onClick={handleSubmit}
-        size="lg"
-      >
-        Złóż zamówienie
-      </Button>
-    </Flex>
-  </Stack>
+          <FormControl isInvalid={!!errors.agreeTerms}>
+            <Checkbox
+              isChecked={formData.agreeTerms}
+              onChange={(e) => handleChange("agreeTerms", e.target.checked)}
+              colorScheme="pink"
+              color="white"
+              size={{ base: "md", md: "lg" }} // Rozmiar checkboxa dostosowany do ekranu
+            >
+              <Text fontSize={{ base: "sm", md: "md" }}>
+                {" "}
+                {/* Responsywny rozmiar tekstu */}
+                Akceptuję{" "}
+                <ChakraLink
+                  href="/rules"
+                  color="pink.500"
+                  textDecoration="underline"
+                  fontSize="inherit" // Dziedziczy rozmiar z rodzica
+                >
+                  regulamin
+                </ChakraLink>{" "}
+                i zapoznałem/am się z{" "}
+                <ChakraLink
+                  href="/rodo"
+                  color="pink.500"
+                  textDecoration="underline"
+                  fontSize="inherit" // Dziedziczy rozmiar z rodzica
+                >
+                  polityką prywatności
+                </ChakraLink>
+              </Text>
+            </Checkbox>
+            <FormErrorMessage>{errors.agreeTerms}</FormErrorMessage>
+          </FormControl>
+
+          <Flex
+            width="100%"
+            gap={4}
+            direction={{ base: "row", sm: "row" }} // Zawsze w rzędzie, ale dostosujemy szerokość
+            flexWrap="wrap" // Na bardzo małych ekranach może przejść do nowej linii
+          >
+            <Button
+              flex={{ base: "1 1 120px", sm: 1 }} // Minimalna szerokość 120px na małych ekranach
+              bg="rgba(255, 255, 255, 0.15)"
+              color="white"
+              backdropFilter="blur(4px)"
+              border="1px solid rgba(255, 255, 255, 0.2)"
+              _hover={{
+                bg: "rgba(255, 255, 255, 0.25)",
+                borderColor: "rgba(255, 255, 255, 0.4)",
+              }}
+              onClick={() => nav("/menu")}
+              size="lg"
+              whiteSpace="nowrap" // Zapobiega zawijaniu tekstu
+              fontSize={{ base: "0.9rem", md: "1.1rem" }}
+            >
+              Anuluj
+            </Button>
+            <Button
+              flex={{ base: "1 1 120px", sm: 1 }} // Minimalna szerokość 120px na małych ekranach
+              bgGradient="linear(to-r, rgb(130, 70, 190), rgb(227,11,78))"
+              color="white"
+              _hover={{
+                bgGradient: "linear(to-r, rgb(130, 70, 190), rgb(249,72,38))",
+              }}
+              onClick={handleSubmit}
+              size="lg"
+              whiteSpace="nowrap" // Zapobiega zawijaniu tekstu
+              fontSize={{ base: "0.9rem", md: "1.1rem" }}
+            >
+              Złóż zamówienie
+            </Button>
+          </Flex>
+        </Stack>
 
         {/* Modal */}
         <Modal isOpen={isOpen} onClose={onClose} isCentered>

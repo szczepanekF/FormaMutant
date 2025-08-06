@@ -141,22 +141,14 @@ const Menu2 = () => {
           },
         }}
       >
-        {/* Logo - responsywne pozycjonowanie i rozmiar */}
+        <Box h={{ base: "2vh", md: "3vh" }} />
         <MotionImage
           src="/assets/logo.png"
           alt="Logo"
           ref={scope}
-          style={
-            {
-              // willChange: "opacity", // Informuje przeglądarkę, że będzie zmiana
-              // imageRendering: "crisp-edges", // Lepsza jakość dla skalowania
-              //         filter: "blur(0)", // Hack dla Safari
-              // transform: "translateZ(0)", // Wymusza warstwę GPU
-            }
-          }
           initial={{
             position: "absolute",
-            top: "3vh",
+            top: { base: "3vh", md: "3vh" },
             left: "50%",
             x: "-50%",
             y: "0",
@@ -164,10 +156,12 @@ const Menu2 = () => {
             opacity: 1,
             zIndex: 10,
           }}
-          // animate={controls}
-          // transition={{ type: "spring", damping: 20 }}
-          boxSize="20vh"
+          boxSize={{ base: "15vh", md: "20vh" }}
           mx="auto"
+          maxW="90vw"
+          style={{
+            objectFit: "contain",
+          }}
         />
         <VStack
           spacing={{ base: 8, md: 12 }}
@@ -181,7 +175,6 @@ const Menu2 = () => {
         >
           <Box h={{ base: "15vh", md: "20vh" }} />
 
-          {/* Sekcja tytułowa */}
           <MotionContainer
             maxW="container.md"
             textAlign="center"
@@ -216,8 +209,7 @@ const Menu2 = () => {
             </Text>
           </MotionContainer>
 
-          {/* Slider */}
-          <Box w="100%" px={0}>
+          <Box w="100%" px={0} >
             <MotionContainer
               maxW="100%"
               maxH="60%"
@@ -231,8 +223,6 @@ const Menu2 = () => {
               <Slider />
             </MotionContainer>
           </Box>
-
-          {/* Przycisk rezerwacji */}
           <MotionContainer
             maxW="container.lg"
             py={{ base: 6, md: 8 }}
@@ -303,8 +293,6 @@ const Menu2 = () => {
               </Button>
             </ChakraLink>
           </MotionContainer>
-
-          {/* Sekcja 3 kroki */}
           <MotionContainer
             maxW={{ base: "90%", md: "85%" }}
             py={{ base: 6, md: 8 }}
@@ -327,7 +315,7 @@ const Menu2 = () => {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                Rezerwacja trzy etapowa
+                Rezerwacja trzyetapowa
               </Heading>
 
               <Box
@@ -373,8 +361,6 @@ const Menu2 = () => {
               ))}
             </VStack>
           </MotionContainer>
-
-          {/* Sekcja "Czym jest Silent Disco" */}
           <MotionContainer
             maxW={{ base: "90%", md: "85%" }}
             py={{ base: 6, md: 8 }}
@@ -427,8 +413,6 @@ const Menu2 = () => {
               </Box>
             </Box>
           </MotionContainer>
-
-          {/* Sekcja "Co jest w cenie" */}
           <MotionContainer
             maxW={{ base: "90%", md: "85%" }}
             py={{ base: 6, md: 10 }}
@@ -508,8 +492,6 @@ const Menu2 = () => {
               </SimpleGrid>
             </Box>
           </MotionContainer>
-
-          {/* Sekcja FAQ */}
           <MotionContainer
             maxW={{ base: "90%", md: "85%" }}
             py={{ base: 6, md: 8 }}
@@ -542,7 +524,6 @@ const Menu2 = () => {
                 Nie znalazłeś odpowiedzi? Skontaktuj się z nami!
               </Box>
             </Box>
-
             <Box textAlign="left">
               {faqItems.map((item, index) => (
                 <Box
