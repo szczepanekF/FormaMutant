@@ -29,6 +29,28 @@ const Menu2 = () => {
   const [scope, animate] = useAnimate();
   const [gradientRef, gradientAnimate] = useAnimate();
 
+  const stepsData = [
+    {
+      stepNumber: 1,
+      stepName: "pierwszy",
+      title: "Wypełnij formularz!",
+      description: "Podaj swoje podstawowe dane kontaktowe i informacje.",
+    },
+    {
+      stepNumber: 2,
+      stepName: "drugi",
+      title: "Wybierz produkt!",
+      description:
+        "Z listy dostępnych produktów wybierz ten, który Cię interesuje.",
+    },
+    {
+      stepNumber: 3,
+      stepName: "trzeci",
+      title: "Potwierdzenie!",
+      description: "Sprawdź poprawność danych i potwierdź zamówienie.",
+    },
+  ];
+
   const benefits = [
     {
       icon: "/assets/logo.png",
@@ -330,30 +352,28 @@ const Menu2 = () => {
               align="flex-start"
               pl={{ base: 0, md: 14 }}
             >
-              {[1, 2, 3].map((step) => (
-                <Box key={step}>
+              {stepsData.map((step) => (
+                <Box key={step.stepNumber}>
                   <Heading
                     as="h3"
                     mb={0.5}
                     fontSize={{ base: "0.8rem", md: "0.9rem" }}
                     color="gray.300"
                   >
-                    {step}. Krok{" "}
-                    {step === 1 ? "pierwszy" : step === 2 ? "drugi" : "trzeci"}
+                    {step.stepNumber}. Krok {step.stepName}
                   </Heading>
                   <Text
                     fontWeight="bold"
                     mb={2}
                     fontSize={{ base: "1.8rem", md: "2.5rem" }}
                   >
-                    Wypełnij formularz!
+                    {step.title}
                   </Text>
                   <Box
-                    width={{ base: "100%", md: "70%", lg: "55%" }}
+                    width={{ base: "100%", md: "70%", lg: "70%" }}
                     fontSize={{ base: "1rem", md: "1.1rem" }}
                   >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Mauris consequat metus nec neque dignissim elementum.
+                    {step.description}
                   </Box>
                 </Box>
               ))}
