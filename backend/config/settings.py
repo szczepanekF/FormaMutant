@@ -41,8 +41,8 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 # ALLOWED_HOSTS = ["*"]  # os.environ.get("DJANGO_ALLOWED_HOSTS",default='*').split(" ")
 
-ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
-CSRF_TRUSTED_ORIGINS = ['https://'+os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
+ALLOWED_HOSTS = [os.environ.get("DJANGO_ALLOWED_HOSTS",default='*').split(" ")]
+CSRF_TRUSTED_ORIGINS = [os.environ.get("DJANGO_ALLOWED_HOSTS",default='*').split(" ")]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("api.auth.CookiesJWTAuthentication",),
