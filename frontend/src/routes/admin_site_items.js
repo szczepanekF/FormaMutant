@@ -107,7 +107,7 @@ const AdminItems = ({ showToast }) => {
         );
         setSelectedItem(null);
         // toast.success("Pomyślnie zmieniono status słuchawek");
-        showToast('success', "Pomyślnie zmieniono status słuchawek")
+        showToast("success", "Pomyślnie zmieniono status słuchawek");
       },
       () => {
         console.log("error");
@@ -190,12 +190,12 @@ const AdminItems = ({ showToast }) => {
 
   return (
     <>
-      <Box p={4}>
-        <Box mt={4} mb={2}>
-          <strong>Aktualnie wypożyczone słuchawki:</strong> {headphoneCount}
+      <Box p={0}>
+        <Box mt={-3} mb={2} fontSize="1.5rem">
+          Aktualnie wypożyczone słuchawki: <strong>{headphoneCount}</strong>
         </Box>
-        <Box mt={4} mb={2}>
-          <strong>Liczba wszystkich słuchawek:</strong> {items.length}
+        <Box mt={-4} mb={2} fontSize="1.5rem">
+          Liczba wszystkich słuchawek: <strong>{items.length}</strong>
         </Box>
         <Box mt={2}>
           {loading ? (

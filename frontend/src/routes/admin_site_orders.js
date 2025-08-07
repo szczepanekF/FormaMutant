@@ -30,7 +30,7 @@ import { useOrdersContext } from "../context/ordersContext";
 import { useEffect, useState } from "react";
 import { change_order_state, sendOrderReminder } from "../endpoints/api";
 
-const Admin = ({showToast}) => {
+const Admin = ({ showToast }) => {
   const { withErrorHandler, withRefresh } = useAuth();
   const { orders, setOrders, loadOrders } = useOrdersContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -103,23 +103,23 @@ const Admin = ({showToast}) => {
 
   const getRowStyle = (state, dateStr, index) => {
     const baseColor =
-      index % 2 === 0 ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)";
+      index % 2 === 1 ? "rgba(227, 11, 78, 0.1)" : "rgba(130, 70, 190, 0.1)";
 
     if (state !== "oczekujące") return baseColor;
 
     if (isOlderThan12Hours(dateStr)) return "rgba(255, 0, 0, 0.4)";
-    if (isOlderThan8Hours(dateStr)) return "rgba(0, 255, 0, 0.4)";
+    if (isOlderThan8Hours(dateStr)) return "rgba(255, 255, 0, 0.4)";
 
     return baseColor;
   };
 
   const getHoverBgColor = (state, dateStr) => {
-    if (state !== "oczekujące") return "rgba(255, 255, 255, 0.6)";
+    if (state !== "oczekujące") return "rgba(130, 70, 190, 0.2)";
 
-    if (isOlderThan12Hours(dateStr)) return "rgba(255, 0, 0, 0.6)";
-    if (isOlderThan8Hours(dateStr)) return "rgba(0, 255, 0, 0.6)";
+    if (isOlderThan12Hours(dateStr)) return "rgba(255, 0, 0, 0.5)";
+    if (isOlderThan8Hours(dateStr)) return "rgba(255, 255, 0, 0.5)";
 
-    return "gray.300";
+    return "rgba(130, 70, 190, 0.2)";
   };
   const handleSendReminder = async (order) => {
     setSelectedOrder(order);
@@ -223,9 +223,9 @@ const Admin = ({showToast}) => {
   }
   return (
     <>
-      <Box p={2}>
-        <Box mt={4} mb={4}>
-          <strong>Aktualnie zarezerwowane słuchawki:</strong> {headphoneCount}
+      <Box p={0}>
+        <Box mt={-4} mb={4} fontSize="2rem">
+          Aktualnie zarezerwowane słuchawki:<strong> {headphoneCount}</strong>
         </Box>
         <Box mt={8}>
           {loading ? (
@@ -464,7 +464,7 @@ const Admin = ({showToast}) => {
                   <Tr>
                     <Th fontSize="sm">
                       <Input
-                        size="xs"
+                        size="sm"
                         color={"white"}
                         onChange={(e) =>
                           handleFilterChange("order_code", e.target.value)
@@ -473,7 +473,7 @@ const Admin = ({showToast}) => {
                     </Th>
                     <Th fontSize="sm">
                       <Input
-                        size="xs"
+                        size="sm"
                         color={"white"}
                         onChange={(e) =>
                           handleFilterChange(
@@ -485,7 +485,7 @@ const Admin = ({showToast}) => {
                     </Th>
                     <Th fontSize="sm">
                       <Input
-                        size="xs"
+                        size="sm"
                         color={"white"}
                         onChange={(e) =>
                           handleFilterChange(
@@ -497,7 +497,7 @@ const Admin = ({showToast}) => {
                     </Th>
                     <Th fontSize="sm">
                       <Input
-                        size="xs"
+                        size="sm"
                         color={"white"}
                         onChange={(e) =>
                           handleFilterChange("account.email", e.target.value)
@@ -506,7 +506,7 @@ const Admin = ({showToast}) => {
                     </Th>
                     <Th fontSize="sm">
                       <Input
-                        size="xs"
+                        size="sm"
                         color={"white"}
                         onChange={(e) =>
                           handleFilterChange(
@@ -518,7 +518,7 @@ const Admin = ({showToast}) => {
                     </Th>
                     <Th fontSize="sm">
                       <Select
-                        size="xs"
+                        size="sm"
                         placeholder="Wszystkie"
                         color={"white"}
                         // variant="filled"

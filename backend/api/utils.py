@@ -1,3 +1,5 @@
+import base64
+from email.mime.application import MIMEApplication
 import math
 import qrcode
 from io import BytesIO
@@ -5,7 +7,9 @@ from config.settings import EMAIL_HOST_PASSWORD, EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from email.mime.image import MIMEImage
-
+from jinja2 import Template
+from weasyprint import HTML
+from django.template import engines
 
 EXAMPLE_ITEM_PRICE = 100
 BROKEN_LOST_ITEM_PRICE = 10000
@@ -22,7 +26,7 @@ Cześć {first_name}
 
 Twoja wstępna rezerwacja słuchawek o numerze {order_code} została pomyślnie zarejestrowana!
 Aby potwierdzić rezerwację, prosimy o dokonanie opłaty rezerwacyjnej w wysokości {full_price:.2f} PLN w ciągu 12 godzin.
-Tytuł płatności: {first_name} {last_name} 
+Tytuł płatności: {first_name} {last_name} - Silent Disco
 
 Link do płatności: {payment_link}
 
@@ -75,6 +79,26 @@ def generate_qr_image(data):
     return buffer
 
 
+def generate_base64_qr_image(item_id):
+    qr_buffer = generate_qr_image(item_id)
+    qr_base64 = base64.b64encode(qr_buffer.read()).decode("utf-8")
+    return f"data:image/png;base64,{qr_base64}"
+
+
+def render_html_to_pdf(template_path: str, context: dict) -> BytesIO:
+    django_engine = engines["django"]
+    template = django_engine.get_template(template_path)
+    with open(template.origin.name, "r", encoding="utf-8") as f:
+        html_template = Template(f.read())
+        rendered_html = html_template.render(context)
+
+    pdf_buffer = BytesIO()
+    HTML(string=rendered_html).write_pdf(pdf_buffer)
+    pdf_buffer.seek(0)
+
+    return pdf_buffer
+
+
 def send_payment_mail(user, order_code, item_amount):
     """Sends a payment request email for headphone reservation."""
     full_order_price = ceil_2_decimal_places(item_amount * EXAMPLE_ITEM_PRICE)
@@ -112,11 +136,10 @@ def send_confirmation_mail(user, order_code, item_tokens):
     if not item_tokens:
         raise ValueError("item_tokens cannot be empty")
 
-    qr_images = []
-    for i, item_id in enumerate(item_tokens):
-        qr_buffer = generate_qr_image(item_id)
-        cid = f"qr_code_{i}"
-        qr_images.append((cid, qr_buffer))
+    qr_images = [
+        (f"qr_code_{i}", generate_qr_image(item_id))
+        for i, item_id in enumerate(item_tokens)
+    ]
 
     body = DEFAULT_BODIES["confirmation"].format(
         first_name=user.first_name,
@@ -142,19 +165,33 @@ def send_confirmation_mail(user, order_code, item_tokens):
     )
     html_content = render_to_string("emails/confirmation.html", context)
     email_message.attach_alternative(html_content, "text/html")
-    for cid, qr_buffer in qr_images:
+    for i, (cid, qr_buffer) in enumerate(qr_images):
         image = MIMEImage(qr_buffer.read(), _subtype="png")
         image.add_header("Content-ID", f"<{cid}>")
         image.add_header("Content-Disposition", "inline", filename=f"{cid}.png")
         email_message.attach(image)
         qr_buffer.seek(0)
 
-        # Dodanie jako załącznik
-        image_attachment = MIMEImage(qr_buffer.read(), _subtype="png")
-        image_attachment.add_header(
-            "Content-Disposition", "attachment", filename=f"{cid}.png"
-        )
-        email_message.attach(image_attachment)
+    context_for_attachment = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "qr_codes": [
+            {"img_src": generate_base64_qr_image(item_id), "item_id": item_id}
+            for item_id in item_tokens
+        ],
+        "order_code": order_code,
+    }
+
+    pdf_attachment = render_html_to_pdf(
+        "emails/confirmationImage.html", context_for_attachment
+    )
+    image_attachment = MIMEApplication(pdf_attachment.read(), _subtype="pdf")
+    image_attachment.add_header(
+        "Content-Disposition",
+        "attachment",
+        filename=f"PlanetaLuzu_SD_{order_code}_{user.last_name}.pdf",
+    )
+    email_message.attach(image_attachment)
     email_message.send()
 
 
