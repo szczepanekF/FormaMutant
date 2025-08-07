@@ -294,7 +294,7 @@ def change_order_state(request, order_id):
 @permission_classes([IsAdminUser])
 def set_item_state(request, token):
     try:
-        item = Item.objects.get(token=token)
+        item = Item.objects.select_related("order__account").get(token=token)
     except Item.DoesNotExist:
         return Response({"reason": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -309,6 +309,15 @@ def set_item_state(request, token):
             {"reason": 'Słuchawki muszą być w stanie "wydane"'},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    if new_state == "zgubione" or new_state == "uszkodzone":
+        async_task(
+            "api.utils.send_lost_or_broken_item_payment_mail",
+            item.order.account,
+            item.item_real_ID,
+            new_state,
+        )
+
     item.state = new_state
     item.save()
     return Response({"message": "item_real_ID updated successfully"})

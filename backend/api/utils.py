@@ -8,6 +8,7 @@ from email.mime.image import MIMEImage
 
 
 EXAMPLE_ITEM_PRICE = 100
+BROKEN_LOST_ITEM_PRICE = 10000
 
 PLANETA_LUZU_FOOTER = (
     "© 2025 PlanetaLuzu. Wszystkie prawa zastrzeżone. \n"
@@ -44,6 +45,19 @@ Twoja rezerwacja słuchawek o numerze {order_code} została anulowana. Trochę s
 
 DOZO! 🗿 Zespół PlanetaLuzu
 {footer}""",
+    "lost_or_broken": """
+Cześć {first_name}
+
+Słuchawki o numerze {item_number} zostały {status} 😬  
+W takich przypadkach obowiązuje opłata w wysokości {price:.2f} zł.  
+Prosimy o uregulowanie płatności w ciągu 7 dni. Z góry dzięki!
+Tytuł płatności: {first_name} {last_name} - {status} słuchawki
+
+Link do płatności: {payment_link}
+
+Trzymaj się! 🗿 Zespół PlanetaLuzu
+{footer}
+""",
 }
 
 
@@ -164,4 +178,38 @@ def send_cancellation_mail(user, order_code):
 
     html_content = render_to_string("emails/cancellation.html", context)
     email_message.attach_alternative(html_content, "text/html")
+    email_message.send()
+
+
+def send_lost_or_broken_item_payment_mail(user, item_number, status):
+    """Sends a payment request email for lost or broken headphones."""
+    full_order_price = ceil_2_decimal_places(BROKEN_LOST_ITEM_PRICE)
+
+    context = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "price": f"{full_order_price:.2f}",
+        "item_number": item_number,
+        "status": status,
+    }
+
+    body = DEFAULT_BODIES["lost_or_broken"].format(
+        first_name=user.first_name,
+        last_name=user.last_name,
+        item_number=item_number,
+        price=full_order_price,
+        status=status,
+        payment_link=PAYMENT_LINK,
+        footer=PLANETA_LUZU_FOOTER,
+    )
+
+    email_message = EmailMultiAlternatives(
+        subject=f"Opłata za {status} słuchawki",
+        body=body,
+        from_email=EMAIL_HOST_USER,
+        to=[user.email],
+    )
+    html_content = render_to_string("emails/lostOrDamagedItemPayment.html", context)
+    email_message.attach_alternative(html_content, "text/html")
+
     email_message.send()
