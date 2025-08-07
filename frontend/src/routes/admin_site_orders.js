@@ -29,9 +29,8 @@ import { useAuth } from "../context/auth";
 import { useOrdersContext } from "../context/ordersContext";
 import { useEffect, useState } from "react";
 import { change_order_state, sendOrderReminder } from "../endpoints/api";
-import { toast } from "sonner";
 
-const Admin = () => {
+const Admin = ({showToast}) => {
   const { withErrorHandler, withRefresh } = useAuth();
   const { orders, setOrders, loadOrders } = useOrdersContext();
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -80,7 +79,8 @@ const Admin = () => {
         );
         setSelectedOrder(null);
         setIsModalOpen(false);
-        toast.success("Pomyślnie zmieniono status zamówienia");
+        /*toast.success("Pomyślnie zmieniono status zamówienia");*/
+        showToast("success", "Pomyślnie zmieniono status zamówienia");
       },
       () => {
         console.error("Błąd przy zmianie statusu");
@@ -132,7 +132,9 @@ const Admin = () => {
         await sendOrderReminder(selectedOrder.id);
         setSelectedOrder(null);
         setIsReminderModalOpen(false);
-        toast.success("Pomyślnie wysłano maila");
+        // toast.success("Pomyślnie wysłano maila");
+        // setShowCustomToast(true);
+        showToast("success", "Pomyślnie wysłano maila");
       },
       () => {
         console.error("Błąd podczas wysyłania maila");

@@ -33,33 +33,7 @@ import { useAuth } from "../context/auth";
 import { useOrdersContext } from "../context/ordersContext";
 import GradientBackground from "../components/gradientBackground";
 import { useItemsContext } from "../context/itemsContext";
-
-const TABS = [
-  {
-    key: "orders",
-    label: "Zamówienia",
-    icon: FiShoppingCart,
-    component: <AdminOrders />,
-  },
-  {
-    key: "items",
-    label: "Słuchawki",
-    icon: FiPackage,
-    component: <AdminItems />,
-  },
-  {
-    key: "register",
-    label: "Przypisanie słuchawek",
-    icon: FiHeadphones,
-    component: <AdminTokenLookup />,
-  },
-  {
-    key: "return",
-    label: "Zwrot słuchawek",
-    icon: FiRotateCcw,
-    component: <AdminNumberLookup />,
-  },
-];
+import ToastNotification from "../components/toast";
 
 const AdminPanel = () => {
   const [view, setView] = useState("orders");
@@ -87,6 +61,45 @@ const AdminPanel = () => {
     );
   }, []);
 
+  const [toastConfig, setToastConfig] = useState({
+    show: false,
+    variant: "success",
+    message: "",
+  });
+
+  const showToast = (variant, message) => {
+    setToastConfig({
+      show: true,
+      variant,
+      message,
+    });
+  };
+  const TABS = [
+    {
+      key: "orders",
+      label: "Zamówienia",
+      icon: FiShoppingCart,
+      component: <AdminOrders showToast={showToast} />,
+    },
+    {
+      key: "items",
+      label: "Słuchawki",
+      icon: FiPackage,
+      component: <AdminItems showToast={showToast} />,
+    },
+    {
+      key: "register",
+      label: "Przypisanie słuchawek",
+      icon: FiHeadphones,
+      component: <AdminTokenLookup showToast={showToast} />,
+    },
+    {
+      key: "return",
+      label: "Zwrot słuchawek",
+      icon: FiRotateCcw,
+      component: <AdminNumberLookup showToast={showToast} />,
+    },
+  ];
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleLogout = async () => {
@@ -217,6 +230,14 @@ const AdminPanel = () => {
           </Box>
         </Container>
       </Box>
+      {toastConfig.show && (
+        <ToastNotification
+          variant={toastConfig.variant}
+          message={toastConfig.message}
+          open={toastConfig.show}
+          onClose={() => setToastConfig((prev) => ({ ...prev, show: false }))}
+        />
+      )}
     </>
   );
 };

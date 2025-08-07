@@ -10,7 +10,7 @@
     left: 50%;
     transform: translateX(-50%) translateY(-100px);
     gap: 15px;
-    z-index: 1000;
+    z-index: 9999; 
     color: white;
     font-family: 'Poppins', sans-serif;
     opacity: 0;
@@ -36,7 +36,25 @@
     mask-composite: exclude;
     pointer-events: none;
 }
+.toastContainer.success {
 
+}
+
+
+.toastContainer.error {
+  background: linear-gradient(135deg, rgba(227, 11, 78, 0.15), rgba(190, 30, 45, 0.15));
+}
+.toastContainer.error::before {
+  background: linear-gradient(90deg, rgba(227, 11, 78, 0.8), rgba(190, 30, 45, 0.8));
+}
+
+/* Information */
+.toastContainer.information {
+  background: linear-gradient(135deg, rgba(30, 136, 229, 0.15), rgba(100, 181, 246, 0.15));
+}
+.toastContainer.information::before {
+  background: linear-gradient(90deg, rgba(30, 136, 229, 0.8), rgba(100, 181, 246, 0.8));
+}
 /* Reszta stylów pozostaje bez zmian */
 .toastContainer.active {
     opacity: 1;

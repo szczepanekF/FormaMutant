@@ -20,7 +20,6 @@ import {
 } from "react-router-dom";
 import ProtectedRoute from "./routes/protected_route";
 import { ItemsProvider } from "./context/itemsContext";
-import TEST from "./components/Test";
 
 function App() {
   return (
@@ -52,7 +51,6 @@ function App() {
                   </ProtectedRoute>
                 }
               ></Route>
-              <Route path="/toast" element={<TEST/>}></Route>
               <Route path="/login" element={<Login />}></Route>
               <Route path="/order" element={<Order />}></Route>
               <Route path="/rodo" element={<Rodo />}></Route>
