@@ -191,6 +191,7 @@ def send_confirmation_mail(user, order_code, item_tokens):
         "attachment",
         filename=f"PlanetaLuzu_SD_{order_code}_{user.last_name}.pdf",
     )
+    email_message.mixed_subtype = "related"
     email_message.attach(image_attachment)
     email_message.send()
 
