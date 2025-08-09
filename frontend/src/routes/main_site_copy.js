@@ -222,7 +222,8 @@ const Menu2 = () => {
               color="white"
               mb={{ base: 2, md: 4 }}
             >
-              Silent Disco{" "}
+              Silent Disco <br />
+              EDYCJA:{" "}
               <Box
                 as="span"
                 sx={{
