@@ -8,11 +8,18 @@ import "swiper/css/pagination";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 const slideData = [
-  { imgSrc: "/assets/1.jpg" },
-  { imgSrc: "/assets/2.jpg" },
-  { imgSrc: "/assets/3.jpg" },
-  { imgSrc: "/assets/4.jpg" },
-  { imgSrc: "/assets/5.jpg" },
+  { imgSrc: "/assets/IMG_1.webp", position: "center 18%" },
+  { imgSrc: "/assets/IMG_2.webp" },
+  { imgSrc: "/assets/IMG_3.webp" },
+  { imgSrc: "/assets/IMG_4.webp" },
+  { imgSrc: "/assets/IMG_5.webp" },
+  { imgSrc: "/assets/IMG_6.webp" },
+  { imgSrc: "/assets/IMG_7.webp", position: "center 20%"},
+  { imgSrc: "/assets/IMG_8.webp" },
+  { imgSrc: "/assets/IMG_9.webp", position: "center 15%" },
+  { imgSrc: "/assets/IMG_10.webp" }
+  
+  
 ];
 
 export default function Slider() {
@@ -99,6 +106,7 @@ export default function Slider() {
               src={slide.imgSrc}
               objectFit="cover"
               h={{ base: "40vh", md: "65vh" }}
+              objectPosition = {slide.position || "center"} 
               w="100%"
               filter="grayscale(20%) contrast(1.05) brightness(1.1)"
             />

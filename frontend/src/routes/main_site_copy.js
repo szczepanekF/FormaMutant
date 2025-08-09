@@ -34,88 +34,103 @@ const Menu2 = () => {
       stepNumber: 1,
       stepName: "pierwszy",
       title: "Wypełnij formularz!",
-      description:
-        "Podaj swoje dane kontaktowe oraz zaakceptuj regulamin i politykę prywatności (RODO).",
+      description: `Wypełnij formularz, do którego możesz przejść za pomocą 
+    przycisku dostępnego na głównej stronie. Podaj w nim swoje dane
+    kontaktowe oraz zaakceptuj regulamin i politykę prywatności (RODO). 
+    Po pomyślnym uzupełnieniu formularza otrzymasz e-mail z potwierdzeniem 
+    utworzenia zamówienia oraz linkiem do płatności.`,
     },
     {
       stepNumber: 2,
       stepName: "drugi",
       title: "Opłać rezerwację i czekaj na potwierdzenie!",
-      description:
-        "Otrzymasz e-mail z linkiem do płatności. Wprowadź kwotę i tytuł przelewu zgodnie z informacjami znajdującymi się wiadomości i wykonaj przelew, a następnie poczekaj na potwierdzenie rezerwacji od organizatora.",
+      description: `Po przejściu na stronę płatności, do której prowadzi link z wiadomości e-mail, 
+    wprowadź kwotę i tytuł przelewu zgodnie z informacjami znajdującymi się w wiadomości 
+    i wykonaj przelew. Następnie poczekaj na potwierdzenie rezerwacji od organizatora.`,
     },
     {
       stepNumber: 3,
       stepName: "trzeci",
       title: "Potwierdzenie!",
-      description:
-        "Po akceptacji rezerwacji otrzymasz e-mail z kodem QR słuchawek. Pokaż kod przy odbiorze, aby otrzymać sprzęt.",
+      description: `Po zaakceptowaniu płatności przez organizatora otrzymasz e-mail 
+    z kodem QR słuchawek. Pokaż kod przy wejściu na wydarzenie, aby otrzymać sprzęt.`,
     },
   ];
 
   const benefits = [
     {
-      icon: "/assets/logo.png",
+      icon: "/assets/bar2.svg",
+      title: "Open bar",
+      desc: "Drinki i softy dostępne przez całą noc (do skończenia asortymentu +- 22:00)",
+      // desc: "Drinki, piwo i softy dostępne przez całą noc! Dla niepijących dostępne wersje zero."
+    },
+    {
+      icon: "/assets/bottle2.svg",
+      title: "Strefa Red Bull i Browary Łódzkie",
+      desc: "Bezpłatne energetyki w rónych samakch oraz piwa dostępne dla kadego.",
+    },
+    {
+      icon: "/assets/headphones2.svg",
       title: "Profesjonalne słuchawki",
-      desc: "Bezprzewodowe, wielokanałowe słuchawki z regulacją głośności i wygodnym pasem na głowę",
+      desc: "Bezprzewodowe nauszne słuchawki z 3 kanałami muzyki.",
     },
     {
-      icon: "/assets/logo.png",
-      title: "3 kanały muzyczne",
-      desc: "Różne gatunki muzyki prowadzone przez naszych DJ-ów: pop, rock i elektro",
+      icon: "/assets/hockey2.svg",
+      title: "Strefa gier",
+      desc: "Wydzielone miesjca w których można zagrać w: beer ponga, flip cupy, piłkarzyki i cymbergaja.",
     },
     {
-      icon: "/assets/logo.png",
+      icon: "/assets/snack2.svg",
+      title: "Finger foody",
+      desc: "Pyszne przekąski na jeden kęs, występujące w wielu wariantach.",
+    },
+    {
+      icon: "/assets/vfx2.svg",
       title: "Efekty wizualne",
-      desc: "Profesjonalne oświetlenie LED i efekty specjalne tworzące niepowtarzalny klimat",
-    },
-    {
-      icon: "/assets/logo.png",
-      title: "Obsługa techniczna",
-      desc: "Nasz zespół techniczny czuwa nad płynnym przebiegiem imprezy 24/7",
-    },
-    {
-      icon: "/assets/logo.png",
-      title: "Pamiątkowy gadżet",
-      desc: "Exclusive Silent Disco Pirates wristband dla każdego uczestnika",
-    },
-    {
-      icon: "/assets/logo.png",
-      title: "Bezpieczna przestrzeń",
-      desc: "Strefa imprezy chroniona przez profesjonalną ochronę",
+      desc: "Wyjątkowa przestrzeń, profesjonalne oświetlenie i efekty specjalne tworzące niezapomniany klimat.",
     },
   ];
 
   const faqItems = [
     {
-      question: "Jak dokonać rezerwacji?",
-      answer:
-        "Rezerwacja składa się z 3 prostych kroków: 1) Wypełnij formularz rejestracyjny, 2) Otrzymasz e-mail z potwierdzeniem, 3) Dokonaj płatności online. Cały proces zajmuje mniej niż 5 minut!",
-    },
-    {
       question: "Czy mogę anulować rezerwację?",
       answer:
-        "Tak, anulowanie jest możliwe do 48 godzin przed wydarzeniem. Zwrot środków następuje w ciągu 14 dni roboczych. Prosimy o kontakt na rezerwacje@silentdiscopiraci.pl",
+        "Jeśli nie opłaciłeś jeszcze zamówienia, to nie musisz się niczym martwić .Zostanie ono anulowane po 12h. Jednak po opłaceniu zamówienia nie jest to już możliwe. Aby nie stracić pieniędzy, musisz znaleźć zastępstwo za siebie i poinformować nas o tym.",
     },
     {
       question: "Czy potrzebuję własnych słuchawek?",
-      answer:
-        "Nie, zapewniamy wysokiej jakości słuchawki bezprzewodowe z 3 kanałami muzycznymi. Możesz jednak zabrać własne słuchawki jeśli wolisz.",
+      answer: "Nie XD, ty jesteś z Chyn czy co?",
     },
     {
-      question: "Czy są jakieś ograniczenia wiekowe?",
+      question: "Czy mogę wykonać kilka rezerwacji?",
       answer:
-        "Impreza przeznaczona jest dla osób powyżej 18 roku życia. Wymagamy okazania dokumentu tożsamości przy wejściu.",
+        "Nie, system rezerwacji został stworzony z myślą o jednym zamówieniu przypisanym do jednego uczestnika. Jednak jeśli twoje zamówienie zostało anulowane, to możliwe jest ponowne przesłanie formularza.",
     },
     {
-      question: "Co jeśli uszkodzę słuchawki?",
+      question:
+        "Co jeżeli nie jestem w stanie wysłać przelewu w przeciągu 12h?",
       answer:
-        "Za przypadkowe uszkodzenie sprzętu pobieramy kaucję w wysokości 150 zł, która jest zwracana po oddaniu sprawnego zestawu.",
+        "W takim przypadku skontaktuj się z nami i opisz swój przypadek. Jeśli zobowiążesz się do wykonania wpłaty w innym ustalonym terminie, to twoje zamówienie nie zostanie anulowane.",
     },
     {
-      question: "Czy można przyjść bez rejestracji?",
+      question: "Czy mogę przyjść bez rejestracji?",
       answer:
-        "Rejestracja online jest obowiązkowa. Nie prowadzimy sprzedaży biletów w dniu imprezy ze względu na ograniczoną liczbę słuchawek.",
+        "Nie, aby wejść na wydarzenie konieczne jest pokazanie kodu QR. Dlatego musisz wypełnić formularz przed 20.08.2025.",
+    },
+    {
+      question: "Co się stanie, jeśli uszkodzę lub zgubię słuchawki?",
+      answer:
+        "W takim przypadku szkody zostaną wycenione, a ty będziesz musiał/a pokryć koszty naprawy lub odkupienia sprzętu.",
+    },
+    {
+      question: "Czy mogę udostępnić tę stronę osobom spoza wydarzenia?",
+      answer:
+        "Nie, prosimy o nieudostępnianie tej strony dalej. Została ona stworzona w celu usprawnienia rejestracji i przypisywania słuchawek. Każda rezerwacja osoby spoza wydarzenia na Facebooku będzie pomijana.",
+    },
+    {
+      question: "Co jeżeli zgubiłem/am mail z kodem QR?",
+      answer:
+        "W takim przypadku skontaktuj się z nami, a my prześlemy wiadomość z kodem QR ponownie.",
     },
   ];
 
@@ -341,11 +356,13 @@ const Menu2 = () => {
               </Heading>
 
               <Box
-                width={{ base: "100%", md: "70%", lg: "55%" }}
+                width={{ base: "100%", md: "70%", lg: "58%" }}
                 fontSize={{ base: "1.1rem", md: "1.3rem" }}
+                color="whiteAlpha.700"
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-                consequat metus nec neque dignissim elementum.
+                W celu zagwarantowania sobie miejsca na wydarzeniu konieczne
+                jest przejście przez proces rezerwacji, który składa się z
+                trzech prostych kroków.
               </Box>
             </Box>
 
@@ -362,7 +379,7 @@ const Menu2 = () => {
                     fontSize={{ base: "0.8rem", md: "0.9rem" }}
                     color="gray.300"
                   >
-                    {step.stepNumber}. Krok {step.stepName}
+                    Krok {step.stepName}
                   </Heading>
                   <Text
                     fontWeight="bold"
@@ -416,19 +433,34 @@ const Menu2 = () => {
               </Text>
 
               <Box
-                maxW="800px"
+                maxW="700px"
                 mx="auto"
                 fontSize={{ base: "1rem", md: "1.2rem" }}
                 lineHeight="1.8"
                 textAlign="center"
               >
                 <Text mb={{ base: 4, md: 6 }}>
-                  TUTAJ BEDA SZCZEGOLY WYDARZENIA Z JAKIMS WPROWADZENIEM
-                </Text>
-                <Text mb={{ base: 4, md: 6 }}>
                   Silent Disco to rewolucyjna forma rozrywki, gdzie uczestnicy
-                  tańczą w słuchawkach, każdy wybierając swój ulubiony kanał
-                  muzyczny.
+                  bawią się w słuchawkach, każdy samodzielnie (lub nie) wybiera
+                  swój ulubiony kanał muzyczny. Nie potrzebujesz do tego
+                  nadludzkich zdolności technicznych, wszystko dzieje się za
+                  pomocą jednego przycisku i pokrętła. <br />
+                  Impreza odbywa się w{" "}
+                  <a
+                    href="https://www.google.com/maps/place/Dobronianka+-+mini+zoo,+agroturystyka/@51.6406328,19.257454,17z/data=!3m1!4b1!4m6!3m5!1s0x471a47b77bda5cc3:0x435baebc41dfb180!8m2!3d51.6406295!4d19.2600343!16s%2Fg%2F11h07ybdy6?entry=ttu&g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "underline" }}
+                  >
+                    Dobroniance (ul. Gliniana 4D, 95-082 Dobroń)
+                  </a>{" "}
+                  na otwartej przestrzeni. Planowany start imprezy to 20:00, a
+                  koniec to 04:00. Wszystkie nowości będą udostępniane zarówno
+                  na Instagramie jak i Facebooku, dlatego radzimy na bieżąco
+                  śledzić obie strony. <br />
+                  Tematyką przewodnią imprezy są "Piraci i zwierzęta morskie", a
+                  w dodatku przebranie jest wymagane. Osoby nieprzebrane mają
+                  przejebane.
                 </Text>
               </Box>
             </Box>
