@@ -150,12 +150,12 @@ const Menu = () => {
     {
       icon: "/assets/bottle2.svg",
       title: "Strefa Red Bull i Browary Łódzkie",
-      desc: "Bezpłatne energetyki w rónych samakch oraz piwa dostępne dla kadego.",
+      desc: "Bezpłatne energetyki oraz piwa dostępne dla kadego.",
     },
     {
       icon: "/assets/headphones2.svg",
       title: "Profesjonalne słuchawki",
-      desc: "Bezprzewodowe nauszne słuchawki z 3 kanałami muzyki.",
+      desc: "Bezprzewodowe nauszne słuchawki z trzema kanałami muzycznymi.",
     },
     {
       icon: "/assets/hockey2.svg",
@@ -199,7 +199,7 @@ const Menu = () => {
     {
       question: "Co się stanie, jeśli uszkodzę lub zgubię słuchawki?",
       answer:
-        "W takim przypadku szkody zostaną wycenione, a ty będziesz musiał/a pokryć koszty naprawy lub odkupienia sprzętu.",
+        "Za trwałe zniszczenia lub zgubienie słuchawek obowiązuje opłata zgodnie z regulaminem.",
     },
     {
       question: "Czy mogę udostępnić tę stronę osobom spoza wydarzenia?",
@@ -532,12 +532,10 @@ const Menu = () => {
                       textAlign="center"
                     >
                       <Text mb={{ base: 4, md: 6 }}>
-                        Silent Disco to rewolucyjna forma rozrywki, gdzie
-                        uczestnicy bawią się w słuchawkach, każdy samodzielnie
-                        wybiera swój ulubiony kanał muzyczny. Nie potrzebujesz
-                        do tego nadludzkich zdolności technicznych, wszystko
-                        dzieje się za pomocą jednego przycisku i pokrętła.{" "}
-                        <br /> 
+                        Silent Disco to nowoczesna forma rozrywki, w której
+                        uczestnicy bawią się w słuchawkach i samodzielnie
+                        wybierają kanał z muzyką. Obsługa jest prosta -
+                        wystarczy jeden przycisk i pokrętło. <br />
                         Impreza odbywa się w{" "}
                         <a
                           href="https://www.google.com/maps/place/Dobronianka+-+mini+zoo,+agroturystyka/@51.6406328,19.257454,17z/data=!3m1!4b1!4m6!3m5!1s0x471a47b77bda5cc3:0x435baebc41dfb180!8m2!3d51.6406295!4d19.2600343!16s%2Fg%2F11h07ybdy6?entry=ttu&g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D"
@@ -547,15 +545,13 @@ const Menu = () => {
                         >
                           Dobroniance (ul. Gliniana 4D, 95-082 Dobroń)
                         </a>{" "}
-                        na otwartej przestrzeni. Planowany start imprezy to
-                        20:00, a koniec to 04:00. Wszystkie nowości będą
-                        udostępniane zarówno na Instagramie jak i Facebooku,
-                        dlatego radzimy na bieżąco śledzić obie strony. <br />
-                        Tematyką przewodnią imprezy są "Piraci i stworzenia
-                        morskie", a w dodatku przebranie jest wymagane. Osoby
-                        nieprzebrane uprawnione są do wejścia dopiero po
-                        założeniu stroju karnego przygotowanego przez
-                        organizatora.
+                        na otwartej przestrzeni. Start o 20:00, koniec o 04:00.
+                        Aktualne informacje znajdziesz na naszym Instagramie i
+                        Facebooku – warto je śledzić na bieżąco. <br />
+                        Tematem przewodnim są piraci i stworzenia morskie.
+                        Przebranie jest wymagane. Osoby bez kostiumu będą mogły
+                        wejść dopiero po założeniu stroju karnego przygotowanego
+                        przez organizatora.
                       </Text>
                     </Box>
                   </Box>
