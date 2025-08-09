@@ -61,7 +61,7 @@ const Menu2 = () => {
     {
       icon: "/assets/bar2.svg",
       title: "Open bar",
-      desc: "Drinki, softy, shoty i piwa dostępne przez całą noc. Dla niepijących dostępne będą wersje zero.",
+      desc: "Drinki dostępne przez całą noc (piwo i shoty do wyczerpania zapasów) Dla niepijących dostępne będą wersje bezalkoholowe.",
       // desc: "Drinki, piwo i softy dostępne przez całą noc! Dla niepijących dostępne wersje zero."
     },
     {
