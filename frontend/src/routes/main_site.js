@@ -144,7 +144,7 @@ const Menu = () => {
     {
       icon: "/assets/bar2.svg",
       title: "Open bar",
-      desc: "Drinki i softy dostępne przez całą noc (do skończenia asortymentu +- 22:00)",
+      desc: "Drinki, softy, shoty i piwa dostępne przez całą noc. Dla niepijących dostępne będą wersje zero.",
       // desc: "Drinki, piwo i softy dostępne przez całą noc! Dla niepijących dostępne wersje zero."
     },
     {
@@ -178,11 +178,7 @@ const Menu = () => {
     {
       question: "Czy mogę anulować rezerwację?",
       answer:
-        "Jeśli nie opłaciłeś jeszcze zamówienia, to nie musisz się niczym martwić. Zostanie ono anulowane po 12h. Jednak po opłaceniu zamówienia nie jest to już możliwe. Aby nie stracić pieniędzy, musisz znaleźć zastępstwo za siebie i poinformować nas o tym.",
-    },
-    {
-      question: "Czy potrzebuję własnych słuchawek?",
-      answer: "Nie XD, ty jesteś z Chyn czy co?",
+        "Jeśli nie opłaciłeś jeszcze zamówienia, to nie musisz się niczym martwić .Zostanie ono anulowane po 12h. Jednak po opłaceniu zamówienia nie jest to już możliwe. Aby nie stracić pieniędzy, musisz znaleźć zastępstwo za siebie i poinformować nas o tym.",
     },
     {
       question: "Czy mogę wykonać kilka rezerwacji?",
@@ -529,19 +525,37 @@ const Menu = () => {
                     </Text>
 
                     <Box
-                      maxW="800px"
+                      maxW="700px"
                       mx="auto"
                       fontSize={{ base: "1rem", md: "1.2rem" }}
                       lineHeight="1.8"
                       textAlign="center"
                     >
                       <Text mb={{ base: 4, md: 6 }}>
-                        TUTAJ BEDA SZCZEGOLY WYDARZENIA Z JAKIMS WPROWADZENIEM
-                      </Text>
-                      <Text mb={{ base: 4, md: 6 }}>
                         Silent Disco to rewolucyjna forma rozrywki, gdzie
-                        uczestnicy tańczą w słuchawkach, każdy wybierając swój
-                        ulubiony kanał muzyczny.
+                        uczestnicy bawią się w słuchawkach, każdy samodzielnie
+                        wybiera swój ulubiony kanał muzyczny. Nie potrzebujesz
+                        do tego nadludzkich zdolności technicznych, wszystko
+                        dzieje się za pomocą jednego przycisku i pokrętła.{" "}
+                        <br /> 
+                        Impreza odbywa się w{" "}
+                        <a
+                          href="https://www.google.com/maps/place/Dobronianka+-+mini+zoo,+agroturystyka/@51.6406328,19.257454,17z/data=!3m1!4b1!4m6!3m5!1s0x471a47b77bda5cc3:0x435baebc41dfb180!8m2!3d51.6406295!4d19.2600343!16s%2Fg%2F11h07ybdy6?entry=ttu&g_ep=EgoyMDI1MDgwNi4wIKXMDSoASAFQAw%3D%3D"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          Dobroniance (ul. Gliniana 4D, 95-082 Dobroń)
+                        </a>{" "}
+                        na otwartej przestrzeni. Planowany start imprezy to
+                        20:00, a koniec to 04:00. Wszystkie nowości będą
+                        udostępniane zarówno na Instagramie jak i Facebooku,
+                        dlatego radzimy na bieżąco śledzić obie strony. <br />
+                        Tematyką przewodnią imprezy są "Piraci i stworzenia
+                        morskie", a w dodatku przebranie jest wymagane. Osoby
+                        nieprzebrane uprawnione są do wejścia dopiero po
+                        założeniu stroju karnego przygotowanego przez
+                        organizatora.
                       </Text>
                     </Box>
                   </Box>
