@@ -13,11 +13,11 @@ const slideData = [
   { imgSrc: "/assets/IMG_3.webp" },
   { imgSrc: "/assets/IMG_4.webp" },
   { imgSrc: "/assets/IMG_5.webp" },
-  { imgSrc: "/assets/IMG_6.webp" },
-  { imgSrc: "/assets/IMG_7.webp", position: "center 20%"},
-  { imgSrc: "/assets/IMG_8.webp" },
-  { imgSrc: "/assets/IMG_9.webp", position: "center 15%" },
-  { imgSrc: "/assets/IMG_10.webp" }
+  // { imgSrc: "/assets/IMG_6.webp" },
+  // { imgSrc: "/assets/IMG_7.webp", position: "center 20%"},
+  // { imgSrc: "/assets/IMG_8.webp" },
+  // { imgSrc: "/assets/IMG_9.webp", position: "center 15%" },
+  // { imgSrc: "/assets/IMG_10.webp" }
   
   
 ];
