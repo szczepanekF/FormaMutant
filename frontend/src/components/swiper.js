@@ -8,16 +8,17 @@ import "swiper/css/pagination";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 const slideData = [
-  { imgSrc: "/assets/IMG_1.webp", position: "center 18%" },
-  { imgSrc: "/assets/IMG_2.webp" },
   { imgSrc: "/assets/IMG_3.webp" },
+  { imgSrc: "/assets/IMG_2.webp" },
+  { imgSrc: "/assets/IMG_1.webp", position: "center 18%" },
+  // { imgSrc: "/assets/IMG_3.webp" },
   { imgSrc: "/assets/IMG_4.webp" },
   { imgSrc: "/assets/IMG_5.webp" },
-  // { imgSrc: "/assets/IMG_6.webp" },
-  // { imgSrc: "/assets/IMG_7.webp", position: "center 20%"},
-  // { imgSrc: "/assets/IMG_8.webp" },
-  // { imgSrc: "/assets/IMG_9.webp", position: "center 15%" },
-  // { imgSrc: "/assets/IMG_10.webp" }
+  { imgSrc: "/assets/IMG_6.webp" },
+  { imgSrc: "/assets/IMG_7.webp", position: "center 20%"},
+  { imgSrc: "/assets/IMG_8.webp" },
+  { imgSrc: "/assets/IMG_9.webp", position: "center 15%" },
+  { imgSrc: "/assets/IMG_10.webp" }
   
   
 ];
@@ -65,7 +66,11 @@ export default function Slider() {
       pagination={{ clickable: true }}
       grabCursor={true}
       loop={true}
-      speed={600}
+      speed={800}
+      touchReleaseOnEdges={true}
+      threshold={10}
+      resistanceRatio={0.7} 
+      // followFinger={false}
       navigation
       style={{
         height: "100%",
@@ -108,7 +113,8 @@ export default function Slider() {
               h={{ base: "40vh", md: "65vh" }}
               objectPosition = {slide.position || "center"} 
               w="100%"
-              filter="grayscale(20%) contrast(1.05) brightness(1.1)"
+              // filter="grayscale(20%) contrast(1.05) brightness(1.1)"
+              loading="lazy"
             />
             <Box
               position="absolute"

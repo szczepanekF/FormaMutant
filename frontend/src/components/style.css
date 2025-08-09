@@ -1,29 +1,26 @@
 /* Normal state*/
 .slide-image {
   transform: scale(1);
-  transition: transform 1s ease, filter 1s ease;
+  transition: transform 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 1.6s ease;
+  backface-visibility: hidden; /* Fix dla WebKit */
+  will-change: transform; /* Informacja dla przeglądarki */
 }
 
 /* Only during drag */
 .swiper.dragging .slide-image {
   transform: scale(0.90);
-  transition: transform 0.5s ease;
-  /* opacity: 0.85; */
-} 
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Krótszy i liniowy easing */
+}
 
 
-/* .swiper-pagination-bullet {
+.swiper-pagination-bullet {
   background-color: #ccc;
   opacity: 0.9;
   transition: all 0.3s ease;
-} */
+}
 
 .swiper-pagination-bullet {
-  background-color: #3182ce; /* Chakra blue.500 */
-  opacity: 0.5; /* Zmniejszona przezroczystość dla nieaktywnych kropek */
-  width: 10px;
-  height: 10px;
-  transition: all 0.3s ease; /* Płynne przejście przy zmianie */
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .swiper-pagination-bullet-active {
