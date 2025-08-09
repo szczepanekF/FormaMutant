@@ -11,14 +11,14 @@ from jinja2 import Template
 from weasyprint import HTML
 from django.template import engines
 
-EXAMPLE_ITEM_PRICE = 100
-BROKEN_LOST_ITEM_PRICE = 10000
+EXAMPLE_ITEM_PRICE = 150
+BROKEN_LOST_ITEM_PRICE = 800
 
 PLANETA_LUZU_FOOTER = (
     "© 2025 PlanetaLuzu. Wszystkie prawa zastrzeżone. \n"
     "Odwiedź naszą stronę: https://planetaluzu.pl Kontakt: planetaluzu.sd@gmail.com"
 )
-PAYMENT_LINK = "https://revolut.me/michalg02"
+PAYMENT_LINK = "https://revolut.me/wiktorrfrc"
 
 DEFAULT_BODIES = {
     "payment": """

@@ -112,6 +112,30 @@ const Menu = () => {
     animateLogo();
   }, [controls]);
 
+  const stepsData = [
+    {
+      stepNumber: 1,
+      stepName: "pierwszy",
+      title: "Wypełnij formularz!",
+      description:
+        "Podaj swoje dane kontaktowe oraz zaakceptuj regulamin i politykę prywatności (RODO).",
+    },
+    {
+      stepNumber: 2,
+      stepName: "drugi",
+      title: "Opłać rezerwację i czekaj na potwierdzenie!",
+      description:
+        "Otrzymasz e-mail z linkiem do płatności. Wprowadź kwotę i tytuł przelewu zgodnie z informacjami znajdującymi się wiadomości i wykonaj przelew, a następnie poczekaj na potwierdzenie rezerwacji od organizatora.",
+    },
+    {
+      stepNumber: 3,
+      stepName: "trzeci",
+      title: "Potwierdzenie!",
+      description:
+        "Po akceptacji rezerwacji otrzymasz e-mail z kodem QR słuchawek. Pokaż kod przy odbiorze, aby otrzymać sprzęt.",
+    },
+  ];
+
   const benefits = [
     {
       icon: "/assets/logo.png",

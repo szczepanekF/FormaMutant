@@ -96,7 +96,7 @@ const Footer = () => {
 
               {/* Instagram Logo Box */}
               <ChakraLink
-                href="https://instagram.com"
+                href="https://www.instagram.com/planeta_luzu"
                 isExternal
                 _hover={{ transform: "scale(1.05)" }}
               >

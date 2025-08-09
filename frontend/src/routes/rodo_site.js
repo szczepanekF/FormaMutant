@@ -14,6 +14,55 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/footer";
 const Rodo = () => {
   const nav = useNavigate();
+  const rodoRules = [
+    {
+      title: "Informacje ogólne",
+      body: `Niniejsza polityka prywatności dotyczy danych osobowych zbieranych za pośrednictwem strony internetowej dotyczącej prywatnej imprezy organizowanej przez Wiktorię Kirsz. 
+      
+Strona służy wyłącznie do rejestracji uczestników wydarzenia i nie ma charakteru komercyjnego.`,
+    },
+    {
+      title: "Administrator danych",
+      body: `Administratorem danych osobowych jest:
+Wiktoria Kirsz, ul. Markówka 26, 95-082 Markówka.
+Kontakt: dane kontaktowe znajdują się w stopce strony, w sekcji "Kontakt".`,
+    },
+    {
+      title: "Zakres zbieranych danych",
+      body: `Zbieramy tylko te dane, które dobrowolnie podasz w formularzu rejestracyjnym – są to:
+    \u00A0 \u00A0 \u00A0 \u00A0- imię i nazwisko,
+    \u00A0 \u00A0 \u00A0 \u00A0- adres e-mail,
+    \u00A0 \u00A0 \u00A0 \u00A0- numer telefonu.
+Dane te są zbierane wyłącznie w celu organizacji imprezy i kontaktu z uczestnikami.`,
+    },
+    {
+      title: "Podstawa prawna przetwarzania",
+      body: `Dane przetwarzane są zgodnie z art. 6 ust. 1 lit. a RODO – na podstawie Twojej zgody, którą wyrażasz, wypełniając formularz rejestracyjny.`,
+    },
+    {
+      title: "Bezpieczeństwo danych",
+      body: `Dbamy o bezpieczeństwo Twoich danych – nie przekazujemy ich osobom trzecim, nie sprzedajemy i nie udostępniamy. Dostęp do danych ma wyłącznie Organizator. `,
+    },
+    {
+      title: "Twoje prawa",
+      body: `Masz prawo do:
+    \u00A0 \u00A0 \u00A0 \u00A0- dostępu do swoich danych,
+    \u00A0 \u00A0 \u00A0 \u00A0- ich poprawienia,
+    \u00A0 \u00A0 \u00A0 \u00A0- żądania usunięcia,
+    \u00A0 \u00A0 \u00A0 \u00A0- ograniczenia przetwarzania.
+W każdej chwili możesz skontaktować się z nami, by z nich skorzystać.
+`,
+    },
+    {
+      title: "Ciasteczka i linki zewnętrzne",
+      body: `Na stronie mogą pojawiać się linki do innych stron (np. do profilu wydarzenia na instagramie). Nie odpowiadamy za polityki prywatności tych stron. Strona nie korzysta z plików cookies do śledzenia użytkowników.`,
+    },
+    {
+      title: "Zmiany w polityce",
+      body: `Polityka prywatności może być aktualizowana, jeśli zmienią się przepisy lub charakter wydarzenia. O wszelkich zmianach poinformujemy na stronie.`,
+    },
+  ];
+
   return (
     <>
       <Box initial={1} position="fixed" w="100%" h="100%" zIndex={1}>
@@ -97,7 +146,7 @@ const Rodo = () => {
                 fontWeight: "bold",
               }}
             >
-              Polityka Prywatności RODO
+              Polityka prywatności – Silent Disco Planeta Luzu
             </Heading>
           </Container>
           <Container
@@ -121,22 +170,18 @@ const Rodo = () => {
               }}
             >
               <OrderedList spacing={4} color="white">
-                {[...Array(10)].map((_, i) => (
-                  <ListItem key={i} mb={4}>
+                {rodoRules.map((item, i) => (
+                  <ListItem key={i} fontWeight="bold" mb={4}>
                     <Text as="span" fontWeight="bold">
-                      {i + 1}. Punkt polityki RODO
+                      {item.title}
                       <Text
                         as="span"
                         fontWeight="normal"
                         display="block"
-                        mt={2}
+                        mt={1}
+                        whiteSpace="pre-line"
                       >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Nullam in dui mauris. Vivamus hendrerit arcu sed erat
-                        molestie vehicula. Sed auctor neque eu tellus rhoncus ut
-                        eleifend nibh porttitor. Ut in nulla enim. Phasellus
-                        molestie magna non est bibendum non venenatis nisl
-                        tempor.
+                        {item.body}
                       </Text>
                     </Text>
                   </ListItem>

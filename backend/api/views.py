@@ -243,7 +243,6 @@ def create_order(request):
 
 
 @api_view(["POST"])
-# @permission_classes([AllowAny])
 @permission_classes([IsAdminUser])
 def change_order_state(request, order_id):
 

@@ -34,20 +34,22 @@ const Menu2 = () => {
       stepNumber: 1,
       stepName: "pierwszy",
       title: "Wypełnij formularz!",
-      description: "Podaj swoje podstawowe dane kontaktowe i informacje.",
+      description:
+        "Podaj swoje dane kontaktowe oraz zaakceptuj regulamin i politykę prywatności (RODO).",
     },
     {
       stepNumber: 2,
       stepName: "drugi",
-      title: "Wybierz produkt!",
+      title: "Opłać rezerwację i czekaj na potwierdzenie!",
       description:
-        "Z listy dostępnych produktów wybierz ten, który Cię interesuje.",
+        "Otrzymasz e-mail z linkiem do płatności. Wprowadź kwotę i tytuł przelewu zgodnie z informacjami znajdującymi się wiadomości i wykonaj przelew, a następnie poczekaj na potwierdzenie rezerwacji od organizatora.",
     },
     {
       stepNumber: 3,
       stepName: "trzeci",
       title: "Potwierdzenie!",
-      description: "Sprawdź poprawność danych i potwierdź zamówienie.",
+      description:
+        "Po akceptacji rezerwacji otrzymasz e-mail z kodem QR słuchawek. Pokaż kod przy odbiorze, aby otrzymać sprzęt.",
     },
   ];
 
