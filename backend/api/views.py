@@ -12,6 +12,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
 from django_q.tasks import async_task
+from django.utils.timezone import now
+from datetime import datetime
 
 from .serializers import (
     AccountSerializer,
@@ -218,6 +220,12 @@ def get_account_with_number(request, number):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def create_order(request):
+    max_allowed_date = datetime(2025, 8, 17, 23, 59, 59, tzinfo=now().tzinfo)
+    print(max_allowed_date.strftime("%H:%M:%S %d %m %Y"))
+    if now() > max_allowed_date:
+        return Response(
+            {"reason": f"Rejestracja zamówień była możliwa do {max_allowed_date.strftime("%H:%M:%S dnia %d.%m.%Y")}"}, status=status.HTTP_400_BAD_REQUEST
+        )
     try:
         serializer = OrderCreateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):

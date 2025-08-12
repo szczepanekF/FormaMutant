@@ -2,8 +2,6 @@ from rest_framework import serializers
 from .models import Account, Order, Item, MAX_ITEM_AMOUNT
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.utils.timezone import now
-from datetime import datetime
 
 MAX_ITEM_AMOUNT = 1
 
@@ -85,13 +83,6 @@ class OrderCreateSerializer(serializers.Serializer):
                 "phone_number": account_data["phone_number"],
             },
         )
-        min_allowed_date = datetime(2025, 8, 20, tzinfo=now().tzinfo)
-        print(min_allowed_date.strftime("%d %m %Y"))
-        if now() > min_allowed_date:
-            raise serializers.ValidationError(
-                f"Rejestracja zamówień była możliwa do {min_allowed_date.strftime("%d.%m.%Y")}"
-            )
-
             # For other MAX_ITEM_AMOUNT than 1
         total_items = (
             Order.objects.filter(account=account)

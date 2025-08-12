@@ -111,7 +111,7 @@ const Menu2 = () => {
     {
       question: "Czy mogę przyjść bez rejestracji?",
       answer:
-        "Nie, aby wejść na wydarzenie konieczne jest pokazanie kodu QR. Dlatego musisz wypełnić formularz przed 20.08.2025.",
+        "Nie, aby wejść na wydarzenie konieczne jest pokazanie kodu QR. Dlatego musisz wypełnić formularz do 23:59 dnia 17.08.2025.",
     },
     {
       question: "Co się stanie, jeśli uszkodzę lub zgubię słuchawki?",
@@ -297,7 +297,7 @@ const Menu2 = () => {
                 fontSize={{ base: "0.9rem", md: "1rem" }}
                 fontStyle="italic"
               >
-                Formularz aktywny do 20.08
+                Formularz aktywny do 23:59 dnia 17.08.2025
               </Text>
             </VStack>
 
