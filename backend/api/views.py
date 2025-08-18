@@ -220,7 +220,7 @@ def get_account_with_number(request, number):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def create_order(request):
-    max_allowed_date = datetime(2025, 8, 17, 23, 59, 59, tzinfo=now().tzinfo)
+    max_allowed_date = datetime(2025, 8, 21, 23, 59, 59, tzinfo=now().tzinfo)
     print(max_allowed_date.strftime("%H:%M:%S %d %m %Y"))
     if now() > max_allowed_date:
         return Response(
