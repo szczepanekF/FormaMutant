@@ -66,7 +66,7 @@ const Menu2 = () => {
     },
     {
       icon: "/assets/bottle2.svg",
-      title: "Strefa Red Bull i Browary Łódzkie",
+      title: "Strefa Red Bull i browaru Ziemia Obiecana",
       desc: "Bezpłatne energetyki oraz piwa dostępne dla kadego.",
     },
     {
