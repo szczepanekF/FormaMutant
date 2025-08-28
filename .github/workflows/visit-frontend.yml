@@ -1,8 +1,6 @@
 name: Visit Frontend Page Every 5 Minutes
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
